@@ -186,17 +186,18 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         }
 
         std::ofstream file("dose_" + physicsName + ".txt");
-        for(G4int i = 0; i < numVoxelX; ++i)
+		// store data in column major where x index changes fastest
+		for(G4int k = 0; k < numVoxelZ; ++k)
         {
             for(G4int j = 0; j < numVoxelY; ++j)
             {
-                for(G4int k = 0; k < numVoxelZ; ++k)
+				for(G4int i = 0; i < numVoxelX; ++i)
                 {
                     G4double edep = 0.0;
                     G4double edep2 = 0.0;
 
-                    // z idx changes fastest, x slowest
-                    G4int globalIdx = numVoxelZ * numVoxelY * i + numVoxelZ * j + k;
+                    // x idx changes fastest, z slowest
+                    G4int globalIdx = numVoxelX * numVoxelY * k + numVoxelX * j + i;
                     G4double* edepPtr = (*hitsMap)[globalIdx];
                     if(edepPtr != nullptr)
                     {
@@ -209,7 +210,9 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
                     }
 
                     // convert from energy to dose
-                    G4double density = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx)->GetDensity();
+					G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
+					G4cout << material->GetName() << G4endl;
+                    G4double density = material->GetDensity();
                     G4double mass = density * voxelVolume;
                     G4double dose  = edep / mass;
                     G4double dose2 = edep2 / mass / mass;

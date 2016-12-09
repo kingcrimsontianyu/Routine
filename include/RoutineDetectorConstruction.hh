@@ -40,9 +40,9 @@ public:
                                   std::vector<G4Material*>* phantomMaterialList);
     ~RoutineNestedParameterisation();
 
-    virtual G4Material* ComputeMaterial(G4VPhysicalVolume* currentPhysicalVol, const G4int zVoxelIdx, const G4VTouchable* parentTouch);
-    virtual void ComputeTransformation(const G4int zVoxelIdx, G4VPhysicalVolume* currentPhysicalVol) const;
-    virtual void ComputeDimensions(G4Box& box, const G4int zVoxelIdx, const G4VPhysicalVolume* currentPhysicalVol) const;
+    virtual G4Material* ComputeMaterial(G4VPhysicalVolume* currentPhysicalVol, const G4int xVoxelIdx, const G4VTouchable* parentTouch);
+    virtual void ComputeTransformation(const G4int xVoxelIdx, G4VPhysicalVolume* currentPhysicalVol) const;
+    virtual void ComputeDimensions(G4Box& box, const G4int xVoxelIdx, const G4VPhysicalVolume* currentPhysicalVol) const;
     virtual G4int GetNumberOfMaterials() const;
     virtual G4Material* GetMaterial(G4int idx) const;
     G4Material* GetPhantomMaterial(G4int globalIdx) const;
@@ -56,7 +56,7 @@ private:
     G4int fZNumVoxel;
     G4int fTotalNumVoxel;
 
-    std::vector<G4double> fZTranslationList;
+    std::vector<G4double> fXTranslationList;
     std::map<G4String, G4Material*>* fMaterialMap;
     std::vector<G4Material*>* fPhantomMaterialList;
     std::vector<G4Material*>* fMaterialList;
