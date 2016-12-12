@@ -130,8 +130,8 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
 
         auto biuRun = static_cast<const RoutineRun*>(run);
-        G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/totalD3D"));
-        G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/totalD3DSquared"));
+        G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyImparted3D"));
+        G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyImparted3DSquared"));
 
         G4double edep = 0.0;
         for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)

@@ -2,7 +2,7 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePSEnergyDeposit::RoutinePSEnergyDeposit(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel)
+RoutinePSEnergyImparted::RoutinePSEnergyImparted(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel)
 :G4PSEnergyDeposit(name),
 fXNumVoxel(xNumVoxel),
 fYNumVoxel(yNumVoxel),
@@ -11,12 +11,12 @@ fZNumVoxel(zNumVoxel)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePSEnergyDeposit::~RoutinePSEnergyDeposit()
+RoutinePSEnergyImparted::~RoutinePSEnergyImparted()
 {}
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4int RoutinePSEnergyDeposit::GetIndex(G4Step* aStep)
+G4int RoutinePSEnergyImparted::GetIndex(G4Step* aStep)
 {
     const G4VTouchable* touchable = aStep->GetPreStepPoint()->GetTouchable();
     G4int xIdx = touchable->GetReplicaNumber(2);

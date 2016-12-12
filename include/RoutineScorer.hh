@@ -6,11 +6,11 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-class RoutinePSEnergyDeposit : public G4PSEnergyDeposit
+class RoutinePSEnergyImparted : public G4PSEnergyDeposit
 {
 public:
-    RoutinePSEnergyDeposit(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel);
-    virtual ~RoutinePSEnergyDeposit();
+    RoutinePSEnergyImparted(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel);
+    virtual ~RoutinePSEnergyImparted();
 
 protected:
     virtual G4int GetIndex(G4Step*);

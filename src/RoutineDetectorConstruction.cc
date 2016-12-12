@@ -275,7 +275,7 @@ void RoutineDetectorConstruction::ConstructSDandField()
     // create mfd and add scorer to it
     G4MultiFunctionalDetector* mfd = new G4MultiFunctionalDetector("PhantomMFD");
     mfd->RegisterPrimitive(new G4PSEnergyDeposit("totalD"));
-    mfd->RegisterPrimitive(new RoutinePSEnergyDeposit(G4String("totalD3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
+    mfd->RegisterPrimitive(new RoutinePSEnergyImparted(G4String("energyImparted3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
     mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
 
     // add mfd to the singleton sd manager
