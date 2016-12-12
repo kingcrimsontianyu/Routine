@@ -18,8 +18,16 @@ int main(int argc,char** argv)
     G4MTRunManager* runManager = new G4MTRunManager;
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
     runManager->SetUserInitialization(new RoutineStandard);
+    // runManager->SetUserInitialization(new RoutineMinimalist);
     runManager->SetUserInitialization(new RoutineActionInitialization());
-    runManager->SetNumberOfThreads(3);
+    runManager->SetNumberOfThreads(28);
+
+    G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    UImanager->ApplyCommand("/control/verbose 0");
+    UImanager->ApplyCommand("/run/verbose 0");
+    UImanager->ApplyCommand("/event/verbose 0");
+    UImanager->ApplyCommand("/tracking/verbose 0");
+    UImanager->ApplyCommand("/hits/verbose 0");
 
     runManager->Initialize();
     int numberOfEvent = static_cast<int>(1e5);
@@ -31,11 +39,6 @@ int main(int argc,char** argv)
     GetVisInfo(visManager);
     #endif
 
-    G4UImanager* UImanager = G4UImanager::GetUIpointer();
-    UImanager->ApplyCommand("/control/verbose 0");
-    UImanager->ApplyCommand("/run/verbose 0");
-    UImanager->ApplyCommand("/event/verbose 0");
-    UImanager->ApplyCommand("/tracking/verbose 0");
     #if defined USE_GUI
     UImanager->ApplyCommand("/control/execute vis.mac");
     #endif

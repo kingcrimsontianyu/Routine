@@ -186,12 +186,12 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         }
 
         std::ofstream file("dose_" + physicsName + ".txt");
-		// store data in column major where x index changes fastest
-		for(G4int k = 0; k < numVoxelZ; ++k)
+        // store data in column major where x index changes fastest
+        for(G4int k = 0; k < numVoxelZ; ++k)
         {
             for(G4int j = 0; j < numVoxelY; ++j)
             {
-				for(G4int i = 0; i < numVoxelX; ++i)
+                for(G4int i = 0; i < numVoxelX; ++i)
                 {
                     G4double edep = 0.0;
                     G4double edep2 = 0.0;
@@ -210,8 +210,130 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
                     }
 
                     // convert from energy to dose
-					G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
-					G4cout << material->GetName() << G4endl;
+                    G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
+                    G4cout << material->GetName() << G4endl;
+                    G4double density = material->GetDensity();
+                    G4double mass = density * voxelVolume;
+                    G4double dose  = edep / mass;
+                    G4double dose2 = edep2 / mass / mass;
+
+                    G4double sigma = dose2 - dose * dose / numHistory;
+                    if (sigma > 0.0)
+                    {
+                        sigma = std::sqrt(sigma);
+                    }
+                    else
+                    {
+                        sigma = 0.0;
+                    }
+                    dose /= numHistory;
+                    sigma /= numHistory;
+                    G4double rsd = sigma / dose;
+
+                    file << std::setw(5) << i
+                         << std::setw(5) << j
+                         << std::setw(5) << k
+                         << std::setw(20) << std::scientific << std::setprecision(12) << dose / (MeV / g)
+                         << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
+
+                }
+            }
+        }
+        file.close();
+    }
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // kerma
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(IsMaster())
+    {
+        // convert energy to dose per source particle
+        auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
+
+        auto biuRun = static_cast<const RoutineRun*>(run);
+        G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyTransfer3D"));
+        G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyTransfer3DSquared"));
+
+        G4double edep = 0.0;
+        for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)
+        {
+            edep += *(it->second);
+        }
+        G4double dose  = edep / mass;
+        dose /= numHistory;
+
+        G4cout << "--> hits map (voxel)" << G4endl;
+        G4cout << "    dose = " << dose / (MeV / g) << " [MeV/g]"<< G4endl;
+
+        // save result to file
+        // get phantom parameters
+        G4cout << "--> save to file" << G4endl;
+        G4int numVoxelX;
+        G4int numVoxelY;
+        G4int numVoxelZ;
+        detectorConstruction->GetNumVoxel(numVoxelX, numVoxelY, numVoxelZ);
+        G4double voxelVolume = detectorConstruction->GetVoxelVolume();
+        G4cout << "    voxel volume = " << voxelVolume / cm3 << G4endl;
+
+        G4String physicsName;
+
+        // RTTI
+        if(dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
+        {
+            auto userPhysics = dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
+            if(userPhysics)
+            {
+                G4cout << "    RoutineModularPhysics" << G4endl;
+                physicsName = userPhysics->name;
+            }
+            else
+            {
+                physicsName = "unamed";
+            }
+        }
+
+        if(dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
+        {
+            auto userPhysics = dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
+            if(userPhysics)
+            {
+                G4cout << "    RoutineUserPhysics" << G4endl;
+                physicsName = userPhysics->name;
+            }
+            else
+            {
+                physicsName = "unamed";
+            }
+        }
+
+        std::ofstream file("kerma_" + physicsName + ".txt");
+        // store data in column major where x index changes fastest
+        for(G4int k = 0; k < numVoxelZ; ++k)
+        {
+            for(G4int j = 0; j < numVoxelY; ++j)
+            {
+                for(G4int i = 0; i < numVoxelX; ++i)
+                {
+                    G4double edep = 0.0;
+                    G4double edep2 = 0.0;
+
+                    // x idx changes fastest, z slowest
+                    G4int globalIdx = numVoxelX * numVoxelY * k + numVoxelX * j + i;
+                    G4double* edepPtr = (*hitsMap)[globalIdx];
+                    if(edepPtr != nullptr)
+                    {
+                        edep = *edepPtr;
+                    }
+                    G4double* edep2Ptr = (*hitsMapSquared)[globalIdx];
+                    if(edep2Ptr != nullptr)
+                    {
+                        edep2 = *edep2Ptr;
+                    }
+
+                    // convert from energy to dose
+                    G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
+                    G4cout << material->GetName() << G4endl;
                     G4double density = material->GetDensity();
                     G4double mass = density * voxelVolume;
                     G4double dose  = edep / mass;

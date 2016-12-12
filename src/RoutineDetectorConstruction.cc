@@ -87,11 +87,41 @@ void RoutineDetectorConstruction::ImportFromFile()
     ZList.clear(); weightFractionList.clear();
     fMaterialMap.insert(std::pair<G4String, G4Material*>("bone", bone));
 
-    fPhantomDimension.set(10.0 * cm, 10.0 * cm, 10.0 * cm);
+    // water
+    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
+    ZList.push_back(1 );  weightFractionList.push_back(0.111894);
+    ZList.push_back(8 );  weightFractionList.push_back(0.888106);
+    density = 1.0 * g / cm3;
+    G4Material* water = new G4Material("water", density, ZList.size());
+    for(int i = 0; i < ZList.size(); ++i)
+    {
+        G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        water->AddElement(el, weightFractionList[i]);
+    }
+    ZList.clear(); weightFractionList.clear();
+    fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
 
-    fXNumVoxel = 2;
-    fYNumVoxel = 2;
-    fZNumVoxel = 2;
+    // vacuum
+    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
+    ZList.push_back(6 );  weightFractionList.push_back(0.000124);
+    ZList.push_back(7 );  weightFractionList.push_back(0.755267);
+    ZList.push_back(8 );  weightFractionList.push_back(0.231781);
+    ZList.push_back(18);  weightFractionList.push_back(0.012827);
+    density = 1.20479e-06 * g / cm3;
+    G4Material* vacuum = new G4Material("vacuum", density, ZList.size());
+    for(int i = 0; i < ZList.size(); ++i)
+    {
+        G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        vacuum->AddElement(el, weightFractionList[i]);
+    }
+    ZList.clear(); weightFractionList.clear();
+    fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
+
+    fPhantomDimension.set(50.0 * cm, 50.0 * cm, 50.0 * cm);
+
+    fXNumVoxel = 1;
+    fYNumVoxel = 100;
+    fZNumVoxel = 1;
     fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
 
     fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,
@@ -99,13 +129,13 @@ void RoutineDetectorConstruction::ImportFromFile()
                         fPhantomDimension.z() / fZNumVoxel);
 
     fPhantomMaterialList.resize(fTotalNumVoxel);
-	for(G4int k = 0; k < fZNumVoxel; ++k)
+    for(G4int k = 0; k < fZNumVoxel; ++k)
     {
         for(G4int j = 0; j < fYNumVoxel; ++j)
         {
             for(G4int i = 0; i < fXNumVoxel; ++i)
             {
-				G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
+                G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
 
                 if(k == 0)
                 {
@@ -133,9 +163,9 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 
     // World
     G4Box* solidWorld = new G4Box("S_World",        // name
-                                  100.0 * cm,
-                                  100.0 * cm,
-                                  100.0 * cm);     // size
+                                  300.0 * cm,
+                                  300.0 * cm,
+                                  300.0 * cm);     // size
 
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,  // solid
                                                       fMaterialMap["air"],   // material
@@ -157,7 +187,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                     fPhantomDimension.z() / 2.0);     // size
 
     fLogicPhantom = new G4LogicalVolume(solidphantom,  // solid
-                                        fMaterialMap["air"],   // material
+                                        fMaterialMap["vacuum"],   // material
                                         "L_Phantom");    // name
 
     G4VPhysicalVolume* physphantom = new G4PVPlacement(0,                  // no rotation
@@ -176,7 +206,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                   fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicZ = new G4LogicalVolume(solidZ,  // solid
-                                                  fMaterialMap["air"],   // material
+                                                  fMaterialMap["vacuum"],   // material
                                                   "L_RepZ");    // name
 
     G4PVReplica* physZ = new G4PVReplica("P_RepZ",
@@ -194,7 +224,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                  fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicY = new G4LogicalVolume(solidY,  // solid
-                                                  fMaterialMap["air"],   // material
+                                                  fMaterialMap["vacuum"],   // material
                                                   "L_RepY");    // name
 
     G4PVReplica* physY = new G4PVReplica("P_RepY",
@@ -212,7 +242,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                  fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicX = new G4LogicalVolume(solidX,  // solid
-                                                  fMaterialMap["air"],   // material
+                                                  fMaterialMap["vacuum"],   // material
                                                   "L_Voxel");    // name
 
     fLogicVolumeVoxel = logicX;
@@ -246,6 +276,7 @@ void RoutineDetectorConstruction::ConstructSDandField()
     G4MultiFunctionalDetector* mfd = new G4MultiFunctionalDetector("PhantomMFD");
     mfd->RegisterPrimitive(new G4PSEnergyDeposit("totalD"));
     mfd->RegisterPrimitive(new RoutinePSEnergyDeposit(G4String("totalD3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
+    mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
 
     // add mfd to the singleton sd manager
     G4SDManager* sdManager = G4SDManager::GetSDMpointer();
@@ -374,14 +405,16 @@ G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume* cu
     G4int yVoxelIdx = parentTouch->GetReplicaNumber(0); // parent (y) has depth of 0 relative to itself
     G4int globalIdx = fXNumVoxel * fYNumVoxel * zVoxelIdx + fXNumVoxel * yVoxelIdx + xVoxelIdx;
 
-    if(zVoxelIdx == 0)
-    {
-        mat = fMaterialMap->at("soft_tissue");
-    }
-    else
-    {
-        mat = fMaterialMap->at("bone");
-    }
+    // if(zVoxelIdx == 0)
+    // {
+        // mat = fMaterialMap->at("soft_tissue");
+    // }
+    // else
+    // {
+        // mat = fMaterialMap->at("bone");
+    // }
+
+    mat = fMaterialMap->at("water");
 
     return mat;
 }
