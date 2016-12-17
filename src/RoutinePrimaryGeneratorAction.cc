@@ -38,10 +38,10 @@ RoutinePrimaryGeneratorAction::~RoutinePrimaryGeneratorAction()
 void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
     // pencil beam: 1 x 1 cm2 square
-    G4double sigmaPosition = 10.0 * cm;
+    G4double sigmaPosition = 1.0 * cm;
     G4double dx = (G4UniformRand() - 0.5) * sigmaPosition;
     G4double dz = (G4UniformRand() - 0.5) * sigmaPosition;
-    G4ThreeVector position = {dx, -30.0 * cm, dz};
+    G4ThreeVector position = {dx, -101.0 * cm, dz};
     fParticleGun->SetParticlePosition(position);
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }

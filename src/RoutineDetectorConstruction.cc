@@ -101,6 +101,19 @@ void RoutineDetectorConstruction::ImportFromFile()
     ZList.clear(); weightFractionList.clear();
     fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
 
+    // lead
+    // http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=082
+    ZList.push_back(82);  weightFractionList.push_back(1);
+    density = 11.35 * g / cm3;
+    G4Material* lead = new G4Material("lead", density, ZList.size());
+    for(int i = 0; i < ZList.size(); ++i)
+    {
+        G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        lead->AddElement(el, weightFractionList[i]);
+    }
+    ZList.clear(); weightFractionList.clear();
+    fMaterialMap.insert(std::pair<G4String, G4Material*>("lead", lead));
+
     // vacuum
     // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
     ZList.push_back(6 );  weightFractionList.push_back(0.000124);
@@ -117,7 +130,7 @@ void RoutineDetectorConstruction::ImportFromFile()
     ZList.clear(); weightFractionList.clear();
     fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
-    fPhantomDimension.set(50.0 * cm, 50.0 * cm, 50.0 * cm);
+    fPhantomDimension.set(200.0 * cm, 200.0 * cm, 200.0 * cm);
 
     fXNumVoxel = 1;
     fYNumVoxel = 100;
@@ -405,16 +418,14 @@ G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume* cu
     G4int yVoxelIdx = parentTouch->GetReplicaNumber(0); // parent (y) has depth of 0 relative to itself
     G4int globalIdx = fXNumVoxel * fYNumVoxel * zVoxelIdx + fXNumVoxel * yVoxelIdx + xVoxelIdx;
 
-    // if(zVoxelIdx == 0)
-    // {
-        // mat = fMaterialMap->at("soft_tissue");
-    // }
-    // else
-    // {
-        // mat = fMaterialMap->at("bone");
-    // }
-
-    mat = fMaterialMap->at("water");
+    if(zVoxelIdx == 0)
+    {
+        mat = fMaterialMap->at("soft_tissue");
+    }
+    else
+    {
+        mat = fMaterialMap->at("bone");
+    }
 
     return mat;
 }
