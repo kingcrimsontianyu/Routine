@@ -16,11 +16,15 @@ int main(int argc,char** argv)
     // Choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
     G4MTRunManager* runManager = new G4MTRunManager;
+
+    RoutineUtility* rut = new RoutineUtility();
+    rut->SetPrintParticleInfo(true);
+
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
     runManager->SetUserInitialization(new RoutineStandard);
     // runManager->SetUserInitialization(new RoutineMinimalist);
-    runManager->SetUserInitialization(new RoutineActionInitialization());
-    runManager->SetNumberOfThreads(28);
+    runManager->SetUserInitialization(new RoutineActionInitialization(rut));
+    runManager->SetNumberOfThreads(1);
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     UImanager->ApplyCommand("/control/verbose 0");
@@ -30,7 +34,7 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/hits/verbose 0");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e5);
+    int numberOfEvent = static_cast<int>(1e2);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI
@@ -49,6 +53,7 @@ int main(int argc,char** argv)
     delete visManager;
     #endif
 
+    delete rut;
     delete runManager;
 }
 

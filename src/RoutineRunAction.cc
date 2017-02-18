@@ -2,7 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineRunAction::RoutineRunAction() : G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0)
+RoutineRunAction::RoutineRunAction(RoutineUtility* rut) :
+G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0), rut(rut)
 {
     // Register parameter to the parameter manager
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
@@ -33,6 +34,10 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
     parameterManager->Reset();
 
+    // histogram
+    rut->CreateHistManager();
+    rut->GetHistManager()->SetUpHist();
+    rut->GetAnalysisManager()->OpenFile();
 }
 
 //------------------------------------------------------------
@@ -363,6 +368,12 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         }
         file.close();
     }
+
+    // histograms
+    G4cout << "--> Output histogram." << G4endl;
+    rut->GetAnalysisManager()->Write();
+    rut->GetAnalysisManager()->CloseFile();
+    rut->DeleteHistManager();
 }
 
 //------------------------------------------------------------

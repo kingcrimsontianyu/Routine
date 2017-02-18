@@ -2,7 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineActionInitialization::RoutineActionInitialization() : G4VUserActionInitialization()
+RoutineActionInitialization::RoutineActionInitialization(RoutineUtility* rut) :
+G4VUserActionInitialization(), rut(rut)
 {}
 
 //------------------------------------------------------------
@@ -14,7 +15,7 @@ RoutineActionInitialization::~RoutineActionInitialization()
 //------------------------------------------------------------
 void RoutineActionInitialization::BuildForMaster() const
 {
-    SetUserAction(new RoutineRunAction);
+    SetUserAction(new RoutineRunAction(rut));
 }
 
 //------------------------------------------------------------
@@ -25,7 +26,7 @@ void RoutineActionInitialization::Build() const
     SetUserAction(new RoutinePrimaryGeneratorAction);
 
     // user run action class
-    RoutineRunAction* runAction = new RoutineRunAction;
+    RoutineRunAction* runAction = new RoutineRunAction(rut);
     SetUserAction(runAction);
 
     // user event action class
@@ -34,5 +35,9 @@ void RoutineActionInitialization::Build() const
 
     // user stepping action class (delta track)
     SetUserAction(new RoutineSteppingAction(eventAction));
+
+    // user stacking action class
+    RoutineStackingAction* stackingAction = new RoutineStackingAction(rut);
+    SetUserAction(stackingAction);
 }
 

@@ -16,6 +16,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
+#include "RoutineUtility.hh"
 
 class G4Run;
 
@@ -28,7 +29,7 @@ class G4Run;
 class RoutineRunAction : public G4UserRunAction
 {
 public:
-    RoutineRunAction();
+    RoutineRunAction(RoutineUtility* rut);
     virtual ~RoutineRunAction();
 
     virtual G4Run* GenerateRun();
@@ -40,6 +41,7 @@ public:
 private:
     G4Parameter<G4double> fEdep;
     G4Parameter<G4double> fEdep2;
+    RoutineUtility* rut;
 };
 
 #endif
