@@ -15,7 +15,13 @@ int main(int argc,char** argv)
 
     // Choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
+
+    #if defined G4MULTITHREADED
     G4MTRunManager* runManager = new G4MTRunManager;
+    runManager->SetNumberOfThreads(1);
+    #else
+    G4RunManager* runManager = new G4RunManager;
+    #endif
 
     RoutineUtility* rut = new RoutineUtility();
     rut->SetPrintParticleInfo(true);
@@ -24,7 +30,6 @@ int main(int argc,char** argv)
     runManager->SetUserInitialization(new RoutineStandard);
     // runManager->SetUserInitialization(new RoutineMinimalist);
     runManager->SetUserInitialization(new RoutineActionInitialization(rut));
-    runManager->SetNumberOfThreads(1);
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     UImanager->ApplyCommand("/control/verbose 0");

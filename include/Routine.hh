@@ -4,7 +4,12 @@
 #include "RoutineDetectorConstruction.hh"
 #include "RoutineActionInitialization.hh"
 
-#include "G4MTRunManager.hh"
+#ifdef G4MULTITHREADED
+	#include "G4MTRunManager.hh"
+#else
+	#include "G4RunManager.hh"
+#endif
+
 #include "G4UImanager.hh"
 
 #include "G4VisExecutive.hh"
