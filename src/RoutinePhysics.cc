@@ -35,13 +35,13 @@
 #include "G4AutoDelete.hh"
 
 //******************************
-// standard
+// QBBC
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineStandard::RoutineStandard(G4int ver)
+RoutineQBBC::RoutineQBBC(G4int ver)
 {
-    name = "standard";
+    name = "QBBC";
     defaultCutValue = 0.7 * CLHEP::mm;
     SetVerboseLevel(ver);
     RegisterPhysics( new G4EmStandardPhysics(ver) );
@@ -56,13 +56,46 @@ RoutineStandard::RoutineStandard(G4int ver)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineStandard::~RoutineStandard()
+RoutineQBBC::~RoutineQBBC()
 {
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineStandard::SetCuts()
+void RoutineQBBC::SetCuts()
+{
+    SetCutsWithDefault();
+}
+
+//******************************
+// Topas
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineTopas::RoutineTopas(G4int ver) : RoutineModularPhysics()
+{
+    name = "topas";
+
+    defaultCutValue = 0.7 * CLHEP::mm;
+    SetVerboseLevel(ver);
+
+    RegisterPhysics( new G4EmStandardPhysics_option4(ver) );
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(ver));
+    RegisterPhysics( new G4DecayPhysics(ver) );
+    RegisterPhysics( new G4IonBinaryCascadePhysics(ver));
+    RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
+    RegisterPhysics( new G4StoppingPhysics(ver) );
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineTopas::~RoutineTopas()
+{
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineTopas::SetCuts()
 {
     SetCutsWithDefault();
 }

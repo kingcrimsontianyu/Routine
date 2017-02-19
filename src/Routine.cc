@@ -27,8 +27,12 @@ int main(int argc,char** argv)
     rut->SetPrintParticleInfo(true);
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
-    runManager->SetUserInitialization(new RoutineStandard);
-    // runManager->SetUserInitialization(new RoutineMinimalist);
+
+    // G4VUserPhysicsList* physicsList = new RoutineQBBC;
+    // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
+    G4VUserPhysicsList* physicsList = new RoutineTopas;
+    runManager->SetUserInitialization(physicsList);
+
     runManager->SetUserInitialization(new RoutineActionInitialization(rut));
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
@@ -45,7 +49,7 @@ int main(int argc,char** argv)
     #if defined USE_GUI
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
-    GetVisInfo(visManager);
+    rut->PrintVisualInfo();
     #endif
 
     #if defined USE_GUI
@@ -61,36 +65,6 @@ int main(int argc,char** argv)
     delete rut;
     delete runManager;
 }
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void GetVisInfo(G4VisManager* visManager)
-{
-    // G4cout << visManager->GetCurrentGraphicsSystem()->GetName() << G4endl;
-
-    auto gph = visManager->GetAvailableGraphicsSystems();
-
-    for(size_t i = 0; i < gph.size(); ++i)
-    {
-        G4cout << "--> simple: " << gph[i]->GetName() << G4endl;
-    }
-
-    if(visManager->GetCurrentGraphicsSystem() == nullptr)
-    {
-        G4cout << "--> simple: current graphics system is nullptr XS." << G4endl;
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
 
 
 

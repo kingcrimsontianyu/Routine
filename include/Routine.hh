@@ -5,9 +5,9 @@
 #include "RoutineActionInitialization.hh"
 
 #ifdef G4MULTITHREADED
-	#include "G4MTRunManager.hh"
+    #include "G4MTRunManager.hh"
 #else
-	#include "G4RunManager.hh"
+    #include "G4RunManager.hh"
 #endif
 
 #include "G4UImanager.hh"
@@ -19,6 +19,5 @@
 #include "RoutinePhysics.hh"
 
 
-void GetVisInfo(G4VisManager* visManager);
-
 #endif
+

@@ -13,6 +13,9 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+#include "G4UIExecutive.hh"
 
 class G4HistManager;
 
@@ -46,6 +49,7 @@ public:
     G4HistManager* GetHistManager();
     G4AnalysisManager* GetAnalysisManager();
     void AccumulateCounter(const G4Track* track);
+    void PrintVisualInfo();
 protected:
     G4HistManager* fHistManager;
     G4bool bPrintParticleInfo;

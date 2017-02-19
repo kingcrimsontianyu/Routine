@@ -110,6 +110,33 @@ void RoutineUtility::AccumulateCounter(const G4Track* track)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
+void RoutineUtility::PrintVisualInfo()
+{
+    G4VisManager* vm = G4VisManager::GetInstance();
+    auto gph = vm->GetAvailableGraphicsSystems();
+    G4cout << "--> available graphics systems:" << G4endl;
+    for(size_t i = 0; i < gph.size(); ++i)
+    {
+        G4cout << "    " << gph[i]->GetName() << G4endl;
+    }
+
+    G4cout << "    current graphics system:" << G4endl;
+    if(vm->GetCurrentGraphicsSystem() == nullptr)
+    {
+        G4cout << "    none." << G4endl;
+    }
+    else
+    {
+        G4cout << "    " << vm->GetCurrentGraphicsSystem()->GetName() << G4endl;
+    }
+}
+
+
+
+
+
+//------------------------------------------------------------
+//------------------------------------------------------------
 G4AnalysisManager* RoutineUtility::GetAnalysisManager()
 {
     return G4AnalysisManager::Instance();
@@ -162,7 +189,6 @@ void G4HistManager::SetUpHist()
         ++count;
     }
 }
-
 
 
 

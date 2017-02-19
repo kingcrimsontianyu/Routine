@@ -55,15 +55,28 @@ public:
 };
 
 //******************************
-// standard
+// QBBC
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-class RoutineStandard: public RoutineModularPhysics
+class RoutineQBBC: public RoutineModularPhysics
 {
 public:
-    RoutineStandard(G4int ver = 0);
-    virtual ~RoutineStandard();
+    RoutineQBBC(G4int ver = 0);
+    virtual ~RoutineQBBC();
+    virtual void SetCuts();
+};
+
+//******************************
+// Topas
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+class RoutineTopas: public RoutineModularPhysics
+{
+public:
+    RoutineTopas(G4int ver = 0);
+    virtual ~RoutineTopas();
     virtual void SetCuts();
 };
 
