@@ -46,20 +46,20 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
 void RoutineRunAction::EndOfRunAction(const G4Run* run)
 {
     G4int numHistory = run->GetNumberOfEvent();
-    if (numHistory == 0) return;
 
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // scoring based on stepping
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if (numHistory == 0) return;
     // Merge parameters
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
     parameterManager->Merge();
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // scoring based on stepping
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
         // convert energy to dose per source particle
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
+        G4double mass = detectorConstruction->GetPhantomMass();
 
         G4double edep  = fEdep.GetValue();
         G4double edep2 = fEdep2.GetValue();
@@ -92,7 +92,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     {
         // convert energy to dose per source particle
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
+        G4double mass = detectorConstruction->GetPhantomMass();
 
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap;
@@ -126,13 +126,14 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // dose
     // scoring based on hits map (voxel)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
         // convert energy to dose per source particle
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
+        G4double mass = detectorConstruction->GetPhantomMass();
 
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyImparted3D"));
@@ -216,7 +217,6 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
                     // convert from energy to dose
                     G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
-                    G4cout << material->GetName() << G4endl;
                     G4double density = material->GetDensity();
                     G4double mass = density * voxelVolume;
                     G4double dose  = edep / mass;
@@ -254,7 +254,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     {
         // convert energy to dose per source particle
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetLogicPhantom()->GetMass();
+        G4double mass = detectorConstruction->GetPhantomMass();
 
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyTransfer3D"));
@@ -338,7 +338,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
                     // convert from energy to dose
                     G4Material* material = detectorConstruction->GetParameterisation()->GetPhantomMaterial(globalIdx);
-                    G4cout << material->GetName() << G4endl;
+                    // G4cout << material->GetName() << G4endl;
                     G4double density = material->GetDensity();
                     G4double mass = density * voxelVolume;
                     G4double dose  = edep / mass;

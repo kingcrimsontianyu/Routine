@@ -23,8 +23,8 @@ G4int RoutinePSEnergyImparted::GetIndex(G4Step* aStep)
     G4int yIdx = touchable->GetReplicaNumber(1);
     G4int zIdx = touchable->GetReplicaNumber(0);
 
-    // z idx changes fastest, x slowest
-    G4int globalIdx = fZNumVoxel * fYNumVoxel * xIdx + fZNumVoxel * yIdx + zIdx;
+    // x idx changes fastest, z slowest
+    G4int globalIdx = fXNumVoxel * fYNumVoxel * zIdx + fXNumVoxel * yIdx + xIdx;
     return globalIdx;
 }
 
@@ -52,8 +52,8 @@ G4int RoutinePSEnergyTransfer::GetIndex(G4Step* aStep)
     G4int yIdx = touchable->GetReplicaNumber(1);
     G4int zIdx = touchable->GetReplicaNumber(0);
 
-    // z idx changes fastest, x slowest
-    G4int globalIdx = fZNumVoxel * fYNumVoxel * xIdx + fZNumVoxel * yIdx + zIdx;
+    // x idx changes fastest, z slowest
+    G4int globalIdx = fXNumVoxel * fYNumVoxel * zIdx + fXNumVoxel * yIdx + xIdx;
     return globalIdx;
 }
 

@@ -86,7 +86,7 @@ public:
     RoutineNestedParameterisation* GetParameterisation() const;
 
     void ImportFromFile();
-
+    G4double GetPhantomMass() const;
 protected:
     G4LogicalVolume* fLogicVolumeVoxel;
     G4LogicalVolume* fLogicPhantom;

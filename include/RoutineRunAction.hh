@@ -37,7 +37,6 @@ public:
     virtual void EndOfRunAction(const G4Run*);
 
     void AddEdep (G4double edep);
-
 private:
     G4Parameter<G4double> fEdep;
     G4Parameter<G4double> fEdep2;

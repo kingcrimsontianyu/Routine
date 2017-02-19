@@ -81,9 +81,9 @@ RoutineTopas::RoutineTopas(G4int ver) : RoutineModularPhysics()
 
     RegisterPhysics( new G4EmStandardPhysics_option4(ver) );
     RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(ver));
-    RegisterPhysics( new G4DecayPhysics(ver) );
-    RegisterPhysics( new G4IonBinaryCascadePhysics(ver));
-    RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
+    // RegisterPhysics( new G4DecayPhysics(ver) );
+    // RegisterPhysics( new G4IonBinaryCascadePhysics(ver));
+    // RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
     RegisterPhysics( new G4StoppingPhysics(ver) );
 }
 

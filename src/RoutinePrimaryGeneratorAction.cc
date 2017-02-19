@@ -20,10 +20,10 @@ RoutinePrimaryGeneratorAction::RoutinePrimaryGeneratorAction() : G4VUserPrimaryG
 
     // default particle kinematic
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
+    G4ParticleDefinition* particle = particleTable->FindParticle("proton");
     fParticleGun->SetParticleDefinition(particle);
-    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 1.0, 0.0));
-    fParticleGun->SetParticleEnergy(6.0 * MeV);
+    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, 1.0));
+    fParticleGun->SetParticleEnergy(200.0 * MeV);
 }
 
 //------------------------------------------------------------
@@ -40,8 +40,8 @@ void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // pencil beam: 1 x 1 cm2 square
     G4double sigmaPosition = 1.0 * cm;
     G4double dx = (G4UniformRand() - 0.5) * sigmaPosition;
-    G4double dz = (G4UniformRand() - 0.5) * sigmaPosition;
-    G4ThreeVector position = {dx, -101.0 * cm, dz};
+    G4double dy = (G4UniformRand() - 0.5) * sigmaPosition;
+    G4ThreeVector position = {dx, dy, -30.0 * cm};
     fParticleGun->SetParticlePosition(position);
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }

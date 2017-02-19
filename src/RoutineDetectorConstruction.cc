@@ -130,11 +130,11 @@ void RoutineDetectorConstruction::ImportFromFile()
     ZList.clear(); weightFractionList.clear();
     fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
-    fPhantomDimension.set(200.0 * cm, 200.0 * cm, 200.0 * cm);
+    fPhantomDimension.set(40.0 * cm, 40.0 * cm, 40.0 * cm);
 
     fXNumVoxel = 1;
-    fYNumVoxel = 100;
-    fZNumVoxel = 1;
+    fYNumVoxel = 1;
+    fZNumVoxel = 100;
     fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
 
     fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,
@@ -150,14 +150,16 @@ void RoutineDetectorConstruction::ImportFromFile()
             {
                 G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
 
-                if(k == 0)
-                {
-                    fPhantomMaterialList[globalIdx] = fMaterialMap["soft_tissue"];
-                }
-                else
-                {
-                    fPhantomMaterialList[globalIdx] = fMaterialMap["bone"];
-                }
+                // if(k == 0)
+                // {
+                    // fPhantomMaterialList[globalIdx] = fMaterialMap["soft_tissue"];
+                // }
+                // else
+                // {
+                    // fPhantomMaterialList[globalIdx] = fMaterialMap["bone"];
+                // }
+
+                fPhantomMaterialList[globalIdx] = fMaterialMap["water"];
             }
         }
     }
@@ -176,12 +178,12 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 
     // World
     G4Box* solidWorld = new G4Box("S_World",        // name
-                                  300.0 * cm,
-                                  300.0 * cm,
-                                  300.0 * cm);     // size
+                                  40.0 * cm,
+                                  40.0 * cm,
+                                  40.0 * cm);     // size
 
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,  // solid
-                                                      fMaterialMap["air"],   // material
+                                                      fMaterialMap["vacuum"],   // material
                                                       "L_World");    // name
 
     G4VPhysicalVolume* physWorld = new G4PVPlacement(0,                // no rotation
@@ -361,6 +363,34 @@ RoutineNestedParameterisation* RoutineDetectorConstruction::GetParameterisation(
 
 //------------------------------------------------------------
 //------------------------------------------------------------
+G4double RoutineDetectorConstruction::GetPhantomMass() const
+{
+    G4double mass = 0.0;
+    G4double voxelVolume = fVoxelDimension.x() * fVoxelDimension.y() * fVoxelDimension.z();
+
+    for(G4int k = 0; k < fZNumVoxel; ++k)
+    {
+        for(G4int j = 0; j < fYNumVoxel; ++j)
+        {
+            for(G4int i = 0; i < fXNumVoxel; ++i)
+            {
+                // x idx changes fastest, z slowest
+                G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
+                G4Material* material = fparam->GetPhantomMaterial(globalIdx);
+                mass += material->GetDensity() * voxelVolume;
+            }
+        }
+    }
+
+    G4cout << "--> phantom mass = " << mass / g << " [g]" << G4endl;
+    return mass;
+}
+
+
+
+
+//------------------------------------------------------------
+//------------------------------------------------------------
 RoutineNestedParameterisation::RoutineNestedParameterisation(const G4ThreeVector& voxelSize,
                                                              const G4int xNumVoxel,
                                                              const G4int yNumVoxel,
@@ -378,14 +408,14 @@ RoutineNestedParameterisation::RoutineNestedParameterisation(const G4ThreeVector
     fZNumVoxel = zNumVoxel;
     fTotalNumVoxel = xNumVoxel * yNumVoxel * zNumVoxel;
 
-    for(size_t idx = 0; idx < fZNumVoxel; ++idx)
+    for(size_t idx = 0; idx < fXNumVoxel; ++idx)
     {
         // the original voxel template is centered at (0,0,0)
         // we want the whole phantom to be centered at (0,0,0)
         // and we want to determine the shift of each voxel relative to the original template
         // - fHalfZDimVoxel * fZNumVoxel + fHalfZDimVoxel : the center of the 1st voxel
         // increment this center by 2.0 * fHalfZDimVoxel for each iteration
-        G4double trans = - fHalfZDimVoxel * fZNumVoxel + fHalfZDimVoxel + 2.0 * fHalfZDimVoxel * idx;
+        G4double trans = - fHalfXDimVoxel * fXNumVoxel + fHalfXDimVoxel + 2.0 * fHalfXDimVoxel * idx;
         fXTranslationList.push_back(trans);
     }
 
@@ -418,14 +448,15 @@ G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume* cu
     G4int yVoxelIdx = parentTouch->GetReplicaNumber(0); // parent (y) has depth of 0 relative to itself
     G4int globalIdx = fXNumVoxel * fYNumVoxel * zVoxelIdx + fXNumVoxel * yVoxelIdx + xVoxelIdx;
 
-    if(zVoxelIdx == 0)
-    {
-        mat = fMaterialMap->at("soft_tissue");
-    }
-    else
-    {
-        mat = fMaterialMap->at("bone");
-    }
+    // if(zVoxelIdx == 0)
+    // {
+        // mat = fMaterialMap->at("soft_tissue");
+    // }
+    // else
+    // {
+        // mat = fMaterialMap->at("bone");
+    // }
+    mat = fMaterialMap->at("water");
 
     return mat;
 }
