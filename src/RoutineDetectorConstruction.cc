@@ -115,19 +115,7 @@ void RoutineDetectorConstruction::ImportFromFile()
     fMaterialMap.insert(std::pair<G4String, G4Material*>("lead", lead));
 
     // vacuum
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
-    ZList.push_back(6 );  weightFractionList.push_back(0.000124);
-    ZList.push_back(7 );  weightFractionList.push_back(0.755267);
-    ZList.push_back(8 );  weightFractionList.push_back(0.231781);
-    ZList.push_back(18);  weightFractionList.push_back(0.012827);
-    density = 1.20479e-06 * g / cm3;
-    G4Material* vacuum = new G4Material("vacuum", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        vacuum->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
+    G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");
     fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
     fPhantomDimension.set(40.0 * cm, 40.0 * cm, 40.0 * cm);
