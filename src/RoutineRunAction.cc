@@ -34,6 +34,8 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
     parameterManager->Reset();
 
+    rut->PrintPhysicsInfo();
+
     // histogram
     rut->CreateHistManager();
     rut->GetHistManager()->SetUpHist();

@@ -16,6 +16,8 @@
 #include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
+#include "G4EventManager.hh"
+#include "G4Event.hh"
 
 class G4HistManager;
 

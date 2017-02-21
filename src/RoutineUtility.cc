@@ -27,22 +27,24 @@ void RoutineUtility::PrintParticleInfo(const G4Track* track)
 {
     if(bPrintParticleInfo)
     {
+        G4EventManager* em = G4EventManager::GetEventManager();
+        G4int eventId = em->GetConstCurrentEvent()->GetEventID();
+
         const G4ParticleDefinition* pd = track->GetDefinition();
         G4String particleName = pd->GetParticleName();
-        G4int id = track->GetTrackID();
+        G4int trackId = track->GetTrackID();
 
         // primary particle
-        if(id == 1)
+        if(trackId == 1)
         {
-            G4cout << "--> primary particle = " << particleName << G4endl;
+            G4cout << "--> primary particle = " << particleName << ", event id = " << eventId << G4endl;
         }
         // secondary particle
         else
         {
-            G4cout << "    secondary particle = " << particleName
-                   << " self id = " << id
-                   << " parent id = "
-                   << track->GetParentID()
+            G4cout << "    secondary particle = " << std::setw(12) << particleName
+                   << ", track id = " << std::setw(4) << trackId
+                   << ", parent track id = " << std::setw(4) << track->GetParentID()
                    << G4endl;
         }
     }
@@ -55,6 +57,7 @@ void RoutineUtility::PrintPhysicsInfo()
     G4ParticleTable* theParticleTable = G4ParticleTable::GetParticleTable();
     G4ParticleTable::G4PTblDicIterator* it = theParticleTable->GetIterator();
     it->reset();
+    // loop through particles
     while((*it)())
     {
         G4ParticleDefinition* particle = it->value();
@@ -63,6 +66,7 @@ void RoutineUtility::PrintPhysicsInfo()
         G4ProcessManager* pm = particle->GetProcessManager();
         G4ProcessVector* pv = pm->GetProcessList();
 
+        // loop through process name
         for(G4int i = 0; i < pv->size(); ++i)
         {
             G4VProcess* proc = (*pv)[i];
