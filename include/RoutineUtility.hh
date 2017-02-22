@@ -52,6 +52,7 @@ public:
     G4AnalysisManager* GetAnalysisManager();
     void AccumulateCounter(const G4Track* track);
     void PrintVisualInfo();
+    void SaveHistToFile();
 protected:
     G4HistManager* fHistManager;
     G4bool bPrintParticleInfo;

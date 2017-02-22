@@ -135,7 +135,57 @@ void RoutineUtility::PrintVisualInfo()
     }
 }
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+// sort according to value of pair<key,value> in descending order
+bool SortFunc(std::pair<G4String, double> i, std::pair<G4String, double> j)
+{
+    return (i.second > j.second);
+}
 
+// find the first occurrence of zero value
+bool FindFunc(std::pair<G4String, double> i)
+{
+    return (i.second == 0.0);
+}
+
+void RoutineUtility::SaveHistToFile()
+{
+    std::ofstream file("histogram.txt");
+    if(file.is_open())
+    {
+        G4AnalysisManager* analysisManager = GetAnalysisManager();
+        auto h1Size = analysisManager->EndConstH1() - analysisManager->BeginConstH1();
+        std::vector<std::pair<G4String, double>> tempVec;
+        for(G4int i = 0; i < h1Size; ++i)
+        {
+            G4String h1Name = analysisManager->GetH1Name(i);
+            tools::histo::h1d* h1 = analysisManager->GetH1(i);
+            double count = h1->sum_bin_heights();
+            tempVec.push_back(std::make_pair(h1Name, count));
+        }
+
+        // sort the vector
+        std::sort(tempVec.begin(), tempVec.end(), SortFunc);
+        auto it = std::find_if(tempVec.begin(), tempVec.end(), FindFunc);
+
+        // write
+        file << "total number of particles supported = " << tempVec.size() << G4endl;
+        auto num = it - tempVec.begin();
+        file << "number of particles actually simulated = " << num << G4endl << G4endl;
+        for(G4int i = 0; i < h1Size; ++i)
+        {
+            file << std::setw(30) << std::left << tempVec[i].first
+                 << std::setw(10) << tempVec[i].second << G4endl;
+
+            if(i == num - 1)
+            {
+                file << G4endl;
+            }
+        }
+        file.close();
+    }
+}
 
 
 
@@ -193,6 +243,7 @@ void G4HistManager::SetUpHist()
         ++count;
     }
 }
+
 
 
 

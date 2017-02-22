@@ -18,13 +18,13 @@ int main(int argc,char** argv)
 
     #if defined G4MULTITHREADED
     G4MTRunManager* runManager = new G4MTRunManager;
-    runManager->SetNumberOfThreads(1);
+    runManager->SetNumberOfThreads(28);
     #else
     G4RunManager* runManager = new G4RunManager;
     #endif
 
     RoutineUtility* rut = new RoutineUtility();
-    rut->SetPrintParticleInfo(true);
+    // rut->SetPrintParticleInfo(true);
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
 
@@ -43,7 +43,7 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/hits/verbose 0");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e1);
+    int numberOfEvent = static_cast<int>(1e5);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI
@@ -55,6 +55,8 @@ int main(int argc,char** argv)
     #if defined USE_GUI
     UImanager->ApplyCommand("/control/execute vis.mac");
     #endif
+
+    // UImanager->ApplyCommand("/run/particle/storePhysicsTable xs_data");
 
     #if defined USE_GUI
     ui->SessionStart();

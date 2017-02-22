@@ -34,7 +34,7 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
     parameterManager->Reset();
 
-    rut->PrintPhysicsInfo();
+    // rut->PrintPhysicsInfo();
 
     // histogram
     rut->CreateHistManager();
@@ -374,6 +374,12 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     // histograms
     G4cout << "--> Output histogram." << G4endl;
     rut->GetAnalysisManager()->Write();
+    if(IsMaster())
+    {
+        // must be called before GetAnalysisManager()->CloseFile() is called
+        // otherwise all results are 0
+        rut->SaveHistToFile();
+    }
     rut->GetAnalysisManager()->CloseFile();
     rut->DeleteHistManager();
 }
@@ -385,4 +391,5 @@ void RoutineRunAction::AddEdep(G4double edep)
     fEdep  += edep;
     fEdep2 += edep * edep;
 }
+
 
