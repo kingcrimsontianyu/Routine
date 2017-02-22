@@ -23,6 +23,7 @@
 #else
     #include "G4RunManager.hh"
 #endif
+#include "RoutineDetectorConstruction.hh"
 
 class G4HistManager;
 
@@ -55,12 +56,17 @@ public:
     void DeleteHistManager();
     G4HistManager* GetHistManager();
     G4AnalysisManager* GetAnalysisManager();
-    void AccumulateCounter(const G4Track* track);
+    void AccumulateCount(const G4Track* track);
+    void AccumulateSpectrum(const G4Step* step);
     void PrintVisualInfo();
     void SaveHistToFile();
 protected:
     G4HistManager* fHistManager;
     G4bool bPrintParticleInfo;
+    std::vector<G4String> supportedParticleList;
+    std::vector<G4String> activeParticleList;
+
+    friend class G4HistManager;
 };
 
 //------------------------------------------------------------

@@ -12,9 +12,8 @@
 // because per-step energy is accumulated by event action function
 // AddEdep()
 //------------------------------------------------------------
-RoutineSteppingAction::RoutineSteppingAction(RoutineEventAction* eventAction) : G4UserSteppingAction(),
-                                                                             fEventAction(eventAction),
-                                                                             fScoringVolume(0)
+RoutineSteppingAction::RoutineSteppingAction(RoutineEventAction* eventAction, RoutineUtility* rut) :
+G4UserSteppingAction(), fEventAction(eventAction), fScoringVolume(0), rut(rut)
 {}
 
 //------------------------------------------------------------
@@ -44,6 +43,8 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
         // collect energy deposited in this step
         G4double edepStep = step->GetTotalEnergyDeposit();
         fEventAction->AddEdep(edepStep);
+
+        rut->AccumulateSpectrum(step);
     }
 }
 

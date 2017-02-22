@@ -16,7 +16,7 @@ RoutineStackingAction::~RoutineStackingAction()
 //------------------------------------------------------------
 G4ClassificationOfNewTrack RoutineStackingAction::ClassifyNewTrack(const G4Track* track)
 {
-    rut->AccumulateCounter(track);
+    rut->AccumulateCount(track);
 
     G4ClassificationOfNewTrack classification = fUrgent;
     if(track->GetTrackStatus() == fPostponeToNextEvent)

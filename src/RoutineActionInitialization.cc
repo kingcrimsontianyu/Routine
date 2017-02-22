@@ -34,7 +34,7 @@ void RoutineActionInitialization::Build() const
     SetUserAction(eventAction);
 
     // user stepping action class (delta track)
-    SetUserAction(new RoutineSteppingAction(eventAction));
+    SetUserAction(new RoutineSteppingAction(eventAction, rut));
 
     // user stacking action class
     RoutineStackingAction* stackingAction = new RoutineStackingAction(rut);

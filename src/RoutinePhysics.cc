@@ -81,9 +81,9 @@ RoutineTopas::RoutineTopas(G4int ver) : RoutineModularPhysics()
 
     RegisterPhysics( new G4EmStandardPhysics_option4(ver) );
     RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(ver));
-    // RegisterPhysics( new G4DecayPhysics(ver) );
-    // RegisterPhysics( new G4IonBinaryCascadePhysics(ver));
-    // RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
+    RegisterPhysics( new G4DecayPhysics(ver) );
+    RegisterPhysics( new G4IonBinaryCascadePhysics(ver));
+    RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
     RegisterPhysics( new G4StoppingPhysics(ver) );
 }
 
@@ -120,14 +120,18 @@ RoutineMinimalist::~RoutineMinimalist()
 //------------------------------------------------------------
 void RoutineMinimalist::SetCuts()
 {
-    defaultCutValue = 0.7 * CLHEP::mm;
-    SetCutValue(defaultCutValue, "gamma");
+    // defaultCutValue = 0.7 * CLHEP::mm;
+    // SetCutValue(defaultCutValue, "gamma");
+
+    // prevent secondary electrons
+    SetCutValue(1.0 * mm, "proton");
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 void RoutineMinimalist::ConstructParticle()
 {
+    G4Proton::Proton();
     G4Gamma::Gamma();
     G4Electron::Electron();
     G4Positron::Positron();

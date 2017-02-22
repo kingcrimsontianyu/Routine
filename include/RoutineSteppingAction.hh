@@ -3,6 +3,7 @@
 
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
+#include "RoutineUtility.hh"
 
 class RoutineEventAction;
 
@@ -11,7 +12,7 @@ class G4LogicalVolume;
 class RoutineSteppingAction : public G4UserSteppingAction
 {
 public:
-    RoutineSteppingAction(RoutineEventAction* eventAction);
+    RoutineSteppingAction(RoutineEventAction* eventAction, RoutineUtility* rut);
     virtual ~RoutineSteppingAction();
 
     // method from the base class
@@ -20,6 +21,7 @@ public:
 private:
     RoutineEventAction*  fEventAction;
     G4LogicalVolume* fScoringVolume;
+    RoutineUtility* rut;
 };
 
 #endif
