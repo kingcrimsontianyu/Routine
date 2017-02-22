@@ -18,6 +18,11 @@
 #include "G4UIExecutive.hh"
 #include "G4EventManager.hh"
 #include "G4Event.hh"
+#ifdef G4MULTITHREADED
+    #include "G4MTRunManager.hh"
+#else
+    #include "G4RunManager.hh"
+#endif
 
 class G4HistManager;
 

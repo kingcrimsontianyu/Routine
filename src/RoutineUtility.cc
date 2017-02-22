@@ -173,10 +173,19 @@ void RoutineUtility::SaveHistToFile()
         file << "total number of particles supported = " << tempVec.size() << G4endl;
         auto num = it - tempVec.begin();
         file << "number of particles actually simulated = " << num << G4endl << G4endl;
+        file << std::setw(30) << std::left << "particle name"
+             << std::setw(10) << "count normalized to per source particle" << G4endl;
+
+        #if defined G4MULTITHREADED
+        G4RunManager* rm = G4RunManager::GetRunManager();
+        #else
+        G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+        #endif
+        G4int numHistory = rm->GetNumberOfEventsToBeProcessed();
         for(G4int i = 0; i < h1Size; ++i)
         {
             file << std::setw(30) << std::left << tempVec[i].first
-                 << std::setw(10) << tempVec[i].second << G4endl;
+                 << std::setw(15) << std::scientific << tempVec[i].second / numHistory << G4endl;
 
             if(i == num - 1)
             {
