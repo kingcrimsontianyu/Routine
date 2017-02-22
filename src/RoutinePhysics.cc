@@ -153,12 +153,24 @@ void RoutineMinimalist::ConstructProcess()
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
 
-        if (particleName == "gamma")
+        if (particleName == "proton")
         {
-            ph->RegisterProcess(new G4PhotoElectricEffect(), particle);
-            ph->RegisterProcess(new G4ComptonScattering(), particle);
-            ph->RegisterProcess(new G4GammaConversion(), particle);
+            ph->RegisterProcess(new G4hIonisation(), particle);
+
+            // G4BinaryCascade* model = new G4BinaryCascade();
+            // model->SetMinEnergy(0);
+            // model->SetMaxEnergy(9.9 * GeV);
+            // G4ProtonInelasticProcess* proc = new G4ProtonInelasticProcess();
+            // proc->RegisterMe(model);
+            // ph->RegisterProcess(proc, particle);
         }
+
+        // if (particleName == "gamma")
+        // {
+            // ph->RegisterProcess(new G4PhotoElectricEffect(), particle);
+            // ph->RegisterProcess(new G4ComptonScattering(), particle);
+            // ph->RegisterProcess(new G4GammaConversion(), particle);
+        // }
 
     }
 }

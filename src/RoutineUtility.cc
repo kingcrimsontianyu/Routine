@@ -256,7 +256,7 @@ void RoutineUtility::SaveHistToFile()
         // spectrum
         //++++++++++++++++++++++++++++++
         file << G4endl << "--> dose spectrum (per source particle) [MeV/g/par]" << G4endl;
-        G4double sum = 0.0;
+        G4double sumActivePar = 0.0;
         // retain histogram entries with the name of ``particleName_spectrum''
         for(G4int i = 0; i < h1Size; ++i)
         {
@@ -268,16 +268,26 @@ void RoutineUtility::SaveHistToFile()
                 // among active particles, retain histogram entries with the name of ``particleName_count''
                 if(IsInParticleList(particleName, h1Name, activeParticleList, "_spectrum"))
                 {
+                    file << "    " << particleName << G4endl;
                     tools::histo::h1d* h1 = analysisManager->GetH1(i);
-                    double dose = h1->sum_bin_heights() / mass / (MeV / g) / numHistory;
-                    sum += dose;
-                    file << "    " << std::setw(30) << std::left << particleName
-                         << std::setw(15) << std::scientific << dose << G4endl;
+
+                    double dose = 0.0;
+                    // the last two bins are for underflow and overflow data. ditch them
+                    for(G4int k = 0; k < h1->get_bins() - 2; ++k)
+                    {
+                        double bin_value = h1->bin_Sxw(k) / mass / (MeV / g) / numHistory;
+                        file << "        "
+                             << std::setw(15) << std::scientific << h1->bin_center(k) / MeV
+                             << std::setw(15) << std::scientific << bin_value << G4endl;
+                        dose += bin_value;
+                    }
+                    sumActivePar += dose;
+                    file << "        local sum = " << std::setw(15) << std::scientific << dose << G4endl;
                 }
             }
         }
-        file << "    " << std::setw(30) << std::left << "sum"
-                       << std::setw(15) << std::scientific << sum << G4endl;
+        file << "    " << std::setw(30) << std::left << "sum of all active particles = "
+                       << std::setw(15) << std::scientific << sumActivePar << G4endl;
 
         file.close();
     }
@@ -331,7 +341,7 @@ void G4HistManager::SetUpHist()
         G4int ih = analysisManager->CreateH1(particle->GetParticleName() + "_count", particle->GetParticleName() + " count", 1, 0.0, 200.0 * MeV);
         analysisManager->SetH1Ascii(ih, true);
 
-        ih = analysisManager->CreateH1(particle->GetParticleName() + "_spectrum", particle->GetParticleName() + " spectrum", 1, 0.0, 200.0 * MeV);
+        ih = analysisManager->CreateH1(particle->GetParticleName() + "_spectrum", particle->GetParticleName() + " spectrum", 100, 0.0, 200.0 * MeV);
         analysisManager->SetH1Ascii(ih, true);
     }
 }
