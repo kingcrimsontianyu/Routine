@@ -93,10 +93,26 @@ void RoutineUtility::AccumulateCount(RoutineRun* localRun, const G4Track* track)
     {
         localRun->GetCSMap()[particleName].AccumulateCount(1.0);
     }
-    else
+    else // if the particle appears the first time
     {
         RoutineCustomScore temp(1.0, 0.0);
         localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, temp));
+
+        auto& ref = localRun->GetCSMap()[particleName].processList;
+        G4ProcessManager* pm = pd->GetProcessManager();
+        G4ProcessVector* pv = pm->GetProcessList();
+        // loop through process name
+        for(G4int i = 0; i < pv->size(); ++i)
+        {
+            G4VProcess* proc = (*pv)[i];
+            bool isActive = pm->GetProcessActivation(proc);
+            if(!isActive)
+            {
+                G4cout << ">>> inactive process detected." << G4endl;
+            }
+
+            ref.push_back(proc->GetProcessName());
+        }
     }
 }
 
@@ -170,6 +186,7 @@ void RoutineUtility::SaveCustomScoreToFile()
              << std::setw(25) << "energy"
              << G4endl;
 
+        // print count and dose
         G4double sum = 0.0;
         for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
         {
@@ -181,6 +198,18 @@ void RoutineUtility::SaveCustomScoreToFile()
                  << G4endl;
         }
         file << "    total dose = " << std::setprecision(10) << sum << G4endl;
+
+        // print physics
+        file << G4endl << "--> " << std::setw(30) << std::left << "process list" << G4endl;
+        for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
+        {
+            file << "    " << std::setw(30) << std::left << it->first << G4endl;
+            for(G4int j = 0; j < it->second.processList.size(); ++j)
+            {
+                file << "        " << std::setw(30) << std::left << it->second.processList[j] << G4endl;
+            }
+        }
+
         file.close();
     }
 }
@@ -226,6 +255,7 @@ RoutineCustomScore& RoutineCustomScore::operator = (const RoutineCustomScore& rh
 {
     energy = rhs.energy;
     count  = rhs.count;
+    processList = rhs.processList;
     return *this;
 }
 

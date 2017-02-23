@@ -36,7 +36,7 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
 
     if(IsMaster())
     {
-        rut->PrintPhysicsInfo();
+        // rut->PrintPhysicsInfo();
     }
 }
 

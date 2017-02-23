@@ -36,11 +36,9 @@ public:
     RoutineUtility();
     ~RoutineUtility();
 
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // runtime print
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // This function shall be called in user's G4UserStackingAction::ClassifyNewTrack(const G4Track* track) method
-    // to print particle information when the particle is about to be simulated.
+    // to print particle information when the particle is about to be simulated. By default this function is not
+    // effective (bPrintParticleInfo == false). Use SetPrintParticleInfo(true) to activate this function.
     void PrintParticleInfo(const G4Track* track);
 
     // This function shall be used to determine whether particle info is to be printed at runtime.
@@ -48,7 +46,13 @@ public:
 
     // This function shall be called in user's G4UserRunAction::BeginOfRunAction(const G4Run*) method
     // to print all particles and their associated processes for a given physics list.
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Some ions such as O16 are assembled at run-time and are not included in the particle table before
+    // the run
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     void PrintPhysicsInfo();
+
+    void PrintActivePhysicsInfo();
 
     void PrintVisualInfo();
 
@@ -71,6 +75,7 @@ public:
     ~RoutineCustomScore();
     G4double energy;
     G4double count;
+    std::vector<G4String> processList;
 
     RoutineCustomScore& operator += (const RoutineCustomScore& rhs);
     RoutineCustomScore& operator = (const RoutineCustomScore& rhs);
