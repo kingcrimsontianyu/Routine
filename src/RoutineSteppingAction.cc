@@ -44,15 +44,7 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
         G4double edepStep = step->GetTotalEnergyDeposit();
         fEventAction->AddEdep(edepStep);
 
-        #if defined G4MULTITHREADED
-        G4RunManager* rm = G4RunManager::GetRunManager();
-        #else
-        G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
-        #endif
-
-        G4Run* run = rm->GetNonConstCurrentRun();
-        RoutineRun* localRun = static_cast<RoutineRun*>(run);
-        rut->AccumulateEnergy(localRun, step);
+        rut->AccumulateEnergy(step);
     }
 }
 

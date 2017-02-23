@@ -153,41 +153,5 @@ void RoutineRun::GetHitsMapAndSquaredSum(G4THitsMap<G4double>*& hitsMap,
     }
 }
 
-//------------------------------------------------------------
-//------------------------------------------------------------
-// G4THitsMap<G4double>* RoutineRun::GetHitsMap(const G4String& fullName)
-// {
-    // G4int nCol = fCollName.size();
-    // for ( G4int i = 0; i < nCol; i++){
-        // if ( fCollName[i] == fullName ){
-            // return fRunMap[i];
-        // }
-    // }
-    // return NULL;
-// }
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineRun::DumpAllScorer()
-{
-
-    // // - Number of HitsMap in this RUN.
-    // G4int n = GetNumberOfHitsMap();
-    // // - GetHitsMap and dump values.
-    // for ( G4int i = 0; i < n ; i++ ){
-        // G4THitsMap<G4double>* runMap =GetHitsMap(i);
-        // if ( runMap ) {
-            // G4cout << " PrimitiveScorer RUN "
-            // << runMap->GetSDname() <<","<< runMap->GetName() << G4endl;
-            // G4cout << " Number of entries " << runMap->entries() << G4endl;
-            // std::map<G4int,G4double*>::iterator itr = runMap->GetMap()->begin();
-            // for(; itr != runMap->GetMap()->end(); itr++) {
-                // G4cout << "  copy no.: " << itr->first
-                // << "  Run Value : " << *(itr->second)
-                // << G4endl;
-            // }
-        // }
-    // }
-}
 
 

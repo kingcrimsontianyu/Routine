@@ -44,7 +44,7 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/hits/verbose 0");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e4);
+    int numberOfEvent = static_cast<int>(1e6);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI

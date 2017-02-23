@@ -56,8 +56,8 @@ public:
 
     void PrintVisualInfo();
 
-    void AccumulateCount(RoutineRun* localRun, const G4Track* track);
-    void AccumulateEnergy(RoutineRun* localRun, const G4Step* step);
+    void AccumulateCount(const G4Track* track);
+    void AccumulateEnergy(const G4Step* step);
     void SaveCustomScoreToFile();
 protected:
     G4bool bPrintParticleInfo;

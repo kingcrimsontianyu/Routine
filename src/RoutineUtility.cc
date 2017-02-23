@@ -81,12 +81,21 @@ void RoutineUtility::PrintPhysicsInfo()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::AccumulateCount(RoutineRun* localRun, const G4Track* track)
+void RoutineUtility::AccumulateCount(const G4Track* track)
 {
     PrintParticleInfo(track);
 
     const G4ParticleDefinition* pd = track->GetDefinition();
     G4String particleName = pd->GetParticleName();
+
+    #if defined G4MULTITHREADED
+    G4RunManager* rm = G4RunManager::GetRunManager();
+    #else
+    G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+    #endif
+
+    G4Run* run = rm->GetNonConstCurrentRun();
+    RoutineRun* localRun = static_cast<RoutineRun*>(run);
 
     // accumulate custom score
     if(localRun->GetCSMap().find(particleName) != localRun->GetCSMap().end())
@@ -118,8 +127,17 @@ void RoutineUtility::AccumulateCount(RoutineRun* localRun, const G4Track* track)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::AccumulateEnergy(RoutineRun* localRun, const G4Step* step)
+void RoutineUtility::AccumulateEnergy(const G4Step* step)
 {
+    #if defined G4MULTITHREADED
+    G4RunManager* rm = G4RunManager::GetRunManager();
+    #else
+    G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+    #endif
+
+    G4Run* run = rm->GetNonConstCurrentRun();
+    RoutineRun* localRun = static_cast<RoutineRun*>(run);
+
     G4Track* track = step->GetTrack();
     const G4ParticleDefinition* pd = track->GetDefinition();
     G4String particleName = pd->GetParticleName();
