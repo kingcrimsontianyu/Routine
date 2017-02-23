@@ -26,6 +26,7 @@
 #include "RoutineDetectorConstruction.hh"
 
 class G4HistManager;
+class RoutineRun;
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -49,36 +50,32 @@ public:
     // to print all particles and their associated processes for a given physics list.
     void PrintPhysicsInfo();
 
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // runtime tally
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    G4HistManager* CreateHistManager();
-    void DeleteHistManager();
-    G4HistManager* GetHistManager();
-    G4AnalysisManager* GetAnalysisManager();
-    void AccumulateCount(const G4Track* track);
-    void AccumulateSpectrum(const G4Step* step);
     void PrintVisualInfo();
-    void SaveHistToFile();
+
+    void AccumulateCount(RoutineRun* localRun, const G4Track* track);
+    void AccumulateEnergy(RoutineRun* localRun, const G4Step* step);
+    void SaveCustomScoreToFile();
 protected:
-    G4HistManager* fHistManager;
     G4bool bPrintParticleInfo;
     std::vector<G4String> supportedParticleList;
     std::vector<G4String> activeParticleList;
-
-    friend class G4HistManager;
 };
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-class G4HistManager
+class RoutineCustomScore
 {
 public:
-    G4HistManager();
-    ~G4HistManager();
-    void SetUpHist();
-private:
-    G4String fFileName;
+    RoutineCustomScore(G4double count, G4double energy);
+    RoutineCustomScore();
+    ~RoutineCustomScore();
+    G4double energy;
+    G4double count;
+
+    RoutineCustomScore& operator += (const RoutineCustomScore& rhs);
+    RoutineCustomScore& operator = (const RoutineCustomScore& rhs);
+    void AccumulateEnergy(const G4double energy);
+    void AccumulateCount(const G4double count);
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "G4UserStackingAction.hh"
 #include "globals.hh"
 #include "RoutineUtility.hh"
+#include "RoutineRun.hh"
 #include "G4Track.hh"
 #include "G4SystemOfUnits.hh"
 

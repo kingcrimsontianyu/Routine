@@ -1,8 +1,9 @@
 #include "RoutineUtility.hh"
+#include "RoutineRun.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineUtility::RoutineUtility() : fHistManager(nullptr), bPrintParticleInfo(false)
+RoutineUtility::RoutineUtility() : bPrintParticleInfo(false)
 {
 
 }
@@ -80,57 +81,42 @@ void RoutineUtility::PrintPhysicsInfo()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4HistManager* RoutineUtility::CreateHistManager()
-{
-    fHistManager = new G4HistManager();
-    return fHistManager;
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineUtility::DeleteHistManager()
-{
-    delete fHistManager; fHistManager = nullptr;
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineUtility::AccumulateCount(const G4Track* track)
+void RoutineUtility::AccumulateCount(RoutineRun* localRun, const G4Track* track)
 {
     PrintParticleInfo(track);
 
     const G4ParticleDefinition* pd = track->GetDefinition();
     G4String particleName = pd->GetParticleName();
-    G4AnalysisManager* analysisManager = GetAnalysisManager();
-    auto h1Size = analysisManager->EndConstH1() - analysisManager->BeginConstH1();
-    for(G4int i = 0; i < h1Size; ++i)
+
+    // accumulate custom score
+    if(localRun->GetCSMap().find(particleName) != localRun->GetCSMap().end())
     {
-        G4String h1Name = analysisManager->GetH1Name(i);
-        G4String temp = particleName + "_count";
-        if(h1Name == temp)
-        {
-            analysisManager->FillH1(i, 1.0);
-        }
+        localRun->GetCSMap()[particleName].AccumulateCount(1.0);
+    }
+    else
+    {
+        RoutineCustomScore temp(1.0, 0.0);
+        localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, temp));
     }
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::AccumulateSpectrum(const G4Step* step)
+void RoutineUtility::AccumulateEnergy(RoutineRun* localRun, const G4Step* step)
 {
     G4Track* track = step->GetTrack();
     const G4ParticleDefinition* pd = track->GetDefinition();
     G4String particleName = pd->GetParticleName();
-    G4AnalysisManager* analysisManager = GetAnalysisManager();
-    auto h1Size = analysisManager->EndConstH1() - analysisManager->BeginConstH1();
-    for(G4int i = 0; i < h1Size; ++i)
+
+    // accumulate custom score
+    if(localRun->GetCSMap().find(particleName) != localRun->GetCSMap().end())
     {
-        G4String h1Name = analysisManager->GetH1Name(i);
-        G4String temp = particleName + G4String("_spectrum");
-        if(h1Name == temp)
-        {
-            analysisManager->FillH1(i, step->GetTotalEnergyDeposit());
-        }
+        localRun->GetCSMap()[particleName].AccumulateEnergy(step->GetTotalEnergyDeposit());
+    }
+    else
+    {
+        RoutineCustomScore temp(0.0, step->GetTotalEnergyDeposit());
+        localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, temp));
     }
 }
 
@@ -159,37 +145,7 @@ void RoutineUtility::PrintVisualInfo()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-// sort according to value of pair<key,value> in descending order
-bool SortFunc(std::pair<G4String, double> i, std::pair<G4String, double> j)
-{
-    return (i.second > j.second);
-}
-
-// find the first occurrence of zero value
-bool FindFunc(std::pair<G4String, double> i)
-{
-    return (i.second == 0.0);
-}
-
-bool IsInParticleList(G4String& particle, // return particle name, for example: proton
-                      const G4String& p,  // string name, for example: proton_count
-                      const std::vector<G4String>& supportedParticleList,
-                      const G4String& suffix = "")
-{
-    for(G4int i = 0; i < supportedParticleList.size(); ++i)
-    {
-        G4String temp = supportedParticleList[i] + suffix;
-        if(p == temp)
-        {
-            particle = supportedParticleList[i];
-            return true;
-        }
-    }
-    particle = "";
-    return false;
-}
-
-void RoutineUtility::SaveHistToFile()
+void RoutineUtility::SaveCustomScoreToFile()
 {
     std::ofstream file("histogram.txt");
 
@@ -200,152 +156,91 @@ void RoutineUtility::SaveHistToFile()
         #else
         G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
         #endif
+        G4Run* run = rm->GetNonConstCurrentRun();
+        RoutineRun* mergedRun = static_cast<RoutineRun*>(run);
         G4int numHistory = rm->GetNumberOfEventsToBeProcessed();
         file << "--> total number of primary particles = " << numHistory << G4endl;
 
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*>(rm->GetUserDetectorConstruction());
         G4double mass = detectorConstruction->GetPhantomMass();
+        G4int numActivePar = mergedRun->GetCSMap().size();
+        file << "    number of particles actually simulated = " << numActivePar << G4endl << G4endl;
+        file << "--> " << std::setw(30) << std::left << "particle"
+             << std::setw(25) << "count"
+             << std::setw(25) << "energy"
+             << G4endl;
 
-        //++++++++++++++++++++++++++++++
-        // ordered particle count
-        //++++++++++++++++++++++++++++++
-        G4AnalysisManager* analysisManager = GetAnalysisManager();
-        auto h1Size = analysisManager->EndConstH1() - analysisManager->BeginConstH1();
-        std::vector<std::pair<G4String, double>> tempVec;
-        for(G4int i = 0; i < h1Size; ++i)
+        G4double sum = 0.0;
+        for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
         {
-            G4String h1Name = analysisManager->GetH1Name(i);
-            G4String particleName;
-            // among supported particles, retain histogram entries with the name of ``particleName_count''
-            if(IsInParticleList(particleName, h1Name, supportedParticleList, "_count"))
-            {
-                tools::histo::h1d* h1 = analysisManager->GetH1(i);
-                double count = h1->sum_bin_heights();
-                tempVec.push_back(std::make_pair(particleName, count));
-
-                // log active particles
-                if(count != 0.0)
-                {
-                    activeParticleList.push_back(particleName);
-                }
-            }
+            G4double dose = it->second.energy / mass / (MeV / g) / numHistory;
+            sum += dose;
+            file << "    " << std::setw(30) << std::left << it->first
+                 << std::setw(25) << std::setprecision(10) << std::scientific << it->second.count / numHistory
+                 << std::setw(25) << std::setprecision(10) << std::scientific << dose
+                 << G4endl;
         }
-
-        // sort the vector
-        std::sort(tempVec.begin(), tempVec.end(), SortFunc);
-        auto it = std::find_if(tempVec.begin(), tempVec.end(), FindFunc);
-
-        // write
-        file << G4endl << "--> total number of particles supported = " << tempVec.size() << G4endl;
-        auto num = it - tempVec.begin();
-        file << "    number of particles actually simulated = " << num << G4endl << G4endl;
-        file << "--> count (per source particle)" << G4endl;
-
-        for(G4int i = 0; i < tempVec.size(); ++i)
-        {
-            file << "    " << std::setw(30) << std::left << tempVec[i].first
-                 << std::setw(15) << std::scientific << tempVec[i].second / numHistory << G4endl;
-
-            if(i == num - 1)
-            {
-                file << G4endl;
-            }
-        }
-
-        //++++++++++++++++++++++++++++++
-        // spectrum
-        //++++++++++++++++++++++++++++++
-        file << G4endl << "--> dose spectrum (per source particle) [MeV/g/par]" << G4endl;
-        G4double sumActivePar = 0.0;
-        // retain histogram entries with the name of ``particleName_spectrum''
-        for(G4int i = 0; i < h1Size; ++i)
-        {
-            G4String h1Name = analysisManager->GetH1Name(i);
-            G4String particleName;
-            // among supported particles, retain histogram entries with the name of ``particleName_count''
-            if(IsInParticleList(particleName, h1Name, supportedParticleList, "_spectrum"))
-            {
-                // among active particles, retain histogram entries with the name of ``particleName_count''
-                if(IsInParticleList(particleName, h1Name, activeParticleList, "_spectrum"))
-                {
-                    file << "    " << particleName << G4endl;
-                    tools::histo::h1d* h1 = analysisManager->GetH1(i);
-
-                    double dose = 0.0;
-                    // the last two bins are for underflow and overflow data. ditch them
-                    for(G4int k = 0; k < h1->get_bins() - 2; ++k)
-                    {
-                        double bin_value = h1->bin_Sxw(k) / mass / (MeV / g) / numHistory;
-                        file << "        "
-                             << std::setw(15) << std::scientific << h1->bin_center(k) / MeV
-                             << std::setw(15) << std::scientific << bin_value << G4endl;
-                        dose += bin_value;
-                    }
-                    sumActivePar += dose;
-                    file << "        local sum = " << std::setw(15) << std::scientific << dose << G4endl;
-                }
-            }
-        }
-        file << "    " << std::setw(30) << std::left << "sum of all active particles = "
-                       << std::setw(15) << std::scientific << sumActivePar << G4endl;
-
+        file << "    total dose = " << std::setprecision(10) << sum << G4endl;
         file.close();
     }
 }
 
 
 
+
+
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4AnalysisManager* RoutineUtility::GetAnalysisManager()
+RoutineCustomScore::RoutineCustomScore(G4double count, G4double energy)
 {
-    return G4AnalysisManager::Instance();
+    this->energy = energy;
+    this->count  = count;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4HistManager* RoutineUtility::GetHistManager()
+RoutineCustomScore::RoutineCustomScore() : energy(0.0), count(0.0)
 {
-    return fHistManager;
+
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4HistManager::G4HistManager() : fFileName("histogram")
+RoutineCustomScore::~RoutineCustomScore()
 {
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-    analysisManager->SetFileName(fFileName);
-    // analysisManager->SetVerboseLevel(1);
-    // analysisManager->SetActivation(true);
+
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4HistManager::~G4HistManager()
+RoutineCustomScore& RoutineCustomScore::operator += (const RoutineCustomScore& rhs)
 {
+    energy += rhs.energy;
+    count  += rhs.count;
+    return *this;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void G4HistManager::SetUpHist()
+RoutineCustomScore& RoutineCustomScore::operator = (const RoutineCustomScore& rhs)
 {
-    G4ParticleTable* theParticleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleTable::G4PTblDicIterator* it = theParticleTable->GetIterator();
-    it->reset();
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-
-    // loop through all supported particles
-    while((*it)())
-    {
-        G4ParticleDefinition* particle = it->value();
-        G4int ih = analysisManager->CreateH1(particle->GetParticleName() + "_count", particle->GetParticleName() + " count", 1, 0.0, 200.0 * MeV);
-        analysisManager->SetH1Ascii(ih, true);
-
-        ih = analysisManager->CreateH1(particle->GetParticleName() + "_spectrum", particle->GetParticleName() + " spectrum", 100, 0.0, 200.0 * MeV);
-        analysisManager->SetH1Ascii(ih, true);
-    }
+    energy = rhs.energy;
+    count  = rhs.count;
+    return *this;
 }
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineCustomScore::AccumulateEnergy(const G4double energy)
+{
+    this->energy += energy;
+}
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineCustomScore::AccumulateCount(const G4double count)
+{
+    this->count += count;
+}
 
 

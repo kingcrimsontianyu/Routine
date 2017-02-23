@@ -4,6 +4,7 @@
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
 #include "RoutineUtility.hh"
+#include "RoutineRun.hh"
 
 class RoutineEventAction;
 

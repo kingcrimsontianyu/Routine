@@ -6,6 +6,7 @@
 
 #include "G4THitsMap.hh"
 #include <vector>
+#include "RoutineUtility.hh"
 
 class RoutineRun : public G4Run
 {
@@ -26,12 +27,15 @@ public:
                                  const G4String& fullName) const;
     void DumpAllScorer();
 
+    std::map<G4String, RoutineCustomScore>& GetCSMap() {return csMap;}
 private:
     std::vector<G4String> fCollectionName;
     std::vector<G4int> fCollectionID;
     std::vector<G4THitsMap<G4double>*> fRunMap;
     std::vector<G4double> fRunMapSquaredSum;
     std::vector<G4THitsMap<G4double>*> fRunMapSquared;
+
+    std::map<G4String, RoutineCustomScore> csMap;
 };
 
 #endif

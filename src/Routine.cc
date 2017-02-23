@@ -24,7 +24,7 @@ int main(int argc,char** argv)
     #endif
 
     RoutineUtility* rut = new RoutineUtility();
-    // rut->SetPrintParticleInfo(true);
+    rut->SetPrintParticleInfo(true);
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
 
@@ -44,7 +44,7 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/hits/verbose 0");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e3);
+    int numberOfEvent = static_cast<int>(1e2);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI

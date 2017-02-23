@@ -81,12 +81,25 @@ void RoutineRun::RecordEvent(const G4Event* aEvent)
 //------------------------------------------------------------
 void RoutineRun::Merge(const G4Run * aRun)
 {
-    const RoutineRun * localRun = static_cast<const RoutineRun*>(aRun);
+    const RoutineRun* localRun = static_cast<const RoutineRun*>(aRun);
     for(size_t i = 0; i < fCollectionID.size(); ++i)
     {
         *fRunMap[i] += *localRun->fRunMap[i];
         *fRunMapSquared[i] += *localRun->fRunMapSquared[i];
         fRunMapSquaredSum[i] += localRun->fRunMapSquaredSum[i];
+    }
+
+    // merge custom score
+    for(auto it = localRun->csMap.begin(); it != localRun->csMap.end(); ++it)
+    {
+        if(csMap.find(it->first) != csMap.end())
+        {
+            csMap[it->first] += it->second;
+        }
+        else
+        {
+            csMap[it->first] = it->second;
+        }
     }
 
     G4Run::Merge(aRun);
