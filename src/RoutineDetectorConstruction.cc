@@ -24,68 +24,68 @@ void RoutineDetectorConstruction::ImportFromFile()
 
     G4NistManager* nist = G4NistManager::Instance();
 
-    // dry air
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
-    ZList.push_back(6 );  weightFractionList.push_back(0.000124);
-    ZList.push_back(7 );  weightFractionList.push_back(0.755267);
-    ZList.push_back(8 );  weightFractionList.push_back(0.231781);
-    ZList.push_back(18);  weightFractionList.push_back(0.012827);
-    density = 1.20479e-03 * g / cm3;
-    G4Material* air = new G4Material("air", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        air->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("air", air));
+    // // dry air
+    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
+    // ZList.push_back(6 );  weightFractionList.push_back(0.000124);
+    // ZList.push_back(7 );  weightFractionList.push_back(0.755267);
+    // ZList.push_back(8 );  weightFractionList.push_back(0.231781);
+    // ZList.push_back(18);  weightFractionList.push_back(0.012827);
+    // density = 1.20479e-03 * g / cm3;
+    // G4Material* air = new G4Material("air", density, ZList.size());
+    // for(int i = 0; i < ZList.size(); ++i)
+    // {
+        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        // air->AddElement(el, weightFractionList[i]);
+    // }
+    // ZList.clear(); weightFractionList.clear();
+    // fMaterialMap.insert(std::pair<G4String, G4Material*>("air", air));
 
-    // tissue, soft (icrp)
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=261
-    ZList.push_back(1 );  weightFractionList.push_back(0.104472);
-    ZList.push_back(6 );  weightFractionList.push_back(0.232190);
-    ZList.push_back(7 );  weightFractionList.push_back(0.024880);
-    ZList.push_back(8 );  weightFractionList.push_back(0.630238);
-    ZList.push_back(11);  weightFractionList.push_back(0.001130);
-    ZList.push_back(12);  weightFractionList.push_back(0.000130);
-    ZList.push_back(15);  weightFractionList.push_back(0.001330);
-    ZList.push_back(16);  weightFractionList.push_back(0.001990);
-    ZList.push_back(17);  weightFractionList.push_back(0.001340);
-    ZList.push_back(19);  weightFractionList.push_back(0.001990);
-    ZList.push_back(20);  weightFractionList.push_back(0.000230);
-    ZList.push_back(26);  weightFractionList.push_back(0.000050);
-    ZList.push_back(30);  weightFractionList.push_back(0.000030);
-    density = 1.0 * g / cm3;
-    G4Material* softTissue = new G4Material("soft_tissue", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        softTissue->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("soft_tissue", softTissue));
+    // // tissue, soft (icrp)
+    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=261
+    // ZList.push_back(1 );  weightFractionList.push_back(0.104472);
+    // ZList.push_back(6 );  weightFractionList.push_back(0.232190);
+    // ZList.push_back(7 );  weightFractionList.push_back(0.024880);
+    // ZList.push_back(8 );  weightFractionList.push_back(0.630238);
+    // ZList.push_back(11);  weightFractionList.push_back(0.001130);
+    // ZList.push_back(12);  weightFractionList.push_back(0.000130);
+    // ZList.push_back(15);  weightFractionList.push_back(0.001330);
+    // ZList.push_back(16);  weightFractionList.push_back(0.001990);
+    // ZList.push_back(17);  weightFractionList.push_back(0.001340);
+    // ZList.push_back(19);  weightFractionList.push_back(0.001990);
+    // ZList.push_back(20);  weightFractionList.push_back(0.000230);
+    // ZList.push_back(26);  weightFractionList.push_back(0.000050);
+    // ZList.push_back(30);  weightFractionList.push_back(0.000030);
+    // density = 1.0 * g / cm3;
+    // G4Material* softTissue = new G4Material("soft_tissue", density, ZList.size());
+    // for(int i = 0; i < ZList.size(); ++i)
+    // {
+        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        // softTissue->AddElement(el, weightFractionList[i]);
+    // }
+    // ZList.clear(); weightFractionList.clear();
+    // fMaterialMap.insert(std::pair<G4String, G4Material*>("soft_tissue", softTissue));
 
 
-    // bone, cortical (icrp)
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=120
-    ZList.push_back(1 );  weightFractionList.push_back(0.047234);
-    ZList.push_back(6 );  weightFractionList.push_back(0.144330);
-    ZList.push_back(7 );  weightFractionList.push_back(0.041990);
-    ZList.push_back(8 );  weightFractionList.push_back(0.446096);
-    ZList.push_back(12);  weightFractionList.push_back(0.002200);
-    ZList.push_back(15);  weightFractionList.push_back(0.104970);
-    ZList.push_back(16);  weightFractionList.push_back(0.003150);
-    ZList.push_back(20);  weightFractionList.push_back(0.209930);
-    ZList.push_back(30);  weightFractionList.push_back(0.000100);
-    density = 1.85 * g / cm3;
-    G4Material* bone = new G4Material("bone", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        bone->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("bone", bone));
+    // // bone, cortical (icrp)
+    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=120
+    // ZList.push_back(1 );  weightFractionList.push_back(0.047234);
+    // ZList.push_back(6 );  weightFractionList.push_back(0.144330);
+    // ZList.push_back(7 );  weightFractionList.push_back(0.041990);
+    // ZList.push_back(8 );  weightFractionList.push_back(0.446096);
+    // ZList.push_back(12);  weightFractionList.push_back(0.002200);
+    // ZList.push_back(15);  weightFractionList.push_back(0.104970);
+    // ZList.push_back(16);  weightFractionList.push_back(0.003150);
+    // ZList.push_back(20);  weightFractionList.push_back(0.209930);
+    // ZList.push_back(30);  weightFractionList.push_back(0.000100);
+    // density = 1.85 * g / cm3;
+    // G4Material* bone = new G4Material("bone", density, ZList.size());
+    // for(int i = 0; i < ZList.size(); ++i)
+    // {
+        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        // bone->AddElement(el, weightFractionList[i]);
+    // }
+    // ZList.clear(); weightFractionList.clear();
+    // fMaterialMap.insert(std::pair<G4String, G4Material*>("bone", bone));
 
     // water
     // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
@@ -101,18 +101,18 @@ void RoutineDetectorConstruction::ImportFromFile()
     ZList.clear(); weightFractionList.clear();
     fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
 
-    // lead
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=082
-    ZList.push_back(82);  weightFractionList.push_back(1);
-    density = 11.35 * g / cm3;
-    G4Material* lead = new G4Material("lead", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        lead->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("lead", lead));
+    // // lead
+    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=082
+    // ZList.push_back(82);  weightFractionList.push_back(1);
+    // density = 11.35 * g / cm3;
+    // G4Material* lead = new G4Material("lead", density, ZList.size());
+    // for(int i = 0; i < ZList.size(); ++i)
+    // {
+        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        // lead->AddElement(el, weightFractionList[i]);
+    // }
+    // ZList.clear(); weightFractionList.clear();
+    // fMaterialMap.insert(std::pair<G4String, G4Material*>("lead", lead));
 
     // vacuum
     G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");

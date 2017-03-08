@@ -6,8 +6,8 @@
 int main(int argc,char** argv)
 {
     // very verbose in order to glean useful cross-section info
-    G4EmParameters* empar = G4EmParameters::Instance();
-    empar->SetVerbose(3);
+    // G4EmParameters* empar = G4EmParameters::Instance();
+    // empar->SetVerbose(3);
 
     #if defined USE_GUI
     G4UIExecutive* ui = 0;
@@ -22,7 +22,7 @@ int main(int argc,char** argv)
 
     #if defined G4MULTITHREADED
     G4MTRunManager* runManager = new G4MTRunManager;
-    runManager->SetNumberOfThreads(1);
+    runManager->SetNumberOfThreads(28);
     #else
     G4RunManager* runManager = new G4RunManager;
     #endif
@@ -34,13 +34,14 @@ int main(int argc,char** argv)
 
     // G4VUserPhysicsList* physicsList = new QBBC;
     // G4VUserPhysicsList* physicsList = new RoutineQBBC;
-    G4VUserPhysicsList* physicsList = new RoutineMinimalist;
-    // G4VUserPhysicsList* physicsList = new RoutineTopas;
+    // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
+    G4VUserPhysicsList* physicsList = new RoutineTopas;
     runManager->SetUserInitialization(physicsList);
 
     runManager->SetUserInitialization(new RoutineActionInitialization(rut));
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    // UImanager->ApplyCommand("/process/setVerbose 2");
     // UImanager->ApplyCommand("/control/verbose 2");
     // UImanager->ApplyCommand("/run/particle/verbose 3");
     // UImanager->ApplyCommand("/event/verbose 2");
@@ -49,7 +50,7 @@ int main(int argc,char** argv)
     // UImanager->ApplyCommand("/particle/verbose 2");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1);
+    int numberOfEvent = static_cast<int>(1e5);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI
