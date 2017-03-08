@@ -120,9 +120,9 @@ void RoutineDetectorConstruction::ImportFromFile()
 
     fPhantomDimension.set(40.0 * cm, 40.0 * cm, 40.0 * cm);
 
-    fXNumVoxel = 1;
-    fYNumVoxel = 1;
-    fZNumVoxel = 100;
+    fXNumVoxel = 20;
+    fYNumVoxel = 20;
+    fZNumVoxel = 20;
     fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
 
     fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,

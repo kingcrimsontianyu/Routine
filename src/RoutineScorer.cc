@@ -19,9 +19,9 @@ RoutinePSEnergyImparted::~RoutinePSEnergyImparted()
 G4int RoutinePSEnergyImparted::GetIndex(G4Step* aStep)
 {
     const G4VTouchable* touchable = aStep->GetPreStepPoint()->GetTouchable();
-    G4int xIdx = touchable->GetReplicaNumber(2);
+    G4int xIdx = touchable->GetReplicaNumber(0);
     G4int yIdx = touchable->GetReplicaNumber(1);
-    G4int zIdx = touchable->GetReplicaNumber(0);
+    G4int zIdx = touchable->GetReplicaNumber(2);
 
     // x idx changes fastest, z slowest
     G4int globalIdx = fXNumVoxel * fYNumVoxel * zIdx + fXNumVoxel * yIdx + xIdx;
@@ -48,9 +48,9 @@ RoutinePSEnergyTransfer::~RoutinePSEnergyTransfer()
 G4int RoutinePSEnergyTransfer::GetIndex(G4Step* aStep)
 {
     const G4VTouchable* touchable = aStep->GetPreStepPoint()->GetTouchable();
-    G4int xIdx = touchable->GetReplicaNumber(2);
+    G4int xIdx = touchable->GetReplicaNumber(0);
     G4int yIdx = touchable->GetReplicaNumber(1);
-    G4int zIdx = touchable->GetReplicaNumber(0);
+    G4int zIdx = touchable->GetReplicaNumber(2);
 
     // x idx changes fastest, z slowest
     G4int globalIdx = fXNumVoxel * fYNumVoxel * zIdx + fXNumVoxel * yIdx + xIdx;

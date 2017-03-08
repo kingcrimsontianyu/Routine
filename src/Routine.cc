@@ -32,10 +32,10 @@ int main(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction());
 
-    // G4VUserPhysicsList* physicsList = new QBBC;
+    G4VUserPhysicsList* physicsList = new QBBC;
     // G4VUserPhysicsList* physicsList = new RoutineQBBC;
     // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
-    G4VUserPhysicsList* physicsList = new RoutineTopas;
+    // G4VUserPhysicsList* physicsList = new RoutineTopas;
     runManager->SetUserInitialization(physicsList);
 
     runManager->SetUserInitialization(new RoutineActionInitialization(rut));
