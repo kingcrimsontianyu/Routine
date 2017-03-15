@@ -22,6 +22,8 @@
 #include "G4PSDoseDeposit.hh"
 #include "G4PSEnergyDeposit.hh"
 #include "RoutineScorer.hh"
+#include "RoutineField.hh"
+#include "G4AutoDelete.hh"
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -101,6 +103,8 @@ protected:
     std::map<G4String, G4Material*> fMaterialMap;
     std::vector<G4Material*> fPhantomMaterialList;
     std::vector<G4Material*> fMaterialList;
+
+    G4Cache<RoutineField*> fField;
 };
 
 #endif

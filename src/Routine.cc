@@ -5,6 +5,9 @@
 //------------------------------------------------------------
 int main(int argc,char** argv)
 {
+    G4Timer timer;
+    timer.Start();
+
     // very verbose in order to glean useful cross-section info
     // G4EmParameters* empar = G4EmParameters::Instance();
     // empar->SetVerbose(3);
@@ -50,7 +53,7 @@ int main(int argc,char** argv)
     // UImanager->ApplyCommand("/particle/verbose 2");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e5);
+    int numberOfEvent = static_cast<int>(1e6);
     runManager->BeamOn(numberOfEvent);
 
     #if defined USE_GUI
@@ -73,6 +76,11 @@ int main(int argc,char** argv)
 
     delete rut;
     delete runManager;
+
+    timer.Stop();
+    G4cout << "--> total real elapsed time is: "<< timer.GetRealElapsed() << G4endl;
+    G4cout << "    total system elapsed time: " << timer.GetSystemElapsed() << G4endl;
+    G4cout << "    total user elapsed time: " << timer.GetUserElapsed() << G4endl;
 }
 
 

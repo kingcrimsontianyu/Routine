@@ -77,7 +77,16 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         }
         dose /= numHistory;
         sigma /= numHistory;
-        G4double rsd = sigma / dose;
+
+        G4double rsd;
+        if(dose != 0.0)
+        {
+            rsd = sigma / dose;
+        }
+        else
+        {
+            rsd = 0.0;
+        }
 
         G4cout << "--> history = " << run->GetNumberOfEvent() << G4endl;
         G4cout << "--> stepping" << G4endl;
@@ -118,7 +127,15 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         }
         dose /= numHistory;
         sigma /= numHistory;
-        G4double rsd = sigma / dose;
+        G4double rsd;
+        if(dose != 0.0)
+        {
+            rsd = sigma / dose;
+        }
+        else
+        {
+            rsd = 0.0;
+        }
 
         G4cout << "--> hits map" << G4endl;
         G4cout << "    dose = " << std::setprecision(15) << dose / (MeV / g) << " [MeV/g]"<< G4endl;
@@ -233,7 +250,15 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
                     }
                     dose /= numHistory;
                     sigma /= numHistory;
-                    G4double rsd = sigma / dose;
+                    G4double rsd;
+                    if(dose != 0.0)
+                    {
+                        rsd = sigma / dose;
+                    }
+                    else
+                    {
+                        rsd = 0.0;
+                    }
 
                     file << std::setw(5) << i
                          << std::setw(5) << j
@@ -355,7 +380,15 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
                     }
                     dose /= numHistory;
                     sigma /= numHistory;
-                    G4double rsd = sigma / dose;
+                    G4double rsd;
+                    if(dose != 0.0)
+                    {
+                        rsd = sigma / dose;
+                    }
+                    else
+                    {
+                        rsd = 0.0;
+                    }
 
                     file << std::setw(5) << i
                          << std::setw(5) << j

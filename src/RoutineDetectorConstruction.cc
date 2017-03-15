@@ -118,11 +118,11 @@ void RoutineDetectorConstruction::ImportFromFile()
     G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");
     fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
-    fPhantomDimension.set(40.0 * cm, 40.0 * cm, 40.0 * cm);
+    fPhantomDimension.set(10.0 * cm, 10.0 * cm, 10.0 * cm);
 
-    fXNumVoxel = 20;
-    fYNumVoxel = 20;
-    fZNumVoxel = 20;
+    fXNumVoxel = 100;
+    fYNumVoxel = 100;
+    fZNumVoxel = 100;
     fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
 
     fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,
@@ -287,6 +287,14 @@ void RoutineDetectorConstruction::ConstructSDandField()
 
     // add mfd to logical vol
     fLogicVolumeVoxel->SetSensitiveDetector(mfd);
+
+    // construct the field creator
+    if (!fField.Get())
+    {
+        RoutineField* field = new RoutineField(G4ThreeVector( 0.0, 1.5 * tesla, 0.0 ) );
+        G4AutoDelete::Register(field); // Kernel will delete the RoutineField
+        fField.Put(field);
+    }
 }
 
 //------------------------------------------------------------
