@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineActionInitialization::RoutineActionInitialization(RoutineUtility* rut) :
-G4VUserActionInitialization(), rut(rut)
+RoutineActionInitialization::RoutineActionInitialization(RoutineParameterManager* rp, RoutineUtility* rut) :
+G4VUserActionInitialization(), rp(rp), rut(rut)
 {}
 
 //------------------------------------------------------------
@@ -23,7 +23,7 @@ void RoutineActionInitialization::BuildForMaster() const
 void RoutineActionInitialization::Build() const
 {
     // primary generation class
-    SetUserAction(new RoutinePrimaryGeneratorAction);
+    SetUserAction(new RoutinePrimaryGeneratorAction(rp));
 
     // user run action class
     RoutineRunAction* runAction = new RoutineRunAction(rut);

@@ -3,6 +3,7 @@
 
 #include "RoutineDetectorConstruction.hh"
 #include "RoutineActionInitialization.hh"
+#include "RoutineParameter.hh"
 
 #ifdef G4MULTITHREADED
     #include "G4MTRunManager.hh"

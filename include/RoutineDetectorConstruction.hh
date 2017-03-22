@@ -24,6 +24,7 @@
 #include "RoutineScorer.hh"
 #include "RoutineField.hh"
 #include "G4AutoDelete.hh"
+#include "RoutineParameter.hh"
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -69,7 +70,7 @@ private:
 class RoutineDetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-    RoutineDetectorConstruction();
+    RoutineDetectorConstruction(RoutineParameterManager* rp);
     virtual ~RoutineDetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
@@ -99,6 +100,7 @@ protected:
     G4int            fZNumVoxel;
     G4int            fTotalNumVoxel;
 
+    RoutineParameterManager* rp;
     RoutineNestedParameterisation* fparam;
     std::map<G4String, G4Material*> fMaterialMap;
     std::vector<G4Material*> fPhantomMaterialList;

@@ -8,16 +8,18 @@
 #include "RoutineSteppingAction.hh"
 #include "RoutineStackingAction.hh"
 #include "RoutineRun.hh"
+#include "RoutineParameter.hh"
 
 class RoutineActionInitialization : public G4VUserActionInitialization
 {
 public:
-    RoutineActionInitialization(RoutineUtility* rut);
+    RoutineActionInitialization(RoutineParameterManager* rp, RoutineUtility* rut);
     virtual ~RoutineActionInitialization();
 
     virtual void BuildForMaster() const;
     virtual void Build() const;
 protected:
+    RoutineParameterManager* rp;
     RoutineUtility* rut;
 };
 

@@ -2,10 +2,12 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineDetectorConstruction::RoutineDetectorConstruction() : G4VUserDetectorConstruction(),
-                                                           fLogicPhantom(nullptr),
-                                                           fLogicVolumeVoxel(nullptr),
-                                                           fparam(nullptr)
+RoutineDetectorConstruction::RoutineDetectorConstruction(RoutineParameterManager* rp)
+: G4VUserDetectorConstruction(),
+fLogicPhantom(nullptr),
+fLogicVolumeVoxel(nullptr),
+fparam(nullptr),
+rp(rp)
 { }
 
 //------------------------------------------------------------
@@ -118,11 +120,14 @@ void RoutineDetectorConstruction::ImportFromFile()
     G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");
     fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
-    fPhantomDimension.set(10.0 * cm, 10.0 * cm, 10.0 * cm);
 
-    fXNumVoxel = 100;
-    fYNumVoxel = 100;
-    fZNumVoxel = 100;
+    fPhantomDimension.set(rp->param->phantomDimension.x,
+                          rp->param->phantomDimension.y,
+                          rp->param->phantomDimension.z);
+
+    fXNumVoxel = rp->param->numVoxel.x;
+    fYNumVoxel = rp->param->numVoxel.y;
+    fZNumVoxel = rp->param->numVoxel.z;
     fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
 
     fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,
@@ -166,9 +171,9 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 
     // World
     G4Box* solidWorld = new G4Box("S_World",        // name
-                                  40.0 * cm,
-                                  40.0 * cm,
-                                  40.0 * cm);     // size
+                                  rp->param->worldDimension.x / 2.0,
+                                  rp->param->worldDimension.y / 2.0,
+                                  rp->param->worldDimension.z / 2.0);     // size
 
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,  // solid
                                                       fMaterialMap["vacuum"],   // material

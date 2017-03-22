@@ -4,6 +4,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "globals.hh"
+#include "RoutineParameter.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -12,7 +13,7 @@ class G4Box;
 class RoutinePrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-    RoutinePrimaryGeneratorAction();
+    RoutinePrimaryGeneratorAction(RoutineParameterManager* rp);
     virtual ~RoutinePrimaryGeneratorAction();
 
     // method from the base class
@@ -22,6 +23,7 @@ public:
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
 
 private:
+    RoutineParameterManager* rp;
     G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
 };
 

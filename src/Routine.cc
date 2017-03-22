@@ -8,6 +8,8 @@ int main(int argc,char** argv)
     G4Timer timer;
     timer.Start();
 
+    RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
+
     // very verbose in order to glean useful cross-section info
     // G4EmParameters* empar = G4EmParameters::Instance();
     // empar->SetVerbose(3);
@@ -25,7 +27,7 @@ int main(int argc,char** argv)
 
     #if defined G4MULTITHREADED
     G4MTRunManager* runManager = new G4MTRunManager;
-    runManager->SetNumberOfThreads(28);
+    runManager->SetNumberOfThreads(rp->param->numThread);
     #else
     G4RunManager* runManager = new G4RunManager;
     #endif
@@ -33,7 +35,7 @@ int main(int argc,char** argv)
     RoutineUtility* rut = new RoutineUtility();
     // rut->SetPrintParticleInfo(true);
 
-    runManager->SetUserInitialization(new RoutineDetectorConstruction());
+    runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
 
     G4VUserPhysicsList* physicsList = new QBBC;
     // G4VUserPhysicsList* physicsList = new RoutineQBBC;
@@ -41,7 +43,7 @@ int main(int argc,char** argv)
     // G4VUserPhysicsList* physicsList = new RoutineTopas;
     runManager->SetUserInitialization(physicsList);
 
-    runManager->SetUserInitialization(new RoutineActionInitialization(rut));
+    runManager->SetUserInitialization(new RoutineActionInitialization(rp, rut));
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     // UImanager->ApplyCommand("/process/setVerbose 2");
@@ -53,8 +55,7 @@ int main(int argc,char** argv)
     // UImanager->ApplyCommand("/particle/verbose 2");
 
     runManager->Initialize();
-    int numberOfEvent = static_cast<int>(1e6);
-    runManager->BeamOn(numberOfEvent);
+    runManager->BeamOn(rp->param->numHistory);
 
     #if defined USE_GUI
     G4VisManager* visManager = new G4VisExecutive;
@@ -77,10 +78,14 @@ int main(int argc,char** argv)
     delete rut;
     delete runManager;
 
+    delete rp;
+
     timer.Stop();
     G4cout << "--> total real elapsed time is: "<< timer.GetRealElapsed() << G4endl;
     G4cout << "    total system elapsed time: " << timer.GetSystemElapsed() << G4endl;
     G4cout << "    total user elapsed time: " << timer.GetUserElapsed() << G4endl;
+
+    return 0;
 }
 
 
