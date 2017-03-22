@@ -68,6 +68,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["num-voxel"          ] = RoutineParameterValue("1, 1, 100", ParamType::ThreeVector);
     parameterMap["num-thread"         ] = RoutineParameterValue("10", ParamType::Single);
     parameterMap["num-history"        ] = RoutineParameterValue("1e3", ParamType::Single);
+    parameterMap["magnetic-field"     ] = RoutineParameterValue("0, 0, 0", ParamType::ThreeVector); // Tesla
 }
 
 //------------------------------------------------------------
@@ -180,6 +181,10 @@ void RoutineParameterManager::SetParameter()
 
     param->numThread = std::stoi(parameterMap["num-thread"].single);
     param->numHistory = static_cast<G4int>(std::stof(parameterMap["num-history"].single));
+
+    param->magneticField.x = std::stof(parameterMap["magnetic-field"].x) * tesla;
+    param->magneticField.y = std::stof(parameterMap["magnetic-field"].y) * tesla;
+    param->magneticField.z = std::stof(parameterMap["magnetic-field"].z) * tesla;
 }
 
 //------------------------------------------------------------

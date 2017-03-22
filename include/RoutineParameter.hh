@@ -63,9 +63,9 @@ public:
     RoutineThreeVector<G4double> worldDimension;
     RoutineThreeVector<G4double> phantomDimension;
     RoutineThreeVector<G4int> numVoxel;
-
     G4int numThread;
     G4int numHistory;
+    RoutineThreeVector<G4double> magneticField;
 };
 
 //------------------------------------------------------------

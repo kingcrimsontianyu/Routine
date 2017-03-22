@@ -296,7 +296,7 @@ void RoutineDetectorConstruction::ConstructSDandField()
     // construct the field creator
     if (!fField.Get())
     {
-        RoutineField* field = new RoutineField(G4ThreeVector( 0.0, 1.5 * tesla, 0.0 ) );
+        RoutineField* field = new RoutineField(G4ThreeVector(rp->param->magneticField.x, rp->param->magneticField.y, rp->param->magneticField.z));
         G4AutoDelete::Register(field); // Kernel will delete the RoutineField
         fField.Put(field);
     }
