@@ -43,7 +43,7 @@ void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // square pencil beam
     G4double dx = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
     G4double dy = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
-    G4ThreeVector position = {dx, dy, rp->param->sourceDirection.z};
+    G4ThreeVector position = {dx, dy, rp->param->sourcePosition.z};
     fParticleGun->SetParticlePosition(position);
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }
