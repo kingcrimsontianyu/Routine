@@ -20,7 +20,19 @@ RoutinePrimaryGeneratorAction::RoutinePrimaryGeneratorAction(RoutineParameterMan
 
     // default particle kinematic
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleDefinition* particle = particleTable->FindParticle(rp->param->sourceType);
+    G4ParticleDefinition* particle;
+	
+	G4cout << ">>> " << rp->param->usePDGEncoding << G4endl;
+	G4cout << ">>> " << rp->param->PDGEncoding << G4endl;
+	G4cout << ">>> " << rp->param->sourceType << G4endl;
+    if(rp->param->usePDGEncoding)
+    {
+        particle = particleTable->FindParticle(rp->param->PDGEncoding);
+    }
+    else
+    {
+        particle = particleTable->FindParticle(rp->param->sourceType);
+    }
     fParticleGun->SetParticleDefinition(particle);
 
     G4ThreeVector dir = {rp->param->sourceDirection.x, rp->param->sourceDirection.y, rp->param->sourceDirection.z};

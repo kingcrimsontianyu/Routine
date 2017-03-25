@@ -3,10 +3,9 @@
 //------------------------------------------------------------
 //------------------------------------------------------------
 RoutineParameterValue::RoutineParameterValue(const G4String& rawString, ParamType valueType) :
-rawString(rawString), valueType(valueType), single(""), x(""), y(""), z("")
+rawString(rawString), valueType(valueType), single(""), x(""), y(""), z(""), flag(false)
 {
     // todo: add validity check
-    // todo: handle boolean type
 
     if(valueType == ParamType::Single)
     {
@@ -23,9 +22,12 @@ rawString(rawString), valueType(valueType), single(""), x(""), y(""), z("")
         y = rawString.substr(oldPos + 1, pos - oldPos - 1);
         z = rawString.substr(pos + 1);
     }
-    else // ParamType::Boolean
+    else if(valueType == ParamType::Boolean)
     {
-
+        if(rawString == "true")
+        {
+            flag = true;
+        }
     }
 }
 
@@ -59,6 +61,7 @@ void RoutineParameterManager::InitializeMap()
 {
     // predefined parameter map
     parameterMap["source-type"        ] = RoutineParameterValue("proton", ParamType::Single); // proton, gamma, e-, e+
+    parameterMap["use-pdg-encoding"   ] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["source-energy"      ] = RoutineParameterValue("200", ParamType::Single); // MeV
     parameterMap["source-position"    ] = RoutineParameterValue("0, 0, -10.1", ParamType::ThreeVector); // cm
     parameterMap["source-direction"   ] = RoutineParameterValue("0, 0, 1", ParamType::ThreeVector);
@@ -115,7 +118,7 @@ void RoutineParameterManager::ParseCommandLine(int argc, char** argv)
             while(true);
         }
 
-        // split each element by "=" delimiter
+        // split each element by "=" delimiter if it exists
         for(G4int i = 0; i < parsedParam.size(); ++i)
         {
             G4String delimiter = "=";
@@ -126,10 +129,10 @@ void RoutineParameterManager::ParseCommandLine(int argc, char** argv)
                 cmdKey = parsedParam[i].substr(0, found);
                 cmdValue = parsedParam[i].substr(found + 1);
             }
-            else
+            else // if "=" does not exist, the parameter is Boolean type
             {
                 cmdKey = parsedParam[i].substr(0, found);
-                cmdValue = "";
+                cmdValue = "true";
             }
 
             // check if cmdKey exists in the preset map
@@ -155,7 +158,20 @@ void RoutineParameterManager::SetParameter()
 {
     param = new RoutineParameter;
 
-    param->sourceType = parameterMap["source-type"].single;
+    // if use-pdg-encoding exists, parse source-type as the pdg encoding instead of particle name
+    param->usePDGEncoding = parameterMap["use-pdg-encoding"].flag;
+    if(param->usePDGEncoding)
+    {
+        param->sourceType = "none";
+        param->PDGEncoding = std::stoi(parameterMap["source-type"].single);
+    }
+    else
+    {
+        param->sourceType = parameterMap["source-type"].single;
+        param->PDGEncoding = -1000;
+    }
+
+
     param->sourceEnergy = std::stof(parameterMap["source-energy"].single) * MeV;
     param->squareBeamWidth = std::stof(parameterMap["square-beam-width"].single) * cm;
 
@@ -209,9 +225,11 @@ void RoutineParameterManager::PrintParameterMap()
                    << std::setw(20) << it->second.z
                    << G4endl;
         }
-        else // ParamType::Boolean
+        else if(it->second.valueType == ParamType::Boolean)
         {
-
+            G4cout << "    "
+                               << std::left << std::setw(20) << it->first
+                               << std::setw(20) << it->second.flag << G4endl;
         }
     }
     G4cout << G4endl;

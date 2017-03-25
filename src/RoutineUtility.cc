@@ -195,6 +195,7 @@ void RoutineUtility::SaveCustomScoreToFile()
         G4int numHistory = rm->GetNumberOfEventsToBeProcessed();
         file << "--> total number of primary particles = " << numHistory << G4endl;
 
+        G4ParticleTable* theParticleTable = G4ParticleTable::GetParticleTable();
         auto detectorConstruction = static_cast<const RoutineDetectorConstruction*>(rm->GetUserDetectorConstruction());
         G4double mass = detectorConstruction->GetPhantomMass();
         G4int numActivePar = mergedRun->GetCSMap().size();
@@ -202,17 +203,21 @@ void RoutineUtility::SaveCustomScoreToFile()
         file << "--> " << std::setw(30) << std::left << "particle"
              << std::setw(25) << "count"
              << std::setw(25) << "energy"
+             << std::setw(25) << "PDG encoding"
              << G4endl;
 
         // print count and dose
         G4double sum = 0.0;
         for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
         {
+            G4ParticleDefinition* theParticle = theParticleTable->FindParticle(it->first);
+            G4int PDGEncoding = theParticle->GetPDGEncoding();
             G4double dose = it->second.energy / mass / (MeV / g) / numHistory;
             sum += dose;
             file << "    " << std::setw(30) << std::left << it->first
                  << std::setw(25) << std::setprecision(10) << std::scientific << it->second.count / numHistory
                  << std::setw(25) << std::setprecision(10) << std::scientific << dose
+                 << std::setw(25) << PDGEncoding
                  << G4endl;
         }
         file << "    total dose = " << std::setprecision(10) << sum << G4endl;

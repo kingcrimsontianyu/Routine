@@ -47,6 +47,7 @@ public:
     G4String x;
     G4String y;
     G4String z;
+    G4bool flag;
 };
 
 //------------------------------------------------------------
@@ -58,6 +59,8 @@ public:
     G4String      sourceType;
     G4double      sourceEnergy;
     G4double      squareBeamWidth;
+    G4bool        usePDGEncoding;
+    G4int         PDGEncoding;
     RoutineThreeVector<G4double> sourcePosition;
     RoutineThreeVector<G4double> sourceDirection;
     RoutineThreeVector<G4double> worldDimension;
