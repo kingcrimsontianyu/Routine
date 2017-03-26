@@ -73,6 +73,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["magnetic-field"     ] = RoutineParameterValue("0, 0, 0", ParamType::ThreeVector); // Tesla
     parameterMap["source-ion-Z"       ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["source-ion-A"       ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["output-suffix"      ] = RoutineParameterValue("", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -206,6 +207,8 @@ void RoutineParameterManager::SetParameter()
     param->magneticField.x = std::stof(parameterMap["magnetic-field"].x) * tesla;
     param->magneticField.y = std::stof(parameterMap["magnetic-field"].y) * tesla;
     param->magneticField.z = std::stof(parameterMap["magnetic-field"].z) * tesla;
+
+    param->outputSuffix = parameterMap["output-suffix"].single;
 }
 
 //------------------------------------------------------------

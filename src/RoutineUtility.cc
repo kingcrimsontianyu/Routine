@@ -3,7 +3,14 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineUtility::RoutineUtility() : bPrintParticleInfo(false)
+RoutineUtility::RoutineUtility(RoutineParameterManager* rp) : bPrintParticleInfo(false), rp(rp)
+{
+
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineUtility::RoutineUtility()
 {
 
 }
@@ -181,7 +188,7 @@ void RoutineUtility::PrintVisualInfo()
 //------------------------------------------------------------
 void RoutineUtility::SaveCustomScoreToFile()
 {
-    std::ofstream file("histogram.txt");
+    std::ofstream file("histogram_" + rp->param->outputSuffix + ".txt");
 
     if(file.is_open())
     {
@@ -201,8 +208,8 @@ void RoutineUtility::SaveCustomScoreToFile()
         G4int numActivePar = mergedRun->GetCSMap().size();
         file << "    number of particles actually simulated = " << numActivePar << G4endl << G4endl;
         file << "--> " << std::setw(30) << std::left << "particle"
-             << std::setw(25) << "count"
-             << std::setw(25) << "energy"
+             << std::setw(25) << "count per source"
+             << std::setw(25) << "dose per source"
              << std::setw(25) << "PDG encoding"
              << G4endl;
 

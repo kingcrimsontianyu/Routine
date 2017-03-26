@@ -70,6 +70,7 @@ public:
     G4int numThread;
     G4int numHistory;
     RoutineThreeVector<G4double> magneticField;
+    G4String      outputSuffix;
 };
 
 //------------------------------------------------------------

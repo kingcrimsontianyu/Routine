@@ -32,7 +32,7 @@ int main(int argc,char** argv)
     G4RunManager* runManager = new G4RunManager;
     #endif
 
-    RoutineUtility* rut = new RoutineUtility();
+    RoutineUtility* rut = new RoutineUtility(rp);
     // rut->SetPrintParticleInfo(true);
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));

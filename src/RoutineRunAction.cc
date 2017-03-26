@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineRunAction::RoutineRunAction(RoutineUtility* rut) :
-G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0), rut(rut)
+RoutineRunAction::RoutineRunAction(RoutineParameterManager* rp, RoutineUtility* rut) :
+G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0), rp(rp), rut(rut)
 {
     // Register parameter to the parameter manager
     G4ParameterManager* parameterManager = G4ParameterManager::Instance();
@@ -177,38 +177,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         G4double voxelVolume = detectorConstruction->GetVoxelVolume();
         G4cout << "    voxel volume = " << voxelVolume / cm3 << G4endl;
 
-        G4String physicsName;
-
-        // RTTI
-        if(dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
-        {
-            auto userPhysics = dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
-            if(userPhysics)
-            {
-                G4cout << "    RoutineModularPhysics" << G4endl;
-                physicsName = userPhysics->name;
-            }
-            else
-            {
-                physicsName = "unamed";
-            }
-        }
-
-        if(dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
-        {
-            auto userPhysics = dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
-            if(userPhysics)
-            {
-                G4cout << "    RoutineUserPhysics" << G4endl;
-                physicsName = userPhysics->name;
-            }
-            else
-            {
-                physicsName = "unamed";
-            }
-        }
-
-        std::ofstream file("dose_" + physicsName + ".txt");
+        std::ofstream file("dose_" + rp->param->outputSuffix + ".txt");
         // store data in column major where x index changes fastest
         for(G4int k = 0; k < numVoxelZ; ++k)
         {
@@ -306,38 +275,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         G4double voxelVolume = detectorConstruction->GetVoxelVolume();
         G4cout << "    voxel volume = " << voxelVolume / cm3 << G4endl;
 
-        G4String physicsName;
-
-        // RTTI
-        if(dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
-        {
-            auto userPhysics = dynamic_cast<const RoutineModularPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
-            if(userPhysics)
-            {
-                G4cout << "    RoutineModularPhysics" << G4endl;
-                physicsName = userPhysics->name;
-            }
-            else
-            {
-                physicsName = "unamed";
-            }
-        }
-
-        if(dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList()))
-        {
-            auto userPhysics = dynamic_cast<const RoutineUserPhysics*>(G4RunManager::GetRunManager()->GetUserPhysicsList());
-            if(userPhysics)
-            {
-                G4cout << "    RoutineUserPhysics" << G4endl;
-                physicsName = userPhysics->name;
-            }
-            else
-            {
-                physicsName = "unamed";
-            }
-        }
-
-        std::ofstream file("kerma_" + physicsName + ".txt");
+        std::ofstream file("kerma_" + rp->param->outputSuffix + ".txt");
         // store data in column major where x index changes fastest
         for(G4int k = 0; k < numVoxelZ; ++k)
         {

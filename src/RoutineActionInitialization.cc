@@ -15,7 +15,7 @@ RoutineActionInitialization::~RoutineActionInitialization()
 //------------------------------------------------------------
 void RoutineActionInitialization::BuildForMaster() const
 {
-    SetUserAction(new RoutineRunAction(rut));
+    SetUserAction(new RoutineRunAction(rp, rut));
 }
 
 //------------------------------------------------------------
@@ -26,7 +26,7 @@ void RoutineActionInitialization::Build() const
     SetUserAction(new RoutinePrimaryGeneratorAction(rp));
 
     // user run action class
-    RoutineRunAction* runAction = new RoutineRunAction(rut);
+    RoutineRunAction* runAction = new RoutineRunAction(rp, rut);
     SetUserAction(runAction);
 
     // user event action class

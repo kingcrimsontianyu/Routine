@@ -18,6 +18,7 @@
 #include "G4UIExecutive.hh"
 #include "G4EventManager.hh"
 #include "G4Event.hh"
+#include "RoutineParameter.hh"
 #ifdef G4MULTITHREADED
     #include "G4MTRunManager.hh"
 #else
@@ -33,6 +34,7 @@ class RoutineRun;
 class RoutineUtility
 {
 public:
+    RoutineUtility(RoutineParameterManager* rp);
     RoutineUtility();
     ~RoutineUtility();
 
@@ -63,6 +65,7 @@ protected:
     G4bool bPrintParticleInfo;
     std::vector<G4String> supportedParticleList;
     std::vector<G4String> activeParticleList;
+    RoutineParameterManager* rp;
 };
 
 //------------------------------------------------------------
