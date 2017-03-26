@@ -59,8 +59,9 @@ public:
     G4String      sourceType;
     G4double      sourceEnergy;
     G4double      squareBeamWidth;
-    G4bool        usePDGEncoding;
-    G4int         PDGEncoding;
+    G4bool        isIonSource;
+    G4int         sourceIonZ;
+    G4int         sourceIonA;
     RoutineThreeVector<G4double> sourcePosition;
     RoutineThreeVector<G4double> sourceDirection;
     RoutineThreeVector<G4double> worldDimension;

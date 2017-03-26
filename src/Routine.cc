@@ -45,7 +45,17 @@ int main(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineActionInitialization(rp, rut));
 
+    runManager->Initialize();
+
+    // must be called after G4RunManager->Initialize();
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    if(rp->param->isIonSource)
+    {
+        UImanager->ApplyCommand("/gun/particle ion");
+        UImanager->ApplyCommand("/gun/ion " + std::to_string(rp->param->sourceIonZ) + " " + std::to_string(rp->param->sourceIonA));
+
+        // UImanager->ApplyCommand("/control/execute " + rp->param->macroFilePath);
+    }
     // UImanager->ApplyCommand("/process/setVerbose 2");
     // UImanager->ApplyCommand("/control/verbose 2");
     // UImanager->ApplyCommand("/run/particle/verbose 3");
@@ -54,7 +64,7 @@ int main(int argc,char** argv)
     // UImanager->ApplyCommand("/hits/verbose 2");
     // UImanager->ApplyCommand("/particle/verbose 2");
 
-    runManager->Initialize();
+
     runManager->BeamOn(rp->param->numHistory);
 
     #if defined USE_GUI

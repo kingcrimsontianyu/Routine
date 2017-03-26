@@ -61,7 +61,6 @@ void RoutineParameterManager::InitializeMap()
 {
     // predefined parameter map
     parameterMap["source-type"        ] = RoutineParameterValue("proton", ParamType::Single); // proton, gamma, e-, e+
-    parameterMap["use-pdg-encoding"   ] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["source-energy"      ] = RoutineParameterValue("200", ParamType::Single); // MeV
     parameterMap["source-position"    ] = RoutineParameterValue("0, 0, -10.1", ParamType::ThreeVector); // cm
     parameterMap["source-direction"   ] = RoutineParameterValue("0, 0, 1", ParamType::ThreeVector);
@@ -72,6 +71,8 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["num-thread"         ] = RoutineParameterValue("10", ParamType::Single);
     parameterMap["num-history"        ] = RoutineParameterValue("1e3", ParamType::Single);
     parameterMap["magnetic-field"     ] = RoutineParameterValue("0, 0, 0", ParamType::ThreeVector); // Tesla
+    parameterMap["source-ion-Z"       ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["source-ion-A"       ] = RoutineParameterValue("", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -158,17 +159,21 @@ void RoutineParameterManager::SetParameter()
 {
     param = new RoutineParameter;
 
-    // if use-pdg-encoding exists, parse source-type as the pdg encoding instead of particle name
-    param->usePDGEncoding = parameterMap["use-pdg-encoding"].flag;
-    if(param->usePDGEncoding)
+    // if both source-ion-Z and source-ion-A is specified by the user
+    if(!parameterMap["source-ion-Z"].single.empty() &&
+       !parameterMap["source-ion-A"].single.empty())
     {
         param->sourceType = "none";
-        param->PDGEncoding = std::stoi(parameterMap["source-type"].single);
+        param->isIonSource = true;
+        param->sourceIonZ = std::stoi(parameterMap["source-ion-Z"].single);
+        param->sourceIonA = std::stoi(parameterMap["source-ion-A"].single);
     }
     else
     {
         param->sourceType = parameterMap["source-type"].single;
-        param->PDGEncoding = -1000;
+        param->isIonSource = false;
+        param->sourceIonZ = 0;
+        param->sourceIonA = 0;
     }
 
 
