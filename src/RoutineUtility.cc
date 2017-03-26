@@ -127,7 +127,68 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
                 G4cout << ">>> inactive process detected." << G4endl;
             }
 
-            ref.push_back(proc->GetProcessName());
+            ProcessBlob temp;
+            temp.processName = proc->GetProcessName();
+
+            do
+            {
+                // em process
+                G4VEmProcess* vEmProcess = dynamic_cast<G4VEmProcess*>(proc);
+                if(vEmProcess)
+                {
+                    // geant4 10.02.p02 does not have NumberOfModels() yet.
+                    const G4VEmModel* model = vEmProcess->GetCurrentModel();
+                    temp.modelName.push_back(model->GetName());
+                    break;
+                }
+
+                // em process
+                G4VEnergyLossProcess* vEnergyLossProcess = dynamic_cast<G4VEnergyLossProcess*>(proc);
+                if(vEnergyLossProcess)
+                {
+                    G4int num = vEnergyLossProcess->NumberOfModels();
+                    for(G4int i = 0; i < num; ++i)
+                    {
+                        G4VEmModel* model = vEnergyLossProcess->GetModelByIndex(i);
+                        temp.modelName.push_back(model->GetName());
+                    }
+                    break;
+                }
+
+                // em process
+                G4VMultipleScattering* vMultipleScattering = dynamic_cast<G4VMultipleScattering*>(proc);
+                if(vMultipleScattering)
+                {
+                    // geant4 10.02.p02 does not have NumberOfModels() or GetCurrentModel() yet.
+                    G4VEmModel* model = vMultipleScattering->EmModel();
+                    temp.modelName.push_back(model->GetName());
+                    break;
+                }
+
+                // hadronic process
+                G4HadronicProcess* hadronicProcess = dynamic_cast<G4HadronicProcess*>(proc);
+                if(hadronicProcess)
+                {
+                    std::vector<G4HadronicInteraction*>& hardList = hadronicProcess->GetHadronicInteractionList();
+                    G4int num = hardList.size();
+                    for(G4int i = 0; i < num; ++i)
+                    {
+                        G4HadronicInteraction* model = hardList[i];
+                        temp.modelName.push_back(model->GetModelName());
+                    }
+                    break;
+                }
+
+
+                // other process
+                break;
+            }
+            while(true);
+
+
+
+
+            ref.push_back(temp);
         }
     }
 }
@@ -236,7 +297,18 @@ void RoutineUtility::SaveCustomScoreToFile()
             file << "    " << std::setw(30) << std::left << it->first << G4endl;
             for(G4int j = 0; j < it->second.processList.size(); ++j)
             {
-                file << "        " << std::setw(30) << std::left << it->second.processList[j] << G4endl;
+                file << "        " << std::setw(30) << std::left << it->second.processList[j].processName << ": ";
+
+                for(G4int m = 0; m < it->second.processList[j].modelName.size(); ++m)
+                {
+                    file << it->second.processList[j].modelName[m];
+                    if(m != it->second.processList[j].modelName.size() - 1)
+                    {
+                        file << ", ";
+                    }
+                }
+
+                file << G4endl;
             }
         }
 
