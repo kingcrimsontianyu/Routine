@@ -25,6 +25,10 @@
     #include "G4RunManager.hh"
 #endif
 #include "RoutineDetectorConstruction.hh"
+#include "G4VEmProcess.hh"
+#include "G4VEnergyLossProcess.hh"
+#include "G4VMultipleScattering.hh"
+#include "G4HadronicProcess.hh"
 
 class G4HistManager;
 class RoutineRun;
@@ -58,7 +62,10 @@ public:
 
     void PrintVisualInfo();
 
+    // called by G4UserStackingAction::ClassifyNewTrack()
     void AccumulateCount(const G4Track* track);
+
+    // called by G4UserSteppingAction::UserSteppingAction()
     void AccumulateEnergy(const G4Step* step);
     void SaveCustomScoreToFile();
 protected:
@@ -70,6 +77,12 @@ protected:
 
 //------------------------------------------------------------
 //------------------------------------------------------------
+struct ProcessBlob
+{
+    G4String processName;
+    std::vector<G4String> modelName;
+};
+
 class RoutineCustomScore
 {
 public:
@@ -78,7 +91,7 @@ public:
     ~RoutineCustomScore();
     G4double energy;
     G4double count;
-    std::vector<G4String> processList;
+    std::vector<ProcessBlob> processList;
 
     RoutineCustomScore& operator += (const RoutineCustomScore& rhs);
     RoutineCustomScore& operator = (const RoutineCustomScore& rhs);

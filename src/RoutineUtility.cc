@@ -271,6 +271,7 @@ void RoutineUtility::SaveCustomScoreToFile()
         file << "--> " << std::setw(30) << std::left << "particle"
              << std::setw(25) << "count per source"
              << std::setw(25) << "dose per source"
+             << std::setw(25) << "percent [%]"
              << std::setw(25) << "PDG encoding"
              << G4endl;
 
@@ -278,13 +279,19 @@ void RoutineUtility::SaveCustomScoreToFile()
         G4double sum = 0.0;
         for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
         {
+            G4double dose = it->second.energy / mass / (MeV / g) / numHistory;
+            sum += dose;
+        }
+
+        for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
+        {
             G4ParticleDefinition* theParticle = theParticleTable->FindParticle(it->first);
             G4int PDGEncoding = theParticle->GetPDGEncoding();
             G4double dose = it->second.energy / mass / (MeV / g) / numHistory;
-            sum += dose;
             file << "    " << std::setw(30) << std::left << it->first
                  << std::setw(25) << std::setprecision(10) << std::scientific << it->second.count / numHistory
                  << std::setw(25) << std::setprecision(10) << std::scientific << dose
+                 << std::setw(25) << std::setprecision(5) << std::fixed << dose / sum * 100.0
                  << std::setw(25) << PDGEncoding
                  << G4endl;
         }

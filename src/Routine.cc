@@ -37,9 +37,9 @@ int main(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
 
-    G4VUserPhysicsList* physicsList = new QBBC;
+    // G4VUserPhysicsList* physicsList = new QBBC;
     // G4VUserPhysicsList* physicsList = new RoutineQBBC;
-    // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
+    G4VUserPhysicsList* physicsList = new RoutineMinimalist;
     // G4VUserPhysicsList* physicsList = new RoutineTopas;
     runManager->SetUserInitialization(physicsList);
 
@@ -77,7 +77,10 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/control/execute vis.mac");
     #endif
 
-    // UImanager->ApplyCommand("/run/particle/storePhysicsTable xs_data");
+    if(rp->param->storePhysicsTable)
+    {
+        UImanager->ApplyCommand("/run/particle/storePhysicsTable " + rp->param->physicsTableDir);
+    }
 
     #if defined USE_GUI
     ui->SessionStart();

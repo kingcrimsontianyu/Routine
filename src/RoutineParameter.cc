@@ -74,6 +74,8 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["source-ion-Z"       ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["source-ion-A"       ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["output-suffix"      ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["store-physics-table"] = RoutineParameterValue("false", ParamType::Boolean);
+    parameterMap["physics-table-dir"  ] = RoutineParameterValue("xs_data", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -209,6 +211,9 @@ void RoutineParameterManager::SetParameter()
     param->magneticField.z = std::stof(parameterMap["magnetic-field"].z) * tesla;
 
     param->outputSuffix = parameterMap["output-suffix"].single;
+
+    param->storePhysicsTable = parameterMap["store-physics-table"].flag;
+    param->physicsTableDir = parameterMap["physics-table-dir"].single;
 }
 
 //------------------------------------------------------------

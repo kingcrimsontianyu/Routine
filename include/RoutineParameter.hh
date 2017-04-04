@@ -71,6 +71,8 @@ public:
     G4int numHistory;
     RoutineThreeVector<G4double> magneticField;
     G4String      outputSuffix;
+    G4bool storePhysicsTable;
+    G4String      physicsTableDir;
 };
 
 //------------------------------------------------------------
