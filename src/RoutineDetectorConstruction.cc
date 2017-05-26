@@ -26,21 +26,56 @@ void RoutineDetectorConstruction::ImportFromFile()
 
     G4NistManager* nist = G4NistManager::Instance();
 
-    // // dry air
-    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
-    // ZList.push_back(6 );  weightFractionList.push_back(0.000124);
-    // ZList.push_back(7 );  weightFractionList.push_back(0.755267);
-    // ZList.push_back(8 );  weightFractionList.push_back(0.231781);
-    // ZList.push_back(18);  weightFractionList.push_back(0.012827);
-    // density = 1.20479e-03 * g / cm3;
-    // G4Material* air = new G4Material("air", density, ZList.size());
-    // for(int i = 0; i < ZList.size(); ++i)
-    // {
-        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        // air->AddElement(el, weightFractionList[i]);
-    // }
-    // ZList.clear(); weightFractionList.clear();
-    // fMaterialMap.insert(std::pair<G4String, G4Material*>("air", air));
+    // dry air
+    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
+    G4double air_1 = 0.000124;
+    G4double air_2 = 0.755267;
+    G4double air_3 = 0.231781;
+    G4double air_4 = 0.012827;
+    G4double air_sum = air_1 + air_2 + air_3 + air_4;
+    air_1 /= air_sum;
+    air_2 /= air_sum;
+    air_3 /= air_sum;
+    air_4 /= air_sum;
+    ZList.push_back(6 );  weightFractionList.push_back(air_1);
+    ZList.push_back(7 );  weightFractionList.push_back(air_2);
+    ZList.push_back(8 );  weightFractionList.push_back(air_3);
+    ZList.push_back(18);  weightFractionList.push_back(air_4);
+    density = 1.20479e-03 * g / cm3;
+    G4Material* air = new G4Material("air", density, ZList.size());
+    for(int i = 0; i < ZList.size(); ++i)
+    {
+        G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        air->AddElement(el, weightFractionList[i]);
+    }
+    ZList.clear(); weightFractionList.clear();
+    fMaterialMap.insert(std::pair<G4String, G4Material*>("air", air));
+
+    // water
+    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
+    G4double water_1 = 0.111894;
+    G4double water_2 = 0.888106;
+    G4double water_sum = water_1 + water_2;
+    water_1 /= water_sum;
+    water_2 /= water_sum;
+    ZList.push_back(1 );  weightFractionList.push_back(water_1);
+    ZList.push_back(8 );  weightFractionList.push_back(water_2);
+    density = 1.0 * g / cm3;
+    G4Material* water = new G4Material("water", density, ZList.size());
+    for(int i = 0; i < ZList.size(); ++i)
+    {
+        G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        water->AddElement(el, weightFractionList[i]);
+    }
+    ZList.clear(); weightFractionList.clear();
+    fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
+
+    // get all atomic mass
+    for(G4int Z = 1; Z < maxNumElements; ++Z)
+    {
+        G4cout << "Z = " << std::setw(10) << Z
+               << "A = " << std::setprecision(20) << nist->GetAtomicMassAmu(Z) << G4endl;
+    }
 
     // // tissue, soft (icrp)
     // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=261
@@ -89,20 +124,6 @@ void RoutineDetectorConstruction::ImportFromFile()
     // ZList.clear(); weightFractionList.clear();
     // fMaterialMap.insert(std::pair<G4String, G4Material*>("bone", bone));
 
-    // water
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
-    ZList.push_back(1 );  weightFractionList.push_back(0.111894);
-    ZList.push_back(8 );  weightFractionList.push_back(0.888106);
-    density = 1.0 * g / cm3;
-    G4Material* water = new G4Material("water", density, ZList.size());
-    for(int i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        water->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
-
     // // lead
     // // http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=082
     // ZList.push_back(82);  weightFractionList.push_back(1);
@@ -116,9 +137,9 @@ void RoutineDetectorConstruction::ImportFromFile()
     // ZList.clear(); weightFractionList.clear();
     // fMaterialMap.insert(std::pair<G4String, G4Material*>("lead", lead));
 
-    // vacuum
-    G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
+    // // vacuum
+    // G4Material* vacuum = nist->FindOrBuildMaterial("G4_Galactic");
+    // fMaterialMap.insert(std::pair<G4String, G4Material*>("vacuum", vacuum));
 
 
     fPhantomDimension.set(rp->param->phantomDimension.x,
@@ -176,7 +197,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                   rp->param->worldDimension.z / 2.0);     // size
 
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,  // solid
-                                                      fMaterialMap["vacuum"],   // material
+                                                      fMaterialMap["air"],   // material
                                                       "L_World");    // name
 
     G4VPhysicalVolume* physWorld = new G4PVPlacement(0,                // no rotation
@@ -195,7 +216,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                     fPhantomDimension.z() / 2.0);     // size
 
     fLogicPhantom = new G4LogicalVolume(solidphantom,  // solid
-                                        fMaterialMap["vacuum"],   // material
+                                        fMaterialMap["air"],   // material
                                         "L_Phantom");    // name
 
     G4VPhysicalVolume* physphantom = new G4PVPlacement(0,                  // no rotation
@@ -214,7 +235,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                   fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicZ = new G4LogicalVolume(solidZ,  // solid
-                                                  fMaterialMap["vacuum"],   // material
+                                                  fMaterialMap["air"],   // material
                                                   "L_RepZ");    // name
 
     G4PVReplica* physZ = new G4PVReplica("P_RepZ",
@@ -232,7 +253,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                  fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicY = new G4LogicalVolume(solidY,  // solid
-                                                  fMaterialMap["vacuum"],   // material
+                                                  fMaterialMap["air"],   // material
                                                   "L_RepY");    // name
 
     G4PVReplica* physY = new G4PVReplica("P_RepY",
@@ -250,7 +271,7 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
                                  fVoxelDimension.z() / 2.0);     // size
 
     G4LogicalVolume* logicX = new G4LogicalVolume(solidX,  // solid
-                                                  fMaterialMap["vacuum"],   // material
+                                                  fMaterialMap["air"],   // material
                                                   "L_Voxel");    // name
 
     fLogicVolumeVoxel = logicX;

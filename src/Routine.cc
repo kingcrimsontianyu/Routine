@@ -11,8 +11,8 @@ int main(int argc,char** argv)
     RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
 
     // very verbose in order to glean useful cross-section info
-    // G4EmParameters* empar = G4EmParameters::Instance();
-    // empar->SetVerbose(3);
+    G4EmParameters* empar = G4EmParameters::Instance();
+    empar->SetVerbose(3);
 
     #if defined USE_GUI
     G4UIExecutive* ui = 0;
