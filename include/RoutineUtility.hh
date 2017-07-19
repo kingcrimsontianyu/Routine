@@ -83,6 +83,8 @@ struct ProcessBlob
     std::vector<G4String> modelName;
 };
 
+//------------------------------------------------------------
+//------------------------------------------------------------
 class RoutineCustomScore
 {
 public:
@@ -92,6 +94,7 @@ public:
     G4double energy;
     G4double count;
     std::vector<ProcessBlob> processList;
+    std::vector<ProcessBlob> processForEnergyList;
 
     RoutineCustomScore& operator += (const RoutineCustomScore& rhs);
     RoutineCustomScore& operator = (const RoutineCustomScore& rhs);

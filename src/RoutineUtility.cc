@@ -291,7 +291,7 @@ void RoutineUtility::SaveCustomScoreToFile()
             file << "    " << std::setw(30) << std::left << it->first
                  << std::setw(25) << std::setprecision(10) << std::scientific << it->second.count / numHistory
                  << std::setw(25) << std::setprecision(10) << std::scientific << dose
-                 << std::setw(25) << std::setprecision(5) << std::fixed << dose / sum * 100.0
+                 << std::setw(25) << std::setprecision(5) << std::scientific << dose / sum * 100.0
                  << std::setw(25) << PDGEncoding
                  << G4endl;
         }
