@@ -86,58 +86,26 @@ void RoutineParameterManager::ParseCommandLine(int argc, char** argv)
 {
     if(argc > 1)
     {
-        // concatenate all parameters
-        G4String rawParam;
         for (int i = 1; i < argc; ++i)
         {
-            rawParam += argv[i];
-        }
-
-        // split the string by "--" delimiter
-        std::vector<G4String> parsedParam;
-        G4String delimiter = "--";
-        size_t found = rawParam.find(delimiter);
-        if (found != std::string::npos)
-        {
-            rawParam.erase(found, delimiter.length());
-            do
-            {
-                size_t found = rawParam.find(delimiter);
-                G4String extract;
-
-                if (found != std::string::npos)
-                {
-                    extract = rawParam.substr(0, found);
-                    parsedParam.push_back(extract);
-                }
-                else
-                {
-                    extract = rawParam;
-                    parsedParam.push_back(extract);
-                    break;
-                }
-
-                rawParam.erase(0, extract.length() + delimiter.length());
-            }
-            while(true);
-        }
-
-        // split each element by "=" delimiter if it exists
-        for(G4int i = 0; i < parsedParam.size(); ++i)
-        {
             G4String delimiter = "=";
-            size_t found = parsedParam[i].find(delimiter);
+            G4String temp(argv[i]);
+            size_t found = temp.find(delimiter);
             G4String cmdKey, cmdValue;
             if (found != std::string::npos)
             {
-                cmdKey = parsedParam[i].substr(0, found);
-                cmdValue = parsedParam[i].substr(found + 1);
+                cmdKey = temp.substr(0, found);
+                cmdValue = temp.substr(found + 1);
             }
             else // if "=" does not exist, the parameter is Boolean type
             {
-                cmdKey = parsedParam[i].substr(0, found);
+                cmdKey = temp.substr(0, found);
                 cmdValue = "true";
             }
+
+            G4String prefixer = "--";
+            G4cout << "--> " << cmdKey << " " << cmdValue << " " << G4endl;
+            cmdKey.erase(cmdKey.find(prefixer), prefixer.length());
 
             // check if cmdKey exists in the preset map
             auto it = parameterMap.find(cmdKey);

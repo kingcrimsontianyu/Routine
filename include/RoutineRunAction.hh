@@ -2,7 +2,7 @@
 #define ROUTINE_RUNACTION_H 1
 
 #include "G4UserRunAction.hh"
-#include "G4Parameter.hh"
+#include "G4Accumulable.hh"
 #include "globals.hh"
 #include "RoutinePrimaryGeneratorAction.hh"
 #include "RoutineDetectorConstruction.hh"
@@ -11,7 +11,7 @@
 
 #include "G4RunManager.hh"
 #include "G4Run.hh"
-#include "G4ParameterManager.hh"
+#include "G4AccumulableManager.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
 #include "G4UnitsTable.hh"
@@ -39,8 +39,8 @@ public:
 
     void AddEdep (G4double edep);
 private:
-    G4Parameter<G4double> fEdep;
-    G4Parameter<G4double> fEdep2;
+    G4Accumulable<G4double> fEdep;
+    G4Accumulable<G4double> fEdep2;
     RoutineParameterManager* rp;
     RoutineUtility* rut;
 };

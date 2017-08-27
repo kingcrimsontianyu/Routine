@@ -6,9 +6,9 @@ RoutineRunAction::RoutineRunAction(RoutineParameterManager* rp, RoutineUtility* 
 G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0), rp(rp), rut(rut)
 {
     // Register parameter to the parameter manager
-    G4ParameterManager* parameterManager = G4ParameterManager::Instance();
-    parameterManager->RegisterParameter(fEdep);
-    parameterManager->RegisterParameter(fEdep2);
+    G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
+    parameterManager->RegisterAccumulable(fEdep);
+    parameterManager->RegisterAccumulable(fEdep2);
 }
 
 //------------------------------------------------------------
@@ -31,7 +31,7 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
     // reset parameters to their initial values
-    G4ParameterManager* parameterManager = G4ParameterManager::Instance();
+    G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
     parameterManager->Reset();
 
     if(IsMaster())
@@ -49,7 +49,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
     if (numHistory == 0) return;
     // Merge parameters
-    G4ParameterManager* parameterManager = G4ParameterManager::Instance();
+    G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
     parameterManager->Merge();
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -145,10 +145,10 @@ void RoutineMinimalist::ConstructProcess()
 
     G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
 
-    theParticleIterator->reset();
-    while((*theParticleIterator)())
+    GetParticleIterator()->reset();
+    while((*GetParticleIterator())())
     {
-        G4ParticleDefinition* particle = theParticleIterator->value();
+        G4ParticleDefinition* particle = GetParticleIterator()->value();
         G4String particleName = particle->GetParticleName();
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
