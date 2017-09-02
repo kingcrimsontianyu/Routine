@@ -1,7 +1,9 @@
 #!/bin/bash
 
+BIN=../routine-ir
+
 # proton
-# ./routine \
+# ${BIN} \
 # --source-type=proton \
 # --source-energy=200 \
 # --num-history=1e2 \
@@ -14,7 +16,7 @@
 # --physics-table-dir=xs_data
 
 # C-12
-# ./routine \
+# ${BIN} \
 # --source-ion-Z=6 \
 # --source-ion-A=12 \
 # --source-energy=2400 \
@@ -26,7 +28,7 @@
 # --output-suffix=C12_2400MeV
 
 # alpha
-# ./routine \
+# ${BIN} \
 # --source-type=alpha \
 # --source-energy=800 \
 # --num-history=1e4 \
@@ -37,7 +39,7 @@
 # --output-suffix=alpha_800MeV
 
 # positron
-# ./routine \
+# ${BIN} \
 # --source-type=e+ \
 # --source-energy=20 \
 # --num-history=1e7 \
@@ -48,7 +50,7 @@
 # --magnetic-field=0,1.5,0
 
 # electron
-# ./routine \
+# ${BIN} \
 # --source-type=e- \
 # --source-energy=20 \
 # --num-history=1e7 \
@@ -59,15 +61,15 @@
 # --magnetic-field=0,1.5,0
 
 # photon
-./routine \
+${BIN} \
 --source-type=gamma \
 --source-energy=20 \
 --num-history=1e6 \
 --num-thread=28 \
---phantom-dim=40.0, 40.0, 40.0 \
---num-voxel=100, 100, 100 \
---source-position=0, 0, -20.01 \
---magnetic-field=0, 0, 0
+--phantom-dim=40.0,40.0,40.0 \
+--num-voxel=100,100,100 \
+--source-position=0,0,-20.01 \
+--magnetic-field=0,0,0
 
 
 

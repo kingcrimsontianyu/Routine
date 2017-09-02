@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(Routine)
+project(RoutineIR)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -31,9 +31,9 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #----------------------------------------------------------------------------
-add_executable(routine ${sources} ${headers})
-target_link_libraries(routine ${Geant4_LIBRARIES})
-target_compile_options(routine PUBLIC -fdiagnostics-color)
+add_executable(routine-ir ${sources} ${headers})
+target_link_libraries(routine-ir ${Geant4_LIBRARIES})
+target_compile_options(routine-ir PUBLIC -fdiagnostics-color)
 
 #----------------------------------------------------------------------------
 # add scripts
