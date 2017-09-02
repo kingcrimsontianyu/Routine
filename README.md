@@ -1,8 +1,8 @@
 # RoutineIR
 
-Tianyu Liu
-Li Mao
-kingcrimsontianyu@gmail.com
+Tianyu Liu<br>
+Li Mao<br>
+kingcrimsontianyu@gmail.com<br>
 2017
 
 ------
