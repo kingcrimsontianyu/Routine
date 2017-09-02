@@ -105,7 +105,7 @@ void RoutineTopas::SetCuts()
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineMinimalist::RoutineMinimalist(G4int ver) : RoutineUserPhysics()
+RoutineMinimalist::RoutineMinimalist(G4int) : RoutineUserPhysics()
 {
     name = "minimalist";
 }

@@ -28,42 +28,7 @@
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-class RoutineNestedParameterisation : public G4VNestedParameterisation
-{
-public:
-    RoutineNestedParameterisation(const G4ThreeVector& voxelSize,
-                                  const G4int xNumVoxel,
-                                  const G4int yNumVoxel,
-                                  const G4int zNumVoxel,
-                                  std::map<G4String, G4Material*>* materialMap,
-                                  std::vector<G4Material*>* materialList,
-                                  std::vector<G4Material*>* phantomMaterialList);
-    ~RoutineNestedParameterisation();
-
-    virtual G4Material* ComputeMaterial(G4VPhysicalVolume* currentPhysicalVol, const G4int xVoxelIdx, const G4VTouchable* parentTouch);
-    virtual void ComputeTransformation(const G4int xVoxelIdx, G4VPhysicalVolume* currentPhysicalVol) const;
-    virtual void ComputeDimensions(G4Box& box, const G4int xVoxelIdx, const G4VPhysicalVolume* currentPhysicalVol) const;
-    virtual G4int GetNumberOfMaterials() const;
-    virtual G4Material* GetMaterial(G4int idx) const;
-    G4Material* GetPhantomMaterial(G4int globalIdx) const;
-private:
-
-    G4double fHalfXDimVoxel;
-    G4double fHalfYDimVoxel;
-    G4double fHalfZDimVoxel;
-    G4int fXNumVoxel;
-    G4int fYNumVoxel;
-    G4int fZNumVoxel;
-    G4int fTotalNumVoxel;
-
-    std::vector<G4double> fXTranslationList;
-    std::map<G4String, G4Material*>* fMaterialMap;
-    std::vector<G4Material*>* fPhantomMaterialList;
-    std::vector<G4Material*>* fMaterialList;
-};
+class RoutineNestedParameterisation;
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -80,7 +45,7 @@ public:
     const G4ThreeVector& GetPhantomDimension() const;
     G4double GetVoxelVolume() const;
     void SetNumVoxel(G4int nx, G4int ny, G4int nz);
-    const void GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const;
+    void GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const;
 
     G4LogicalVolume* GetLogicPhantom() const;
 
@@ -89,6 +54,7 @@ public:
     RoutineNestedParameterisation* GetParameterisation() const;
 
     void ImportFromFile();
+    G4Material* GetPhantomMaterial(G4int globalIdx) const;
     G4double GetPhantomMass() const;
 protected:
     G4LogicalVolume* fLogicVolumeVoxel;

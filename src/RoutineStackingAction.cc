@@ -2,7 +2,7 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineStackingAction::RoutineStackingAction(RoutineUtility* rut) : G4UserStackingAction(), rut(rut)
+RoutineStackingAction::RoutineStackingAction(RoutineUtility* rut_ext) : G4UserStackingAction(), rut(rut_ext)
 {
 }
 

@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineParameterValue::RoutineParameterValue(const G4String& rawString, ParamType valueType) :
-rawString(rawString), valueType(valueType), single(""), x(""), y(""), z(""), flag(false)
+RoutineParameterValue::RoutineParameterValue(const G4String& rawString_ext, ParamType valueType_ext) :
+rawString(rawString_ext), valueType(valueType_ext), single(""), x(""), y(""), z(""), flag(false)
 {
     // todo: add validity check
 

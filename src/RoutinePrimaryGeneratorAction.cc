@@ -12,8 +12,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePrimaryGeneratorAction::RoutinePrimaryGeneratorAction(RoutineParameterManager* rp)
-: G4VUserPrimaryGeneratorAction(), rp(rp), fParticleGun(0)
+RoutinePrimaryGeneratorAction::RoutinePrimaryGeneratorAction(RoutineParameterManager* rp_ext)
+: G4VUserPrimaryGeneratorAction(), rp(rp_ext), fParticleGun(0)
 {
     G4int n_particle = 1;
     fParticleGun  = new G4ParticleGun(n_particle);

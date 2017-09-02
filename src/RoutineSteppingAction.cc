@@ -12,8 +12,8 @@
 // because per-step energy is accumulated by event action function
 // AddEdep()
 //------------------------------------------------------------
-RoutineSteppingAction::RoutineSteppingAction(RoutineEventAction* eventAction, RoutineUtility* rut) :
-G4UserSteppingAction(), fEventAction(eventAction), fScoringVolume(0), rut(rut)
+RoutineSteppingAction::RoutineSteppingAction(RoutineEventAction* eventAction, RoutineUtility* rut_ext) :
+G4UserSteppingAction(), fEventAction(eventAction), fScoringVolume(0), rut(rut_ext)
 {}
 
 //------------------------------------------------------------

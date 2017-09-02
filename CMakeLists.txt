@@ -35,6 +35,11 @@ add_executable(routine ${sources} ${headers})
 target_link_libraries(routine ${Geant4_LIBRARIES})
 target_compile_options(routine PUBLIC -fdiagnostics-color)
 
+#----------------------------------------------------------------------------
+# add scripts
+#----------------------------------------------------------------------------
+# copy at build time
+file(COPY script DESTINATION ${PROJECT_BINARY_DIR})
 
 
 

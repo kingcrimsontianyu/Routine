@@ -3,9 +3,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineUtility::RoutineUtility(RoutineParameterManager* rp) : bPrintParticleInfo(false), rp(rp)
+RoutineUtility::RoutineUtility(RoutineParameterManager* rp_ext) : bPrintParticleInfo(false), rp(rp_ext)
 {
-
 }
 
 //------------------------------------------------------------
@@ -111,8 +110,8 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
     }
     else // if the particle appears the first time
     {
-        RoutineCustomScore temp(1.0, 0.0);
-        localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, temp));
+        RoutineCustomScore rsc(1.0, 0.0);
+        localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, rsc));
 
         auto& ref = localRun->GetCSMap()[particleName].processList;
         G4ProcessManager* pm = pd->GetProcessManager();
@@ -147,9 +146,9 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
                 if(vEnergyLossProcess)
                 {
                     G4int num = vEnergyLossProcess->NumberOfModels();
-                    for(G4int i = 0; i < num; ++i)
+                    for(G4int ii = 0; ii < num; ++ii)
                     {
-                        G4VEmModel* model = vEnergyLossProcess->GetModelByIndex(i);
+                        G4VEmModel* model = vEnergyLossProcess->GetModelByIndex(ii);
                         temp.modelName.push_back(model->GetName());
                     }
                     break;
@@ -171,9 +170,9 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
                 {
                     std::vector<G4HadronicInteraction*>& hardList = hadronicProcess->GetHadronicInteractionList();
                     G4int num = hardList.size();
-                    for(G4int i = 0; i < num; ++i)
+                    for(G4int ii = 0; ii< num; ++ii)
                     {
-                        G4HadronicInteraction* model = hardList[i];
+                        G4HadronicInteraction* model = hardList[ii];
                         temp.modelName.push_back(model->GetModelName());
                     }
                     break;
@@ -302,14 +301,14 @@ void RoutineUtility::SaveCustomScoreToFile()
         for(auto it = mergedRun->GetCSMap().begin(); it != mergedRun->GetCSMap().end(); ++it)
         {
             file << "    " << std::setw(30) << std::left << it->first << G4endl;
-            for(G4int j = 0; j < it->second.processList.size(); ++j)
+            for(size_t j = 0; j < it->second.processList.size(); ++j)
             {
                 file << "        " << std::setw(30) << std::left << it->second.processList[j].processName << ": ";
 
-                for(G4int m = 0; m < it->second.processList[j].modelName.size(); ++m)
+                for(size_t mi = 0; mi < it->second.processList[j].modelName.size(); ++mi)
                 {
-                    file << it->second.processList[j].modelName[m];
-                    if(m != it->second.processList[j].modelName.size() - 1)
+                    file << it->second.processList[j].modelName[mi];
+                    if(mi != it->second.processList[j].modelName.size() - 1)
                     {
                         file << ", ";
                     }
@@ -329,10 +328,10 @@ void RoutineUtility::SaveCustomScoreToFile()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineCustomScore::RoutineCustomScore(G4double count, G4double energy)
+RoutineCustomScore::RoutineCustomScore(G4double count_ext, G4double energy_ext)
 {
-    this->energy = energy;
-    this->count  = count;
+    energy = energy_ext;
+    count  = count_ext;
 }
 
 //------------------------------------------------------------
@@ -370,16 +369,16 @@ RoutineCustomScore& RoutineCustomScore::operator = (const RoutineCustomScore& rh
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineCustomScore::AccumulateEnergy(const G4double energy)
+void RoutineCustomScore::AccumulateEnergy(const G4double energy_ext)
 {
-    this->energy += energy;
+    energy += energy_ext;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineCustomScore::AccumulateCount(const G4double count)
+void RoutineCustomScore::AccumulateCount(const G4double count_ext)
 {
-    this->count += count;
+    count += count_ext;
 }
 
 

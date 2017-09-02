@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineActionInitialization::RoutineActionInitialization(RoutineParameterManager* rp, RoutineUtility* rut) :
-G4VUserActionInitialization(), rp(rp), rut(rut)
+RoutineActionInitialization::RoutineActionInitialization(RoutineParameterManager* rp_ext, RoutineUtility* rut_ext) :
+G4VUserActionInitialization(), rp(rp_ext), rut(rut_ext)
 {}
 
 //------------------------------------------------------------
