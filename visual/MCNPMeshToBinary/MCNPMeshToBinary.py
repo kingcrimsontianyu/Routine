@@ -68,13 +68,14 @@ class Manager:
         # save to regular binary format
         self.tallyList.tofile(self.output_tally_path, sep="", format="%.16f")
         self.rsdList.tofile(self.output_rsd_path, sep="", format="%.16f")
+        print("    The tally and rsd are stored in binary format as an array of 8-byte floating points.")
 
 #------------------------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
-    m = Manager("/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/mctal_test.inp",
-                "/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/tally.bin",
-                "/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/rsd.bin",
+    m = Manager("mctal_test.inp",
+                "tally.bin",
+                "rsd.bin",
                 36,
                 12,
                 10)

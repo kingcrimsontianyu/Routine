@@ -30,8 +30,8 @@ int main(int argc,char** argv)
     RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
 
     // very verbose in order to glean useful cross-section info
-    G4EmParameters* empar = G4EmParameters::Instance();
-    empar->SetVerbose(3);
+    // G4EmParameters* empar = G4EmParameters::Instance();
+    // empar->SetVerbose(3);
 
     #if defined USE_GUI
     G4UIExecutive* ui = 0;
@@ -56,8 +56,8 @@ int main(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
 
-    // G4VUserPhysicsList* physicsList = new QBBC;
-    G4VUserPhysicsList* physicsList = new RoutineQBBC;
+    G4VUserPhysicsList* physicsList = new QBBC;
+    // G4VUserPhysicsList* physicsList = new RoutineQBBC;
     // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
     // G4VUserPhysicsList* physicsList = new RoutineTopas;
     runManager->SetUserInitialization(physicsList);
