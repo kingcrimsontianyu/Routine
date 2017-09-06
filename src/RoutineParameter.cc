@@ -60,22 +60,25 @@ RoutineParameterManager::~RoutineParameterManager()
 void RoutineParameterManager::InitializeMap()
 {
     // predefined parameter map
-    parameterMap["source-type"        ] = RoutineParameterValue("proton", ParamType::Single); // proton, gamma, e-, e+
-    parameterMap["source-energy"      ] = RoutineParameterValue("200", ParamType::Single); // MeV
-    parameterMap["source-position"    ] = RoutineParameterValue("0, 0, -10.1", ParamType::ThreeVector); // cm
-    parameterMap["source-direction"   ] = RoutineParameterValue("0, 0, 1", ParamType::ThreeVector);
-    parameterMap["square-beam-width"  ] = RoutineParameterValue("1", ParamType::Single); // cm
-    parameterMap["world-dim"          ] = RoutineParameterValue("80, 80, 80", ParamType::ThreeVector); // cm
-    parameterMap["phantom-dim"        ] = RoutineParameterValue("20, 20, 20", ParamType::ThreeVector); // cm
-    parameterMap["num-voxel"          ] = RoutineParameterValue("1, 1, 100", ParamType::ThreeVector);
-    parameterMap["num-thread"         ] = RoutineParameterValue("10", ParamType::Single);
-    parameterMap["num-history"        ] = RoutineParameterValue("1e3", ParamType::Single);
-    parameterMap["magnetic-field"     ] = RoutineParameterValue("0, 0, 0", ParamType::ThreeVector); // Tesla
-    parameterMap["source-ion-Z"       ] = RoutineParameterValue("", ParamType::Single);
-    parameterMap["source-ion-A"       ] = RoutineParameterValue("", ParamType::Single);
-    parameterMap["output-suffix"      ] = RoutineParameterValue("", ParamType::Single);
-    parameterMap["store-physics-table"] = RoutineParameterValue("false", ParamType::Boolean);
-    parameterMap["physics-table-dir"  ] = RoutineParameterValue("xs_data", ParamType::Single);
+    parameterMap["source-type"              ] = RoutineParameterValue("proton", ParamType::Single); // proton, gamma, e-, e+
+    parameterMap["source-energy"            ] = RoutineParameterValue("200", ParamType::Single); // MeV
+    parameterMap["source-position"          ] = RoutineParameterValue("0, 0, -10.1", ParamType::ThreeVector); // cm
+    parameterMap["source-direction"         ] = RoutineParameterValue("0, 0, 1", ParamType::ThreeVector);
+    parameterMap["square-beam-width"        ] = RoutineParameterValue("1", ParamType::Single); // cm
+    parameterMap["world-dim"                ] = RoutineParameterValue("80, 80, 80", ParamType::ThreeVector); // cm
+    parameterMap["phantom-dim"              ] = RoutineParameterValue("20, 20, 20", ParamType::ThreeVector); // cm
+    parameterMap["num-voxel"                ] = RoutineParameterValue("1, 1, 100", ParamType::ThreeVector);
+    parameterMap["num-thread"               ] = RoutineParameterValue("10", ParamType::Single);
+    parameterMap["num-history"              ] = RoutineParameterValue("1e3", ParamType::Single);
+    parameterMap["magnetic-field"           ] = RoutineParameterValue("0, 0, 0", ParamType::ThreeVector); // Tesla
+    parameterMap["source-ion-Z"             ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["source-ion-A"             ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["output-suffix"            ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["store-physics-table"      ] = RoutineParameterValue("false", ParamType::Boolean);
+    parameterMap["physics-table-dir"        ] = RoutineParameterValue("xs_data", ParamType::Single);
+    parameterMap["phantom-path"             ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["material-path"            ] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["universe-to-material-path"] = RoutineParameterValue("", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -182,6 +185,10 @@ void RoutineParameterManager::SetParameter()
 
     param->storePhysicsTable = parameterMap["store-physics-table"].flag;
     param->physicsTableDir = parameterMap["physics-table-dir"].single;
+
+    param->phantomPath = parameterMap["phantom-path"].single;
+    param->materialPath = parameterMap["material-path"].single;
+    param->universeToMaterialPath = parameterMap["universe-to-material-path"].single;
 }
 
 //------------------------------------------------------------

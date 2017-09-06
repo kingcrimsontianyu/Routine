@@ -17,12 +17,40 @@
 #include "Randomize.hh"
 #include "RoutinePhysics.hh"
 #include "G4Timer.hh"
+#include "RoutineImportPhantom.hh"
 
 // #define USE_GUI
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-int main(int argc,char** argv)
+int main(int argc, char** argv)
+{
+    // Impl(argc, argv);
+
+    Test(argc, argv);
+
+    return 0;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void Test(int argc,char** argv)
+{
+    RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
+    RoutineMCNPImporter* imp = new RoutineMCNPImporter();
+
+    imp->SetMaterialPath(rp->param->materialPath);
+    imp->SetPhantomPath(rp->param->phantomPath);
+    imp->SetUniverseToMaterialPath(rp->param->universeToMaterialPath);
+    imp->InputPhantom();
+
+    delete imp;
+    delete rp;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void Impl(int argc,char** argv)
 {
     G4Timer timer;
     timer.Start();
@@ -116,10 +144,7 @@ int main(int argc,char** argv)
     G4cout << "--> total real elapsed time is: "<< timer.GetRealElapsed() << G4endl;
     G4cout << "    total system elapsed time: " << timer.GetSystemElapsed() << G4endl;
     G4cout << "    total user elapsed time: " << timer.GetUserElapsed() << G4endl;
-
-    return 0;
 }
-
 
 
 

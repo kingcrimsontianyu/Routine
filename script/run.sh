@@ -61,15 +61,37 @@ BIN=../routine-ir
 # --magnetic-field=0,1.5,0
 
 # photon
+# TEST_DIR=/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/test_eight_material
+# ${BIN} \
+# --source-type=gamma \
+# --source-energy=20 \
+# --num-history=1e2 \
+# --num-thread=14 \
+# --phantom-dim=40.0,40.0,40.0 \
+# --num-voxel=100,100,100 \
+# --source-position=0,0,-20.01 \
+# --magnetic-field=0,0,0 \
+# --phantom-path=${TEST_DIR}/input/phantom \
+# --material-path=${TEST_DIR}/input/material \
+# --universe-to-material-path=${TEST_DIR}/input/universe_to_material
+
+# photon
+TEST_DIR=/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/test_rpi_am_122kg
 ${BIN} \
 --source-type=gamma \
 --source-energy=20 \
---num-history=1e6 \
---num-thread=28 \
+--num-history=1e2 \
+--num-thread=14 \
 --phantom-dim=40.0,40.0,40.0 \
 --num-voxel=100,100,100 \
 --source-position=0,0,-20.01 \
---magnetic-field=0,0,0
+--magnetic-field=0,0,0 \
+--phantom-path=${TEST_DIR}/input/rpi_obese_female_122.geo \
+--material-path=${TEST_DIR}/input/rpi_obese_phantom.mat-p \
+--universe-to-material-path=${TEST_DIR}/input/universe_to_material_rpi_obese_female_122
+
+
+
 
 
 

@@ -56,23 +56,26 @@ public:
 class RoutineParameter
 {
 public:
-    G4String      sourceType;
-    G4double      sourceEnergy;
-    G4double      squareBeamWidth;
-    G4bool        isIonSource;
-    G4int         sourceIonZ;
-    G4int         sourceIonA;
+    G4String                     sourceType;
+    G4double                     sourceEnergy;
+    G4double                     squareBeamWidth;
+    G4bool                       isIonSource;
+    G4int                        sourceIonZ;
+    G4int                        sourceIonA;
     RoutineThreeVector<G4double> sourcePosition;
     RoutineThreeVector<G4double> sourceDirection;
     RoutineThreeVector<G4double> worldDimension;
     RoutineThreeVector<G4double> phantomDimension;
-    RoutineThreeVector<G4int> numVoxel;
-    G4int numThread;
-    G4int numHistory;
+    RoutineThreeVector<G4int>    numVoxel;
+    G4int                        numThread;
+    G4int                        numHistory;
     RoutineThreeVector<G4double> magneticField;
-    G4String      outputSuffix;
-    G4bool storePhysicsTable;
-    G4String      physicsTableDir;
+    G4String                     outputSuffix;
+    G4bool                       storePhysicsTable;
+    G4String                     physicsTableDir;
+    G4String                     phantomPath;
+    G4String                     materialPath;
+    G4String                     universeToMaterialPath;
 };
 
 //------------------------------------------------------------
