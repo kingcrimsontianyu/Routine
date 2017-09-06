@@ -2,28 +2,51 @@
 # The 1D flat binary data must be such that, when interpreted as 3D,
 # its x-index changes the fastest.
 
-# example
+# usage
+#
 # sys.path.append(path_to_PlotBinary_module)
 # import PlotBinary as plb
 #
-# figX = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "x")
+# p = plb.Manager("tally.bin",
+#               36,
+#               12,
+#               10)
+# p.InputBinaryData()
+#
+# # single color plot
+# figX = p.CreateSingleColorPlot(((17, 20), (6, 8), (5, 6)), "x")
 # figX.savefig("tally_color_x.pdf", bbox_inches = 'tight')
 #
-# figY = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "y")
+# figY = p.CreateSingleColorPlot(((17, 20), (6, 8), (5, 6)), "y")
 # figY.savefig("tally_color_y.pdf", bbox_inches = 'tight')
 #
-# figZ = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "z")
+# figZ = p.CreateSingleColorPlot(((17, 20), (6, 8), (5, 6)), "z")
 # figZ.savefig("tally_color_z.pdf", bbox_inches = 'tight')
 #
-# # contour plot
-# figX = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "x")
+#
+# # single contour plot
+# figX = p.CreateSingleContourPlot(((17, 20), (6, 8), (5, 6)), "x")
 # figX.savefig("tally_contour_x.pdf", bbox_inches = 'tight')
 #
-# figY = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "y")
+# figY = p.CreateSingleContourPlot(((17, 20), (6, 8), (5, 6)), "y")
 # figY.savefig("tally_contour_y.pdf", bbox_inches = 'tight')
 #
-# figZ = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "z")
+# figZ = p.CreateSingleContourPlot(((17, 20), (6, 8), (5, 6)), "z")
 # figZ.savefig("tally_contour_z.pdf", bbox_inches = 'tight')
+#
+#
+# # xyz color plot
+# figXYZ = p.CreateXYZColorPlot(((17, 20), (6, 8), (5, 6)))
+# figXYZ.savefig("tally_color_xyz.pdf", bbox_inches = 'tight')
+#
+#
+# # xyz contour plot
+# figXYZ = p.CreateXYZContourPlot(((17, 20), (6, 8), (5, 6)))
+# figXYZ.savefig("tally_contour_xyz.pdf", bbox_inches = 'tight')
+
+
+
+
 
 import numpy as np
 import matplotlib
@@ -74,7 +97,7 @@ class Manager:
     # y-z: y up, z right
     # x-z: x up, z right
     #------------------------------------------------------------
-    def InternalPlot(self, plotSize, plotType):
+    def InternalPlotPre(self, plotSize, plotType, fig, ax):
         # determine plot data size
         plotData = []
         hLabel = ""
@@ -99,26 +122,114 @@ class Manager:
 
         print("  2D data size = ", plotData.shape)
 
-        fig = plt.figure(figsize = (5, 5))
-        ax = fig.add_subplot(1, 1, 1)
         ax.set_xlabel(hLabel)
         ax.set_ylabel(vLabel)
         return (fig, ax, plotData)
 
     #------------------------------------------------------------
     #------------------------------------------------------------
-    def CreateColorPlot(self, plotSize, plotType):
-        print("--> Create color plot")
-        (fig, ax, plotData) = self.InternalPlot(plotSize, plotType)
-        ax.imshow(plotData, interpolation = 'none', origin = 'lower')
+    def InternalPlotPost(self, mappable, fig, ax, plotData):
         ax.set_aspect('equal')
+        cax = fig.add_axes([0.9, 0.1, 0.02, 0.8]) # left, bottom, width, height
+        fig.colorbar(mappable, cax = cax, format='%.2e')
+        return (fig, ax)
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
+    def CreateSingleColorPlot(self, plotSize, plotType):
+        print("--> Create single color plot")
+        fig = plt.figure(figsize = (5, 5))
+        ax = fig.add_subplot(1, 1, 1)
+        (fig, ax, plotData) = self.InternalPlotPre(plotSize, plotType, fig, ax)
+        mappable = ax.imshow(plotData, interpolation = 'none', origin = 'lower')
+        (fig, ax) = self.InternalPlotPost(mappable, fig, ax, plotData)
         return fig
 
     #------------------------------------------------------------
     #------------------------------------------------------------
-    def CreateContourPlot(self, plotSize, plotType):
-        print("--> Create contour plot")
-        (fig, ax, plotData) = self.InternalPlot(plotSize, plotType)
-        ax.contour(plotData, origin = 'lower')
-        ax.set_aspect('equal')
+    def CreateSingleContourPlot(self, plotSize, plotType):
+        print("--> Create single contour plot")
+        fig = plt.figure(figsize = (5, 5))
+        ax = fig.add_subplot(1, 1, 1)
+        (fig, ax, plotData) = self.InternalPlotPre(plotSize, plotType, fig, ax)
+        mappable = ax.contour(plotData, origin = 'lower')
+        (fig, ax) = self.InternalPlotPost(mappable, fig, ax, plotData)
         return fig
+
+
+
+
+
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
+    def InternalPlotPostXYZ(self, fig,
+                                  mappable1, mappable2, mappable3,
+                                  ax1, ax2, ax3):
+        ax1.set_aspect('equal')
+        ax2.set_aspect('equal')
+        ax3.set_aspect('equal')
+        cax = fig.add_axes([0.9, 0.1, 0.02, 0.8]) # left, bottom, width, height
+        fig.colorbar(mappable3, cax = cax, format='%.2e')
+        return fig
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
+    def CreateXYZColorPlot(self, plotSize):
+        print("--> Create xyz color plot")
+        fig = plt.figure(figsize = (10, 5))
+
+        ax1 = fig.add_subplot(1, 3, 1)
+        (fig, ax1, plotData1) = self.InternalPlotPre(plotSize, "x", fig, ax1)
+        ax2 = fig.add_subplot(1, 3, 2)
+        (fig, ax2, plotData2) = self.InternalPlotPre(plotSize, "y", fig, ax2)
+        ax3 = fig.add_subplot(1, 3, 3)
+        (fig, ax3, plotData3) = self.InternalPlotPre(plotSize, "z", fig, ax3)
+
+        maxV = np.amax([np.amax(plotData1),
+                        np.amax(plotData2),
+                        np.amax(plotData3)])
+        minV = np.amin([np.amin(plotData1),
+                        np.amin(plotData2),
+                        np.amin(plotData3)])
+
+        mappable1 = ax1.imshow(plotData1, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+        mappable2 = ax2.imshow(plotData2, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+        mappable3 = ax3.imshow(plotData3, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+
+        fig = self.InternalPlotPostXYZ(fig,
+                                       mappable1, mappable2, mappable3,
+                                       ax1, ax2, ax3)
+        return fig
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
+    def CreateXYZContourPlot(self, plotSize):
+        print("--> Create xyz color plot")
+        fig = plt.figure(figsize = (10, 5))
+
+        ax1 = fig.add_subplot(1, 3, 1)
+        (fig, ax1, plotData1) = self.InternalPlotPre(plotSize, "x", fig, ax1)
+        ax2 = fig.add_subplot(1, 3, 2)
+        (fig, ax2, plotData2) = self.InternalPlotPre(plotSize, "y", fig, ax2)
+        ax3 = fig.add_subplot(1, 3, 3)
+        (fig, ax3, plotData3) = self.InternalPlotPre(plotSize, "z", fig, ax3)
+
+        maxV = np.amax([np.amax(plotData1),
+                        np.amax(plotData2),
+                        np.amax(plotData3)])
+        minV = np.amin([np.amin(plotData1),
+                        np.amin(plotData2),
+                        np.amin(plotData3)])
+
+        mappable1 = ax1.contour(plotData1, origin = 'lower', vmin = minV, vmax = maxV)
+        mappable2 = ax2.contour(plotData2, origin = 'lower', vmin = minV, vmax = maxV)
+        mappable3 = ax3.contour(plotData3, origin = 'lower', vmin = minV, vmax = maxV)
+
+        fig = self.InternalPlotPostXYZ(fig,
+                                       mappable1, mappable2, mappable3,
+                                       ax1, ax2, ax3)
+        return fig
+
+
+
