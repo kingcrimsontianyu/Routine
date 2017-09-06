@@ -14,6 +14,10 @@
 # p.InputBinaryData()
 #
 # # single color plot
+# # ((17, 20), (6, 8), (5, 6)) means: for the 3-D binary data array,
+# # to generate a 2-D plot perpendicular to x axis, average over the slices whose x index is from 17 to 20 (inclusive)
+# # to generate a 2-D plot perpendicular to y axis, average over the slices whose y index is from 6 to 8 (inclusive)
+# # to generate a 2-D plot perpendicular to z axis, average over the slices whose z index is from 5 to 6 (inclusive)
 # figX = p.CreateSingleColorPlot(((17, 20), (6, 8), (5, 6)), "x")
 # figX.savefig("tally_color_x.pdf", bbox_inches = 'tight')
 #
