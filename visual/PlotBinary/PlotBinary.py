@@ -5,26 +5,26 @@
 # example
 # sys.path.append(path_to_PlotBinary_module)
 # import PlotBinary as plb
-# 
+#
 # figX = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "x")
 # figX.savefig("tally_color_x.pdf", bbox_inches = 'tight')
-# 
+#
 # figY = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "y")
 # figY.savefig("tally_color_y.pdf", bbox_inches = 'tight')
-# 
+#
 # figZ = p.CreateColorPlot(((17, 20), (6, 8), (5, 6)), "z")
 # figZ.savefig("tally_color_z.pdf", bbox_inches = 'tight')
-# 
+#
 # # contour plot
 # figX = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "x")
 # figX.savefig("tally_contour_x.pdf", bbox_inches = 'tight')
-# 
+#
 # figY = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "y")
 # figY.savefig("tally_contour_y.pdf", bbox_inches = 'tight')
-# 
+#
 # figZ = p.CreateContourPlot(((17, 20), (6, 8), (5, 6)), "z")
 # figZ.savefig("tally_contour_z.pdf", bbox_inches = 'tight')
-	
+
 import numpy as np
 import matplotlib
 matplotlib.use('PDF') # non-interactive plot
@@ -122,15 +122,3 @@ class Manager:
         ax.contour(plotData, origin = 'lower')
         ax.set_aspect('equal')
         return fig
-
-#------------------------------------------------------------
-#------------------------------------------------------------
-if __name__ == "__main__":
-    # p = Manager("rpi_obese_female_122.geo",
-                # "phantom.bin",
-                # 136,
-                # 133,
-                # 469)
-    # p.InputMCNPPhantom()
-    # p.ExportBinaryPhantom()
-    pass
