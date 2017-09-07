@@ -26,13 +26,15 @@ class RoutineMCNPImporter
 {
 public:
     RoutineMCNPImporter();
-    virtual ~RoutineMCNPImporter() = default;
+    virtual ~RoutineMCNPImporter();
 
     void SetMaterialPath(const G4String& path);
     void SetPhantomPath(const G4String& path);
     void SetUniverseToMaterialPath(const G4String& path);
 
     void InputPhantom();
+
+    void BuildG4MaterialList();
 
     // std::vector<G4Material*>& GetG4Material() const;
 
@@ -52,6 +54,7 @@ private:
     std::vector<G4int> universeList; // universe idx
     std::vector<UniverseToMCNPMaterialBlob> universeToMCNPMaterialList; // universe idx, density, material idx
     std::vector<MCNPMaterialBlob> mcnpMaterialList; // universe name, density, elemental composition
+    std::vector<G4Material*> g4MaterialList;
 
     void InputUniverseList();
     void InputMCNPMaterial();

@@ -1,34 +1,17 @@
 #ifndef ROUTINE_DETECTORCONSTRUCTION_H
 #define ROUTINE_DETECTORCONSTRUCTION_H 1
 
-#include "G4VUserDetectorConstruction.hh"
-#include "G4VNestedParameterisation.hh"
-#include "globals.hh"
-#include "G4ThreeVector.hh"
-#include "G4SDManager.hh"
-#include "G4MultiFunctionalDetector.hh"
-
-#include "G4RunManager.hh"
-#include "G4NistManager.hh"
-#include "G4Box.hh"
-#include "G4Cons.hh"
-#include "G4Orb.hh"
-#include "G4Sphere.hh"
-#include "G4Trd.hh"
-#include "G4LogicalVolume.hh"
-#include "G4PVPlacement.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4PVParameterised.hh"
-#include "G4PSDoseDeposit.hh"
-#include "G4PSEnergyDeposit.hh"
-#include "RoutineScorer.hh"
-#include "RoutineField.hh"
 #include "G4AutoDelete.hh"
-#include "RoutineParameter.hh"
+#include "G4ThreeVector.hh"
+#include "G4VUserDetectorConstruction.hh"
 
+class G4Material;
+class RoutineField;
+class RoutineParameterManager;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class RoutineNestedParameterisation;
+class RoutineMCNPImporter;
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -73,6 +56,8 @@ protected:
     std::vector<G4Material*> fMaterialList;
 
     G4Cache<RoutineField*> fField;
+
+    RoutineMCNPImporter* importer;
 };
 
 #endif

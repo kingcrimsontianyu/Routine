@@ -1,10 +1,24 @@
 #include "RoutineImportPhantom.hh"
 #include "RoutineParameter.hh"
+#include "G4NistManager.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 RoutineMCNPImporter::RoutineMCNPImporter()
-{}
+{
+    G4cout << "--> ctor: RoutineMCNPImporter" << G4endl;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineMCNPImporter::~RoutineMCNPImporter()
+{
+    G4cout << "--> dtor: RoutineMCNPImporter" << G4endl;
+    for(auto&& item : g4MaterialList)
+    {
+        delete item;
+    }
+}
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -33,9 +47,9 @@ void RoutineMCNPImporter::InputPhantom()
 {
     InputUniverseList();
     // AnalyzeUniverseList();
-
     InputMCNPMaterial();
     InputUniverseToMaterial();
+    BuildG4MaterialList();
 }
 
 //------------------------------------------------------------
@@ -279,7 +293,7 @@ void RoutineMCNPImporter::InputUniverseToMaterial()
 
                 UniverseToMCNPMaterialBlob uBlob;
                 is >> uBlob.universeIdx >> uBlob.mcnpMaterialIdx >> uBlob.density;
-                uBlob.density *= -1.0;
+                uBlob.density *= -1.0 * (g/cm3);
                 universeToMCNPMaterialList.push_back(uBlob);
             }
         }
@@ -294,6 +308,34 @@ void RoutineMCNPImporter::InputUniverseToMaterial()
         // }
     }
 }
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineMCNPImporter::BuildG4MaterialList()
+{
+    G4NistManager* nist = G4NistManager::Instance();
+
+    // iterate universe-to-material list
+    for(auto&& uBlob : universeToMCNPMaterialList)
+    {
+        // iterate mcnp material list
+        for(auto&& mBlob : mcnpMaterialList)
+        {
+            if(uBlob.mcnpMaterialIdx == mBlob.mcnpMaterialIdx)
+            {
+                // memory released in ~RoutineMCNPImporter()
+                G4Material* mat = new G4Material(std::to_string(uBlob.universeIdx), uBlob.density, mBlob.ZList.size());
+                for(size_t i = 0; i < mBlob.ZList.size(); ++i)
+                {
+                    G4Element* el = nist->FindOrBuildElement(mBlob.ZList[i]);
+                    mat->AddElement(el, mBlob.weightFractionList[i]);
+                }
+                g4MaterialList.push_back(mat);
+            }
+        }
+    }
+}
+
 
 
 
