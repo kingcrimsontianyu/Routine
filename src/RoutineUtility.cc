@@ -89,6 +89,11 @@ void RoutineUtility::PrintPhysicsInfo()
 //------------------------------------------------------------
 void RoutineUtility::AccumulateCount(const G4Track* track)
 {
+    if(!rp->param->logPhysicsInfo)
+    {
+        return;
+    }
+
     PrintParticleInfo(track);
 
     const G4ParticleDefinition* pd = track->GetDefinition();
@@ -196,6 +201,11 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
 //------------------------------------------------------------
 void RoutineUtility::AccumulateEnergy(const G4Step* step)
 {
+    if(!rp->param->logPhysicsInfo)
+    {
+        return;
+    }
+
     #if defined G4MULTITHREADED
     G4RunManager* rm = G4RunManager::GetRunManager();
     #else
@@ -248,9 +258,14 @@ void RoutineUtility::PrintVisualInfo()
 //------------------------------------------------------------
 void RoutineUtility::SaveCustomScoreToFile()
 {
+    if(!rp->param->logPhysicsInfo)
+    {
+        return;
+    }
+
     std::ofstream file("histogram_" + rp->param->outputSuffix + ".txt");
 
-    if(file.is_open())
+    if(file)
     {
         #if defined G4MULTITHREADED
         G4RunManager* rm = G4RunManager::GetRunManager();
@@ -317,8 +332,6 @@ void RoutineUtility::SaveCustomScoreToFile()
                 file << G4endl;
             }
         }
-
-        file.close();
     }
 }
 

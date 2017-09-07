@@ -33,11 +33,6 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     // reset parameters to their initial values
     G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
     parameterManager->Reset();
-
-    if(IsMaster())
-    {
-        // rut->PrintPhysicsInfo();
-    }
 }
 
 //------------------------------------------------------------
@@ -144,7 +139,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // dose
-    // scoring based on hits map (voxel)
+    // scoring based on hits map (voxel dose)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
@@ -243,6 +238,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // kerma
+    // scoring based on hits map (voxel dose)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {

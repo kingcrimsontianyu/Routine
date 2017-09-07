@@ -45,13 +45,9 @@ RoutinePrimaryGeneratorAction::~RoutinePrimaryGeneratorAction()
 void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
     // square pencil beam
-    // G4double dx = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
-    // G4double dy = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
-    // G4ThreeVector position = {dx, dy, rp->param->sourcePosition.z};
-
-    G4double dx = (G4UniformRand() - 0.5) * 20.0 * cm;
-    G4double dy = 20.0* cm;
-    G4double dz = (G4UniformRand() - 0.5) * 20.0* cm;
+    G4double dx = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
+    G4double dy = rp->param->sourcePosition.y;
+    G4double dz = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
     G4ThreeVector position = {dx, dy, dz};
 
     fParticleGun->SetParticlePosition(position);

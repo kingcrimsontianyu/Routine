@@ -79,6 +79,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["phantom-path"             ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["material-path"            ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["universe-to-material-path"] = RoutineParameterValue("", ParamType::Single);
+    parameterMap["log-physics-info"         ] = RoutineParameterValue("false", ParamType::Boolean);
 }
 
 //------------------------------------------------------------
@@ -189,6 +190,8 @@ void RoutineParameterManager::SetParameter()
     param->phantomPath = parameterMap["phantom-path"].single;
     param->materialPath = parameterMap["material-path"].single;
     param->universeToMaterialPath = parameterMap["universe-to-material-path"].single;
+
+    param->logPhysicsInfo = parameterMap["log-physics-info"].flag;
 }
 
 //------------------------------------------------------------

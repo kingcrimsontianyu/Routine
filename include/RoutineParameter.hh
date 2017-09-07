@@ -76,6 +76,7 @@ public:
     G4String                     phantomPath;
     G4String                     materialPath;
     G4String                     universeToMaterialPath;
+    G4bool                       logPhysicsInfo;
 };
 
 //------------------------------------------------------------
