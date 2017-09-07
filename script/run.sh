@@ -13,7 +13,8 @@ ${BIN} \
 --square-beam-width=20 \
 --phantom-path=${TEST_DIR}/input/phantom \
 --material-path=${TEST_DIR}/input/material \
---universe-to-material-path=${TEST_DIR}/input/universe_to_material
+--universe-to-material-path=${TEST_DIR}/input/universe_to_material \
+--output-suffix=qbbc
 
 # photon
 # TEST_DIR=/home/kingcrimson/research/geant4/g4_routine-ir/g4_routine-ir/test/test_rpi_am_122kg

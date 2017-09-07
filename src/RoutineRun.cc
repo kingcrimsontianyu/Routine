@@ -135,23 +135,5 @@ G4THitsMap<G4double>* RoutineRun::GetHitsMapSquared(const G4String& fullName) co
     return result;
 }
 
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineRun::GetHitsMapAndSquaredSum(G4THitsMap<G4double>*& hitsMap,
-                                        G4double& squaredSum,
-                                        const G4String& fullName) const
-{
-    hitsMap = nullptr;
-    squaredSum = 0.0;
-    for(size_t i = 0; i < fCollectionID.size(); ++i)
-    {
-        if(fCollectionName[i] == fullName)
-        {
-            hitsMap = fRunMap[i];
-            squaredSum = fRunMapSquaredSum[i];
-        }
-    }
-}
-
 
 

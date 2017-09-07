@@ -22,9 +22,6 @@ public:
     G4int GetNumberOfHitsMap() const {return fRunMap.size();}
     G4THitsMap<G4double>* GetHitsMap(const G4String& fullName) const;
     G4THitsMap<G4double>* GetHitsMapSquared(const G4String& fullName) const;
-    void GetHitsMapAndSquaredSum(G4THitsMap<G4double>*& hitsMap,
-                                 G4double& squaredSum,
-                                 const G4String& fullName) const;
     void DumpAllScorer();
 
     std::map<G4String, RoutineCustomScore>& GetCSMap() {return csMap;}

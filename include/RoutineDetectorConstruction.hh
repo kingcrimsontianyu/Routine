@@ -26,8 +26,7 @@ public:
     virtual void ConstructSDandField();
 
     G4double GetVoxelVolume() const;
-    void SetNumVoxel(G4int nx, G4int ny, G4int nz);
-    void GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const;
+    RoutineThreeVector<G4int> GetNumVoxel() const;
 
     G4LogicalVolume* GetLogicPhantom() const;
 

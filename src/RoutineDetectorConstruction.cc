@@ -295,7 +295,6 @@ void RoutineDetectorConstruction::ConstructSDandField()
 {
     // create mfd and add scorer to it
     G4MultiFunctionalDetector* mfd = new G4MultiFunctionalDetector("PhantomMFD");
-    mfd->RegisterPrimitive(new G4PSEnergyDeposit("totalD"));
     mfd->RegisterPrimitive(new RoutinePSEnergyImparted(G4String("energyImparted3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
     mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
 
@@ -316,11 +315,9 @@ G4double RoutineDetectorConstruction::GetVoxelVolume() const
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineDetectorConstruction::GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const
+RoutineThreeVector<G4int> RoutineDetectorConstruction::GetNumVoxel() const
 {
-    nx = fNumVoxel.x;
-    ny = fNumVoxel.y;
-    nz = fNumVoxel.z;
+    return fNumVoxel;
 }
 
 //------------------------------------------------------------
