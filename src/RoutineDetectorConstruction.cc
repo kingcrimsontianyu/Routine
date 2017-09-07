@@ -369,7 +369,7 @@ G4double RoutineDetectorConstruction::GetPhantomMass() const
         }
     }
 
-    G4cout << "--> phantom mass = " << mass / g << " [g]" << G4endl;
+    // G4cout << "--> Phantom mass = " << mass / g << " [g]" << G4endl;
     return mass;
 }
 

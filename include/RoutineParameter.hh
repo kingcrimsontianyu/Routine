@@ -77,6 +77,8 @@ public:
     G4String                     materialPath;
     G4String                     universeToMaterialPath;
     G4bool                       logPhysicsInfo;
+    G4bool                       outputBinaryVoxelTally;
+    G4String                     outputDir;
 };
 
 //------------------------------------------------------------

@@ -141,7 +141,7 @@ void Impl(int argc,char** argv)
     delete rp;
 
     timer.Stop();
-    G4cout << "--> total real elapsed time = "<< timer.GetRealElapsed() << " [sec]" << G4endl;
+    G4cout << "--> Total real elapsed time = "<< timer.GetRealElapsed() << " [sec]" << G4endl;
 }
 
 

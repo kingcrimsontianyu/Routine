@@ -80,6 +80,8 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["material-path"            ] = RoutineParameterValue("", ParamType::Single);
     parameterMap["universe-to-material-path"] = RoutineParameterValue("", ParamType::Single);
     parameterMap["log-physics-info"         ] = RoutineParameterValue("false", ParamType::Boolean);
+    parameterMap["output-binary-voxel-tally"] = RoutineParameterValue("false", ParamType::Boolean);
+    parameterMap["output-dir"               ] = RoutineParameterValue(".", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -192,6 +194,9 @@ void RoutineParameterManager::SetParameter()
     param->universeToMaterialPath = parameterMap["universe-to-material-path"].single;
 
     param->logPhysicsInfo = parameterMap["log-physics-info"].flag;
+    param->outputBinaryVoxelTally = parameterMap["output-binary-voxel-tally"].flag;
+
+    param->outputDir = parameterMap["output-dir"].single;
 }
 
 //------------------------------------------------------------

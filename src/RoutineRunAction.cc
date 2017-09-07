@@ -96,94 +96,11 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
-        G4cout << "--> Output absorbed dose based on hits map (voxel dose)." << G4endl;
-
-        // convert energy to dose per source particle
-        auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetPhantomMass();
-
+        G4cout << "--> Output absorbed dose based on hits map (voxel tally)." << G4endl;
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyImparted3D"));
         G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyImparted3DSquared"));
-
-        G4double edep = 0.0;
-        for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)
-        {
-            edep += *(it->second);
-        }
-        G4double dose  = edep / mass;
-        dose /= numHistory;
-        G4cout << "    dose = " << dose / (MeV / g) << " [MeV/g]"<< G4endl;
-
-        // save result to file
-        // get phantom parameters
-        RoutineThreeVector<G4int> numVoxel = detectorConstruction->GetNumVoxel();
-        G4double voxelVolume = detectorConstruction->GetVoxelVolume();
-        G4cout << "    voxel volume = " << voxelVolume / cm3 << G4endl;
-
-        G4String path = "dose_" + rp->param->outputSuffix + ".txt";
-        G4cout << "    save to file " << path << G4endl;
-        std::ofstream file(path);
-        // store data in column major where x index changes fastest
-        for(G4int k = 0; k < numVoxel.z; ++k)
-        {
-            for(G4int j = 0; j < numVoxel.y; ++j)
-            {
-                for(G4int i = 0; i < numVoxel.x; ++i)
-                {
-                    G4double edep_temp = 0.0;
-                    G4double edep2_temp = 0.0;
-
-                    // x idx changes fastest, z slowest
-                    G4int globalIdx = numVoxel.x * numVoxel.y * k + numVoxel.x * j + i;
-                    G4double* edepPtr = (*hitsMap)[globalIdx];
-                    if(edepPtr != nullptr)
-                    {
-                        edep_temp = *edepPtr;
-                    }
-                    G4double* edep2Ptr = (*hitsMapSquared)[globalIdx];
-                    if(edep2Ptr != nullptr)
-                    {
-                        edep2_temp = *edep2Ptr;
-                    }
-
-                    // convert from energy to dose
-                    G4Material* material = detectorConstruction->GetPhantomMaterial(globalIdx);
-                    G4double density = material->GetDensity();
-                    G4double mass_temp = density * voxelVolume;
-                    G4double dose_temp  = edep_temp / mass_temp;
-                    G4double dose2_temp = edep2_temp / mass_temp / mass_temp;
-
-                    G4double sigma = dose2_temp - dose_temp * dose_temp / numHistory;
-                    if (sigma > 0.0)
-                    {
-                        sigma = std::sqrt(sigma);
-                    }
-                    else
-                    {
-                        sigma = 0.0;
-                    }
-                    dose_temp /= numHistory;
-                    sigma /= numHistory;
-                    G4double rsd;
-                    if(dose_temp != 0.0)
-                    {
-                        rsd = sigma / dose_temp;
-                    }
-                    else
-                    {
-                        rsd = 0.0;
-                    }
-
-                    file << std::setw(5) << i
-                         << std::setw(5) << j
-                         << std::setw(5) << k
-                         << std::setw(20) << std::scientific << std::setprecision(12) << dose_temp / (MeV / g)
-                         << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
-
-                }
-            }
-        }
+        OutputEnergyTally("dose", numHistory, hitsMap, hitsMapSquared);
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -192,95 +109,11 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
-        G4cout << "--> Output kerma based on hits map (voxel dose)." << G4endl;
-
-        // convert energy to dose per source particle
-        auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-        G4double mass = detectorConstruction->GetPhantomMass();
-
+        G4cout << "--> Output kerma based on hits map (voxel tally)." << G4endl;
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyTransfer3D"));
         G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyTransfer3DSquared"));
-
-        G4double edep = 0.0;
-        for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)
-        {
-            edep += *(it->second);
-        }
-        G4double dose  = edep / mass;
-        dose /= numHistory;
-        G4cout << "    kerma = " << dose / (MeV / g) << " [MeV/g]"<< G4endl;
-
-        // save result to file
-        // get phantom parameters
-        RoutineThreeVector<G4int> numVoxel = detectorConstruction->GetNumVoxel();
-        G4double voxelVolume = detectorConstruction->GetVoxelVolume();
-        G4cout << "    voxel volume = " << voxelVolume / cm3 << G4endl;
-
-        G4String path = "kerma_" + rp->param->outputSuffix + ".txt";
-        G4cout << "    save to file " << path << G4endl;
-        std::ofstream file(path);
-        // store data in column major where x index changes fastest
-        for(G4int k = 0; k < numVoxel.z; ++k)
-        {
-            for(G4int j = 0; j < numVoxel.y; ++j)
-            {
-                for(G4int i = 0; i < numVoxel.x; ++i)
-                {
-                    G4double edep_temp = 0.0;
-                    G4double edep2_temp = 0.0;
-
-                    // x idx changes fastest, z slowest
-                    G4int globalIdx = numVoxel.x * numVoxel.y * k + numVoxel.x * j + i;
-                    G4double* edepPtr = (*hitsMap)[globalIdx];
-                    if(edepPtr != nullptr)
-                    {
-                        edep_temp = *edepPtr;
-                    }
-                    G4double* edep2Ptr = (*hitsMapSquared)[globalIdx];
-                    if(edep2Ptr != nullptr)
-                    {
-                        edep2_temp = *edep2Ptr;
-                    }
-
-                    // convert from energy to dose
-                    G4Material* material = detectorConstruction->GetPhantomMaterial(globalIdx);
-                    // G4cout << material->GetName() << G4endl;
-                    G4double density = material->GetDensity();
-                    G4double mass_temp = density * voxelVolume;
-                    G4double dose_temp  = edep_temp / mass_temp;
-                    G4double dose2_temp = edep2_temp / mass_temp / mass_temp;
-
-                    G4double sigma = dose2_temp - dose_temp * dose_temp / numHistory;
-                    if (sigma > 0.0)
-                    {
-                        sigma = std::sqrt(sigma);
-                    }
-                    else
-                    {
-                        sigma = 0.0;
-                    }
-                    dose_temp /= numHistory;
-                    sigma /= numHistory;
-                    G4double rsd;
-                    if(dose_temp != 0.0)
-                    {
-                        rsd = sigma / dose_temp;
-                    }
-                    else
-                    {
-                        rsd = 0.0;
-                    }
-
-                    file << std::setw(5) << i
-                         << std::setw(5) << j
-                         << std::setw(5) << k
-                         << std::setw(20) << std::scientific << std::setprecision(12) << dose_temp / (MeV / g)
-                         << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
-
-                }
-            }
-        }
+        OutputEnergyTally("kerma", numHistory, hitsMap, hitsMapSquared);
     }
 
     // histograms
@@ -288,6 +121,150 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     {
         G4cout << "--> Output custom scores." << G4endl;
         rut->SaveCustomScoreToFile();
+    }
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRunAction::OutputEnergyTally(const G4String& prefix,
+                                         const G4int numHistory,
+                                         G4THitsMap<G4double>* hitsMap,
+                                         G4THitsMap<G4double>* hitsMapSquared)
+{
+    // convert energy to dose per source particle
+    auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    G4double mass = detectorConstruction->GetPhantomMass();
+
+    G4double edep = 0.0;
+    for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)
+    {
+        edep += *(it->second);
+    }
+    G4double dose  = edep / mass;
+    dose /= numHistory;
+    G4cout << "    Average " << prefix << " = " << dose / (MeV / g) << " [MeV/g]"<< G4endl;
+
+    // get phantom parameters
+    RoutineThreeVector<G4int> numVoxel = detectorConstruction->GetNumVoxel();
+    G4double voxelVolume = detectorConstruction->GetVoxelVolume();
+    std::ofstream file;
+    std::ofstream fileRSD;
+    if(rp->param->outputBinaryVoxelTally)
+    {
+        G4String path = rp->param->outputDir + "/" + prefix + "_tally_" + rp->param->outputSuffix + ".bin";
+        G4String pathRSD = rp->param->outputDir + "/" + prefix + "_rsd_" + rp->param->outputSuffix + ".bin";
+        file.open(path, std::ofstream::out | std::ofstream::binary);
+        fileRSD.open(pathRSD, std::ofstream::out | std::ofstream::binary);
+
+        if(!file)
+        {
+            G4String msg = "File cannot be opened: " + path;
+            G4Exception("RoutineMCNPImporter::InputUniverseList()", "RoutineReport", FatalException, msg);
+        }
+        else
+        {
+            G4cout << "    Save dose to " << path << G4endl;
+        }
+
+        if(!fileRSD)
+        {
+            G4String msg = "File cannot be opened: " + pathRSD;
+            G4Exception("RoutineMCNPImporter::InputUniverseList()", "RoutineReport", FatalException, msg);
+        }
+        else
+        {
+            G4cout << "    Save RSD to " << pathRSD << G4endl;
+        }
+    }
+    else
+    {
+        G4String path = rp->param->outputDir + "/" + prefix + "_" + rp->param->outputSuffix + ".txt";
+        file.open(path, std::ofstream::out);
+        if(!file)
+        {
+            G4String msg = "File cannot be opened: " + path;
+            G4Exception("RoutineMCNPImporter::InputUniverseList()", "RoutineReport", FatalException, msg);
+        }
+        else
+        {
+            G4cout << "    Save dose and RSD to " << path << G4endl;
+        }
+    }
+
+    // store data in column major where x index changes fastest
+    std::vector<G4double> dose_temp_list(numVoxel.x * numVoxel.y * numVoxel.z);
+    std::vector<G4double> rsd_list(numVoxel.x * numVoxel.y * numVoxel.z);
+
+    for(G4int k = 0; k < numVoxel.z; ++k)
+    {
+        for(G4int j = 0; j < numVoxel.y; ++j)
+        {
+            for(G4int i = 0; i < numVoxel.x; ++i)
+            {
+                G4double edep_temp = 0.0;
+                G4double edep2_temp = 0.0;
+
+                // x idx changes fastest, z slowest
+                G4int globalIdx = numVoxel.x * numVoxel.y * k + numVoxel.x * j + i;
+                G4double* edepPtr = (*hitsMap)[globalIdx];
+                if(edepPtr != nullptr)
+                {
+                    edep_temp = *edepPtr;
+                }
+                G4double* edep2Ptr = (*hitsMapSquared)[globalIdx];
+                if(edep2Ptr != nullptr)
+                {
+                    edep2_temp = *edep2Ptr;
+                }
+
+                // convert from energy to dose
+                G4Material* material = detectorConstruction->GetPhantomMaterial(globalIdx);
+                G4double density = material->GetDensity();
+                G4double mass_temp = density * voxelVolume;
+                G4double dose_temp  = edep_temp / mass_temp;
+                G4double dose2_temp = edep2_temp / mass_temp / mass_temp;
+
+                G4double sigma = dose2_temp - dose_temp * dose_temp / numHistory;
+                if (sigma > 0.0)
+                {
+                    sigma = std::sqrt(sigma);
+                }
+                else
+                {
+                    sigma = 0.0;
+                }
+                dose_temp /= numHistory;
+                sigma /= numHistory;
+                G4double rsd;
+                if(dose_temp != 0.0)
+                {
+                    rsd = sigma / dose_temp;
+                }
+                else
+                {
+                    rsd = 0.0;
+                }
+
+                dose_temp_list[globalIdx] = dose_temp;
+                rsd_list[globalIdx] = rsd;
+
+                if(!rp->param->outputBinaryVoxelTally)
+                {
+                    file << std::setw(5) << i
+                         << std::setw(5) << j
+                         << std::setw(5) << k
+                         << std::setw(20) << std::scientific << std::setprecision(12) << dose_temp / (MeV / g)
+                         << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
+                }
+
+            }
+        }
+    }
+
+    if(rp->param->outputBinaryVoxelTally)
+    {
+        file.write((const char*)dose_temp_list.data(), sizeof(G4double) * dose_temp_list.size());
+        fileRSD.write((const char*)rsd_list.data(), sizeof(G4double) * rsd_list.size());
     }
 }
 
