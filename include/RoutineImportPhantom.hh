@@ -3,6 +3,7 @@
 
 #include "globals.hh"
 #include "G4Material.hh"
+#include "RoutineParameter.hh"
 
 // universe in mcnp is similar to material in G4, both having a density and elemental composition
 // material in mcnp does not have a density
@@ -34,27 +35,29 @@ public:
 
     void InputPhantom();
 
-    void BuildG4MaterialList();
+    void BuildG4MaterialListAndPhantomList();
 
-    // std::vector<G4Material*>& GetG4Material() const;
+    // do not access the pilfered data member after these functions are called
+    std::vector<G4Material*>&& PilferPhantomList();
+
+    const std::vector<G4Material*>& GetG4MaterialList() const;
+
+    RoutineThreeVector<G4int>    GetNumVoxel();
+    RoutineThreeVector<G4double> GetDimVoxel();
 
 private:
-    G4int numVoxelX;
-    G4int numVoxelY;
-    G4int numVoxelZ;
+    RoutineThreeVector<G4int>      numVoxel;
+    RoutineThreeVector<G4double>   dimVoxel;
     G4int totalNumVoxel;
-    G4double dimVoxelX;
-    G4double dimVoxelY;
-    G4double dimVoxelZ;
-
     G4String materialPath;
     G4String phantomPath;
     G4String universeToMaterialPath;
 
-    std::vector<G4int> universeList; // universe idx
+    std::vector<G4int>                      universeList; // universe idx
     std::vector<UniverseToMCNPMaterialBlob> universeToMCNPMaterialList; // universe idx, density, material idx
-    std::vector<MCNPMaterialBlob> mcnpMaterialList; // universe name, density, elemental composition
-    std::vector<G4Material*> g4MaterialList;
+    std::vector<MCNPMaterialBlob>           mcnpMaterialList; // universe name, density, elemental composition
+    std::vector<G4Material*>                g4MaterialList; // each G4 material is equivalent to an mcnp universe
+    std::vector<G4Material*>                phantomList;
 
     void InputUniverseList();
     void InputMCNPMaterial();

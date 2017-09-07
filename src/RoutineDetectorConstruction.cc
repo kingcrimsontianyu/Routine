@@ -29,39 +29,33 @@
 class RoutineNestedParameterisation : public G4VNestedParameterisation
 {
 public:
-    RoutineNestedParameterisation(const G4ThreeVector& voxelSize,
-                                  const G4int xNumVoxel,
-                                  const G4int yNumVoxel,
-                                  const G4int zNumVoxel,
-                                  std::map<G4String, G4Material*>* materialMap,
-                                  std::vector<G4Material*>* materialList,
-                                  std::vector<G4Material*>* phantomMaterialList);
+    RoutineNestedParameterisation(const RoutineThreeVector<G4double>& dimVoxel,
+                                  const RoutineThreeVector<G4int>& numVoxel,
+                                  std::vector<G4Material*>* phantomList,
+                                  std::vector<G4Material*>* materialList);
     ~RoutineNestedParameterisation();
 
     // possible bug in G4.10.3.2 ???
     // G4VNestedParameterisation::ComputeMaterial() may hide G4VPVParameterisation::ComputeMaterial()
     virtual G4Material* ComputeMaterial(G4VPhysicalVolume* currentPhysicalVol, const G4int xVoxelIdx, const G4VTouchable* parentTouch = 0) override;
-
     virtual void ComputeTransformation(const G4int xVoxelIdx, G4VPhysicalVolume* currentPhysicalVol) const;
     virtual void ComputeDimensions(G4Box& box, const G4int xVoxelIdx, const G4VPhysicalVolume* currentPhysicalVol) const override;
     virtual G4int GetNumberOfMaterials() const;
     virtual G4Material* GetMaterial(G4int idx) const;
     G4Material* GetPhantomMaterial(G4int globalIdx) const;
 private:
-
-    G4double fHalfXDimVoxel;
-    G4double fHalfYDimVoxel;
-    G4double fHalfZDimVoxel;
-    G4int fXNumVoxel;
-    G4int fYNumVoxel;
-    G4int fZNumVoxel;
-    G4int fTotalNumVoxel;
+    RoutineThreeVector<G4int>      fNumVoxel;
+    RoutineThreeVector<G4double>   fHalfDimVoxel;
 
     std::vector<G4double> fXTranslationList;
-    std::map<G4String, G4Material*>* fMaterialMap;
-    std::vector<G4Material*>* fPhantomMaterialList;
+    std::vector<G4Material*>* fPhantomList;
     std::vector<G4Material*>* fMaterialList;
 };
+
+
+
+
+
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -93,12 +87,29 @@ void RoutineDetectorConstruction::ImportFromFile()
     importer->SetUniverseToMaterialPath(rp->param->universeToMaterialPath);
     importer->InputPhantom();
 
+    fPhantomList  = importer->PilferPhantomList();
+    fMaterialList = importer->GetG4MaterialList();
+
+    fNumVoxel = importer->GetNumVoxel();
+    fDimVoxel = importer->GetDimVoxel();
+    fDimPhantom.x = fNumVoxel.x * fDimVoxel.x;
+    fDimPhantom.y = fNumVoxel.y * fDimVoxel.y;
+    fDimPhantom.z = fNumVoxel.z * fDimVoxel.z;
+
+    G4cout << "--> phantom info\n"
+           << "    num voxel   = " << std::setw(10) << fNumVoxel.x << std::setw(10) << fNumVoxel.y << std::setw(10) << fNumVoxel.z << G4endl
+           << "    dim voxel   = " << std::setw(10) << fDimVoxel.x / cm << std::setw(10) << fDimVoxel.y / cm << std::setw(10) << fDimVoxel.z / cm << G4endl
+           << "    dim phantom = " << std::setw(10) << fDimPhantom.x / cm << std::setw(10) << fDimPhantom.y / cm << std::setw(10) << fDimPhantom.z / cm << G4endl;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineDetectorConstruction::AddInternalMaterial()
+{
     // internal material
     G4double density;
-    // G4double weightFraction;
     std::vector<G4int> ZList;
     std::vector<G4double> weightFractionList;
-
     G4NistManager* nist = G4NistManager::Instance();
 
     // dry air
@@ -124,7 +135,7 @@ void RoutineDetectorConstruction::ImportFromFile()
         air->AddElement(el, weightFractionList[i]);
     }
     ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("surround_air", air));
+    fNonPhantomMaterialMap.insert(std::pair<G4String, G4Material*>("surround_air", air));
 
     // water
     // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
@@ -143,8 +154,14 @@ void RoutineDetectorConstruction::ImportFromFile()
         water->AddElement(el, weightFractionList[i]);
     }
     ZList.clear(); weightFractionList.clear();
-    fMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
+    fNonPhantomMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
+}
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineDetectorConstruction::PrintMaterialInfo()
+{
+    G4NistManager* nist = G4NistManager::Instance();
     // get all atomic mass
     for(G4int Z = 1; Z < maxNumElements; ++Z)
     {
@@ -152,61 +169,20 @@ void RoutineDetectorConstruction::ImportFromFile()
                << "A = " << std::setprecision(20) << nist->GetAtomicMassAmu(Z) << G4endl;
     }
 
-    fPhantomDimension.set(rp->param->phantomDimension.x,
-                          rp->param->phantomDimension.y,
-                          rp->param->phantomDimension.z);
-
-    fXNumVoxel = rp->param->numVoxel.x;
-    fYNumVoxel = rp->param->numVoxel.y;
-    fZNumVoxel = rp->param->numVoxel.z;
-    fTotalNumVoxel = fXNumVoxel * fYNumVoxel * fZNumVoxel;
-
-    fVoxelDimension.set(fPhantomDimension.x() / fXNumVoxel,
-                        fPhantomDimension.y() / fYNumVoxel,
-                        fPhantomDimension.z() / fZNumVoxel);
-
-    fPhantomMaterialList.resize(fTotalNumVoxel);
-    for(G4int k = 0; k < fZNumVoxel; ++k)
+    // show all material involved in the simulation
+    G4MaterialTable* mtable = G4Material::GetMaterialTable();
+    G4cout << "--> G4 material aka MCNP universe" << G4endl;
+    for(auto&& mat : *mtable)
     {
-        for(G4int j = 0; j < fYNumVoxel; ++j)
+        G4cout << "    " << std::setw(20) << std::left << mat->GetName()
+                         << std::setw(20) << std::setprecision(6) << mat->GetDensity() / (g / cm3) << "\n";
+        for(size_t i = 0; i < mat->GetNumberOfElements(); ++i)
         {
-            for(G4int i = 0; i < fXNumVoxel; ++i)
-            {
-                G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
-
-                // if(k == 0)
-                // {
-                    // fPhantomMaterialList[globalIdx] = fMaterialMap["soft_tissue"];
-                // }
-                // else
-                // {
-                    // fPhantomMaterialList[globalIdx] = fMaterialMap["bone"];
-                // }
-
-                fPhantomMaterialList[globalIdx] = fMaterialMap["water"];
-            }
+            G4Element* el = (*mat->GetElementVector())[i];
+            G4double frac = mat->GetFractionVector()[i];
+            G4cout << "        " << std::setw(15) << el->GetZ() << std::setw(15) << frac << G4endl;
         }
     }
-
-    for(auto it = fMaterialMap.begin(); it != fMaterialMap.end(); ++it)
-    {
-        fMaterialList.push_back(it->second);
-    }
-
-    // // show all material involved in the simulation
-    // G4MaterialTable* mtable = G4Material::GetMaterialTable();
-    // G4cout << "--> G4 material aka MCNP universe" << G4endl;
-    // for(auto&& mat : *mtable)
-    // {
-        // G4cout << "    " << std::setw(20) << std::left << mat->GetName()
-                         // << std::setw(20) << std::setprecision(6) << mat->GetDensity() / (g/cm3) << "\n";
-        // for(size_t i = 0; i < mat->GetNumberOfElements(); ++i)
-        // {
-            // G4Element* el = (*mat->GetElementVector())[i];
-            // G4double frac = mat->GetFractionVector()[i];
-            // G4cout << "        " << std::setw(15) << el->GetZ() << std::setw(15) << frac << G4endl;
-        // }
-    // }
 }
 
 //------------------------------------------------------------
@@ -215,15 +191,17 @@ void RoutineDetectorConstruction::ImportFromFile()
 G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 {
     ImportFromFile();
+    AddInternalMaterial();
+    // PrintMaterialInfo();
 
     // world
     G4Box* solidWorld = new G4Box("S_World", // name
                                   rp->param->worldDimension.x / 2.0,
                                   rp->param->worldDimension.y / 2.0,
                                   rp->param->worldDimension.z / 2.0);
-    G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,                    // solid
-                                                      fMaterialMap["surround_air"],  // material
-                                                      "L_World");                    // name
+    G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld,                              // solid
+                                                      fNonPhantomMaterialMap["surround_air"],  // material
+                                                      "L_World");                              // name
     G4VPhysicalVolume* physWorld = new G4PVPlacement(0,                // no rotation
                                                      G4ThreeVector(),  // at (0,0,0)
                                                      logicWorld,       // logical volume
@@ -235,12 +213,12 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 
     // phantom
     G4Box* solidphantom = new G4Box("S_Phantom", // name
-                                    fPhantomDimension.x() / 2.0,
-                                    fPhantomDimension.y() / 2.0,
-                                    fPhantomDimension.z() / 2.0);
-    fLogicPhantom = new G4LogicalVolume(solidphantom,                 // solid
-                                        fMaterialMap["surround_air"], // material
-                                        "L_Phantom");                 // name
+                                    fDimPhantom.x / 2.0,
+                                    fDimPhantom.y / 2.0,
+                                    fDimPhantom.z / 2.0);
+    fLogicPhantom = new G4LogicalVolume(solidphantom,                           // solid
+                                        fNonPhantomMaterialMap["surround_air"], // material
+                                        "L_Phantom");                           // name
     // G4VPhysicalVolume* physphantom
     new G4PVPlacement(0,                  // no rotation
                       G4ThreeVector(),    // at (0,0,0)
@@ -253,61 +231,58 @@ G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 
     // z replica
     G4VSolid* solidZ = new G4Box("S_RepZ", // name
-                                  fPhantomDimension.x() / 2.0,
-                                  fPhantomDimension.y() / 2.0,
-                                  fVoxelDimension.z() / 2.0);
-    G4LogicalVolume* logicZ = new G4LogicalVolume(solidZ,                        // solid
-                                                  fMaterialMap["surround_air"],  // material
-                                                  "L_RepZ");                     // name
+                                 fDimPhantom.x / 2.0,
+                                 fDimPhantom.y / 2.0,
+                                 fDimVoxel.z   / 2.0);
+    G4LogicalVolume* logicZ = new G4LogicalVolume(solidZ,                                  // solid
+                                                  fNonPhantomMaterialMap["surround_air"],  // material
+                                                  "L_RepZ");                               // name
     // G4PVReplica* physZ
     new G4PVReplica("P_RepZ",
                     logicZ,              // associated logical volume
                     fLogicPhantom,       // associated mother volume, can also be G4VPhysicalVolume*
                     kZAxis,              // axis along witch the replication is applied
-                    fZNumVoxel,          // the number of replicated volumes
-                    fVoxelDimension.z(), // width of a single replica along the axis of replication
+                    fNumVoxel.z,         // the number of replicated volumes
+                    fDimVoxel.z,         // width of a single replica along the axis of replication
                     0);
 
     // y replica
     G4VSolid* solidY = new G4Box("S_RepY",  // name
-                                 fPhantomDimension.x() / 2.0,
-                                 fVoxelDimension.y() / 2.0,
-                                 fVoxelDimension.z() / 2.0);
-    G4LogicalVolume* logicY = new G4LogicalVolume(solidY,                       // solid
-                                                  fMaterialMap["surround_air"], // material
-                                                  "L_RepY");                    // name
+                                 fDimPhantom.x / 2.0,
+                                 fDimVoxel.y   / 2.0,
+                                 fDimVoxel.z   / 2.0);
+    G4LogicalVolume* logicY = new G4LogicalVolume(solidY,                                 // solid
+                                                  fNonPhantomMaterialMap["surround_air"], // material
+                                                  "L_RepY");                              // name
     // unused G4PVReplica* physY
     new G4PVReplica("P_RepY",
                     logicY,              // associated logical volume
                     logicZ,              // associated mother volume, can also be G4VPhysicalVolume*
                     kYAxis,              // axis along witch the replication is applied
-                    fYNumVoxel,          // the number of replicated volumes
-                    fVoxelDimension.y(), // width of a single replica along the axis of replication
+                    fNumVoxel.y,         // the number of replicated volumes
+                    fDimVoxel.y,         // width of a single replica along the axis of replication
                     0);
 
     // x voxel
     G4VSolid* solidX = new G4Box("S_Voxel", // name
-                                 fVoxelDimension.x() / 2.0,
-                                 fVoxelDimension.y() / 2.0,
-                                 fVoxelDimension.z() / 2.0);
-    G4LogicalVolume* logicX = new G4LogicalVolume(solidX,                       // solid
-                                                  fMaterialMap["surround_air"], // material
-                                                  "L_Voxel");                   // name
+                                 fDimVoxel.x / 2.0,
+                                 fDimVoxel.y / 2.0,
+                                 fDimVoxel.z / 2.0);
+    G4LogicalVolume* logicX = new G4LogicalVolume(solidX,                                 // solid
+                                                  fNonPhantomMaterialMap["surround_air"], // material
+                                                  "L_Voxel");                             // name
     fLogicVolumeVoxel = logicX;
 
-    fparam = new RoutineNestedParameterisation(fVoxelDimension,
-                                               fXNumVoxel,
-                                               fYNumVoxel,
-                                               fZNumVoxel,
-                                               &fMaterialMap,
-                                               &fMaterialList,
-                                               &fPhantomMaterialList);
+    fparam = new RoutineNestedParameterisation(fDimVoxel,
+                                               fNumVoxel,
+                                               &fPhantomList,
+                                               &fMaterialList);
     // G4VPhysicalVolume* physicalVoxel
     new G4PVParameterised("P_Voxel",         // name
                           fLogicVolumeVoxel, // logical volume
                           logicY,            // mother logical volume
                           kUndefined,        // enable 3D voxelization algorithm
-                          fXNumVoxel,        // number of cells
+                          fNumVoxel.x,       // number of cells
                           fparam);           // parametrization
 
     // always return the physical World
@@ -321,8 +296,8 @@ void RoutineDetectorConstruction::ConstructSDandField()
     // create mfd and add scorer to it
     G4MultiFunctionalDetector* mfd = new G4MultiFunctionalDetector("PhantomMFD");
     mfd->RegisterPrimitive(new G4PSEnergyDeposit("totalD"));
-    mfd->RegisterPrimitive(new RoutinePSEnergyImparted(G4String("energyImparted3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
-    mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fXNumVoxel, fYNumVoxel, fZNumVoxel));
+    mfd->RegisterPrimitive(new RoutinePSEnergyImparted(G4String("energyImparted3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
+    mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
 
     // add mfd to the singleton sd manager
     G4SDManager* sdManager = G4SDManager::GetSDMpointer();
@@ -330,53 +305,22 @@ void RoutineDetectorConstruction::ConstructSDandField()
 
     // add mfd to logical vol
     fLogicVolumeVoxel->SetSensitiveDetector(mfd);
-
-    // construct the field creator
-    if (!fField.Get())
-    {
-        RoutineField* field = new RoutineField(G4ThreeVector(rp->param->magneticField.x, rp->param->magneticField.y, rp->param->magneticField.z));
-        G4AutoDelete::Register(field); // Kernel will delete the RoutineField
-        fField.Put(field);
-    }
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineDetectorConstruction::SetPhantomDimension(G4ThreeVector dim)
-{
-    fPhantomDimension = dim;
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-const G4ThreeVector& RoutineDetectorConstruction::GetPhantomDimension() const
-{
-    return fPhantomDimension;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 G4double RoutineDetectorConstruction::GetVoxelVolume() const
 {
-    return fVoxelDimension.x() * fVoxelDimension.y() * fVoxelDimension.z();
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineDetectorConstruction::SetNumVoxel(G4int nx, G4int ny, G4int nz)
-{
-    fXNumVoxel = nx;
-    fYNumVoxel = ny;
-    fZNumVoxel = nz;
+    return fDimVoxel.x * fDimVoxel.y * fDimVoxel.z;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 void RoutineDetectorConstruction::GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const
 {
-    nx = fXNumVoxel;
-    ny = fYNumVoxel;
-    nz = fZNumVoxel;
+    nx = fNumVoxel.x;
+    ny = fNumVoxel.y;
+    nz = fNumVoxel.z;
 }
 
 //------------------------------------------------------------
@@ -412,16 +356,16 @@ G4Material* RoutineDetectorConstruction::GetPhantomMaterial(G4int globalIdx) con
 G4double RoutineDetectorConstruction::GetPhantomMass() const
 {
     G4double mass = 0.0;
-    G4double voxelVolume = fVoxelDimension.x() * fVoxelDimension.y() * fVoxelDimension.z();
+    G4double voxelVolume = GetVoxelVolume();
 
-    for(G4int k = 0; k < fZNumVoxel; ++k)
+    for(G4int k = 0; k < fNumVoxel.z; ++k)
     {
-        for(G4int j = 0; j < fYNumVoxel; ++j)
+        for(G4int j = 0; j < fNumVoxel.y; ++j)
         {
-            for(G4int i = 0; i < fXNumVoxel; ++i)
+            for(G4int i = 0; i < fNumVoxel.x; ++i)
             {
                 // x idx changes fastest, z slowest
-                G4int globalIdx = fXNumVoxel * fYNumVoxel * k + fXNumVoxel * j + i;
+                G4int globalIdx = fNumVoxel.x * fNumVoxel.y * k + fNumVoxel.x * j + i;
                 G4Material* material = fparam->GetPhantomMaterial(globalIdx);
                 mass += material->GetDensity() * voxelVolume;
             }
@@ -437,37 +381,30 @@ G4double RoutineDetectorConstruction::GetPhantomMass() const
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineNestedParameterisation::RoutineNestedParameterisation(const G4ThreeVector& voxelSize,
-                                                             const G4int xNumVoxel,
-                                                             const G4int yNumVoxel,
-                                                             const G4int zNumVoxel,
-                                                             std::map<G4String, G4Material*>* materialMap,
-                                                             std::vector<G4Material*>* materialList,
-                                                             std::vector<G4Material*>* phantomMaterialList) : G4VNestedParameterisation()
+RoutineNestedParameterisation::RoutineNestedParameterisation(const RoutineThreeVector<G4double>& dimVoxel,
+                                                             const RoutineThreeVector<G4int>& numVoxel,
+                                                             std::vector<G4Material*>* phantomList,
+                                                             std::vector<G4Material*>* materialList) : G4VNestedParameterisation()
 {
-    fHalfXDimVoxel = voxelSize.x() / 2.0;
-    fHalfYDimVoxel = voxelSize.y() / 2.0;
-    fHalfZDimVoxel = voxelSize.z() / 2.0;
+    fHalfDimVoxel.x = dimVoxel.x / 2.0;
+    fHalfDimVoxel.y = dimVoxel.y / 2.0;
+    fHalfDimVoxel.z = dimVoxel.z / 2.0;
 
-    fXNumVoxel = xNumVoxel;
-    fYNumVoxel = yNumVoxel;
-    fZNumVoxel = zNumVoxel;
-    fTotalNumVoxel = xNumVoxel * yNumVoxel * zNumVoxel;
+    fNumVoxel = numVoxel;
 
-    for(int idx = 0; idx < fXNumVoxel; ++idx)
+    for(int idx = 0; idx < fNumVoxel.x; ++idx)
     {
         // the original voxel template is centered at (0,0,0)
         // we want the whole phantom to be centered at (0,0,0)
         // and we want to determine the shift of each voxel relative to the original template
-        // - fHalfXDimVoxel * fXNumVoxel + fHalfXDimVoxel : the center of the 1st voxel
-        // increment this center by 2.0 * fHalfXDimVoxel for each iteration
-        G4double trans = - fHalfXDimVoxel * fXNumVoxel + fHalfXDimVoxel + 2.0 * fHalfXDimVoxel * idx;
+        // - fHalfDimVoxel.x * fNumVoxel.x + fHalfDimVoxel.x : the center of the 1st voxel
+        // increment this center by 2.0 * fHalfDimVoxel.x for each iteration
+        G4double trans = - fHalfDimVoxel.x * fNumVoxel.x + fHalfDimVoxel.x + 2.0 * fHalfDimVoxel.x * idx;
         fXTranslationList.push_back(trans);
     }
 
-    fMaterialMap = materialMap;
+    fPhantomList  = phantomList;
     fMaterialList = materialList;
-    fPhantomMaterialList = phantomMaterialList;
 }
 
 //------------------------------------------------------------
@@ -478,7 +415,7 @@ RoutineNestedParameterisation::~RoutineNestedParameterisation()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume*, const G4int, const G4VTouchable* parentTouch)
+G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume*, const G4int xVoxelIdx, const G4VTouchable* parentTouch)
 {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // protection for initialization and vis at idle state
@@ -486,24 +423,14 @@ G4Material* RoutineNestedParameterisation::ComputeMaterial(G4VPhysicalVolume*, c
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if(!parentTouch)
     {
-        return fMaterialList->at(0);
+        return fPhantomList->at(0);
     }
 
     G4Material* mat = nullptr;
-    // G4int zVoxelIdx = parentTouch->GetReplicaNumber(1); // parent's (y) parent (z) has depth of 1 relative to parent
-    // G4int yVoxelIdx = parentTouch->GetReplicaNumber(0); // parent (y) has depth of 0 relative to itself
-    // G4int globalIdx = fXNumVoxel * fYNumVoxel * zVoxelIdx + fXNumVoxel * yVoxelIdx + xVoxelIdx;
-
-    // if(zVoxelIdx == 0)
-    // {
-        // mat = fMaterialMap->at("soft_tissue");
-    // }
-    // else
-    // {
-        // mat = fMaterialMap->at("bone");
-    // }
-    mat = fMaterialMap->at("water");
-
+    G4int zVoxelIdx = parentTouch->GetReplicaNumber(1); // parent's (y) parent (z) has depth of 1 relative to parent
+    G4int yVoxelIdx = parentTouch->GetReplicaNumber(0); // parent (y) has depth of 0 relative to itself
+    G4int globalIdx = fNumVoxel.x * fNumVoxel.y * zVoxelIdx + fNumVoxel.x * yVoxelIdx + xVoxelIdx;
+    mat = fPhantomList->at(globalIdx);
     return mat;
 }
 
@@ -518,9 +445,9 @@ void RoutineNestedParameterisation::ComputeTransformation(const G4int xVoxelIdx,
 //------------------------------------------------------------
 void RoutineNestedParameterisation::ComputeDimensions(G4Box& box, const G4int, const G4VPhysicalVolume*) const
 {
-    box.SetXHalfLength(fHalfXDimVoxel);
-    box.SetYHalfLength(fHalfYDimVoxel);
-    box.SetZHalfLength(fHalfZDimVoxel);
+    box.SetXHalfLength(fHalfDimVoxel.x);
+    box.SetYHalfLength(fHalfDimVoxel.y);
+    box.SetZHalfLength(fHalfDimVoxel.z);
 }
 
 //------------------------------------------------------------
@@ -541,7 +468,7 @@ G4Material* RoutineNestedParameterisation::GetMaterial(G4int idx) const
 //------------------------------------------------------------
 G4Material* RoutineNestedParameterisation::GetPhantomMaterial(G4int globalIdx) const
 {
-    return fPhantomMaterialList->at(globalIdx);
+    return fPhantomList->at(globalIdx);
 }
 
 

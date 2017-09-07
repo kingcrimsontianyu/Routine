@@ -26,7 +26,9 @@ RoutinePrimaryGeneratorAction::RoutinePrimaryGeneratorAction(RoutineParameterMan
         fParticleGun->SetParticleDefinition(particle);
     }
 
-    G4ThreeVector dir = {rp->param->sourceDirection.x, rp->param->sourceDirection.y, rp->param->sourceDirection.z};
+    // G4ThreeVector dir = {rp->param->sourceDirection.x, rp->param->sourceDirection.y, rp->param->sourceDirection.z};
+    G4ThreeVector dir = {0.0, -1.0, 0.0};
+
     fParticleGun->SetParticleMomentumDirection(dir);
     fParticleGun->SetParticleEnergy(rp->param->sourceEnergy);
 }
@@ -43,9 +45,15 @@ RoutinePrimaryGeneratorAction::~RoutinePrimaryGeneratorAction()
 void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
     // square pencil beam
-    G4double dx = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
-    G4double dy = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
-    G4ThreeVector position = {dx, dy, rp->param->sourcePosition.z};
+    // G4double dx = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
+    // G4double dy = (G4UniformRand() - 0.5) * rp->param->squareBeamWidth;
+    // G4ThreeVector position = {dx, dy, rp->param->sourcePosition.z};
+
+    G4double dx = (G4UniformRand() - 0.5) * 20.0 * cm;
+    G4double dy = 20.0* cm;
+    G4double dz = (G4UniformRand() - 0.5) * 20.0* cm;
+    G4ThreeVector position = {dx, dy, dz};
+
     fParticleGun->SetParticlePosition(position);
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }

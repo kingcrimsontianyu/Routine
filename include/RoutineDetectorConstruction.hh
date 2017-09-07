@@ -4,6 +4,7 @@
 #include "G4AutoDelete.hh"
 #include "G4ThreeVector.hh"
 #include "G4VUserDetectorConstruction.hh"
+#include "RoutineParameter.hh"
 
 class G4Material;
 class RoutineField;
@@ -24,8 +25,6 @@ public:
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
 
-    void SetPhantomDimension(G4ThreeVector dim);
-    const G4ThreeVector& GetPhantomDimension() const;
     G4double GetVoxelVolume() const;
     void SetNumVoxel(G4int nx, G4int ny, G4int nz);
     void GetNumVoxel(G4int& nx, G4int& ny, G4int& nz) const;
@@ -35,29 +34,26 @@ public:
     G4LogicalVolume* GetLogicVolumeHighestDepthInPhantom() const;
 
     RoutineNestedParameterisation* GetParameterisation() const;
-
-    void ImportFromFile();
     G4Material* GetPhantomMaterial(G4int globalIdx) const;
     G4double GetPhantomMass() const;
 protected:
+    void AddInternalMaterial();
+    void ImportFromFile();
+    void PrintMaterialInfo();
+
     G4LogicalVolume* fLogicVolumeVoxel;
     G4LogicalVolume* fLogicPhantom;
-    G4ThreeVector    fPhantomDimension;
-    G4ThreeVector    fVoxelDimension;
-    G4int            fXNumVoxel;
-    G4int            fYNumVoxel;
-    G4int            fZNumVoxel;
-    G4int            fTotalNumVoxel;
 
+    std::map<G4String, G4Material*> fNonPhantomMaterialMap;
     RoutineParameterManager* rp;
     RoutineNestedParameterisation* fparam;
-    std::map<G4String, G4Material*> fMaterialMap;
-    std::vector<G4Material*> fPhantomMaterialList;
-    std::vector<G4Material*> fMaterialList;
-
+    std::vector<G4Material*> fMaterialList; // dim == num of mcnp universes in the phantom
+    std::vector<G4Material*> fPhantomList; // dim == num of voxels in the phantom
     G4Cache<RoutineField*> fField;
-
     RoutineMCNPImporter* importer;
+    RoutineThreeVector<G4int>      fNumVoxel;
+    RoutineThreeVector<G4double>   fDimVoxel;
+    RoutineThreeVector<G4double>   fDimPhantom;
 };
 
 #endif

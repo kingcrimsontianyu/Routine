@@ -1,5 +1,4 @@
 #include "RoutineImportPhantom.hh"
-#include "RoutineParameter.hh"
 #include "G4NistManager.hh"
 
 //------------------------------------------------------------
@@ -49,7 +48,7 @@ void RoutineMCNPImporter::InputPhantom()
     // AnalyzeUniverseList();
     InputMCNPMaterial();
     InputUniverseToMaterial();
-    BuildG4MaterialList();
+    BuildG4MaterialListAndPhantomList();
 }
 
 //------------------------------------------------------------
@@ -89,13 +88,13 @@ void RoutineMCNPImporter::InputUniverseList()
 
             if(lineIdx == 6)
             {
-                numVoxelX = std::stoi(tempMap["num-voxel-x"]);
-                numVoxelY = std::stoi(tempMap["num-voxel-y"]);
-                numVoxelZ = std::stoi(tempMap["num-voxel-z"]);
-                dimVoxelX = std::stod(tempMap["dim-voxel-x"]);
-                dimVoxelY = std::stod(tempMap["dim-voxel-y"]);
-                dimVoxelZ = std::stod(tempMap["dim-voxel-z"]);
-                totalNumVoxel = numVoxelX * numVoxelY * numVoxelZ;
+                numVoxel.x = std::stoi(tempMap["num-voxel-x"]);
+                numVoxel.y = std::stoi(tempMap["num-voxel-y"]);
+                numVoxel.z = std::stoi(tempMap["num-voxel-z"]);
+                dimVoxel.x = std::stod(tempMap["dim-voxel-x"]) * cm;
+                dimVoxel.y = std::stod(tempMap["dim-voxel-y"]) * cm;
+                dimVoxel.z = std::stod(tempMap["dim-voxel-z"]) * cm;
+                totalNumVoxel = numVoxel.x * numVoxel.y * numVoxel.z;
                 universeList.resize(totalNumVoxel);
             }
 
@@ -293,7 +292,7 @@ void RoutineMCNPImporter::InputUniverseToMaterial()
 
                 UniverseToMCNPMaterialBlob uBlob;
                 is >> uBlob.universeIdx >> uBlob.mcnpMaterialIdx >> uBlob.density;
-                uBlob.density *= -1.0 * (g/cm3);
+                uBlob.density *= -1.0 * (g / cm3);
                 universeToMCNPMaterialList.push_back(uBlob);
             }
         }
@@ -311,8 +310,9 @@ void RoutineMCNPImporter::InputUniverseToMaterial()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineMCNPImporter::BuildG4MaterialList()
+void RoutineMCNPImporter::BuildG4MaterialListAndPhantomList()
 {
+    phantomList.resize(totalNumVoxel, nullptr);
     G4NistManager* nist = G4NistManager::Instance();
 
     // iterate universe-to-material list
@@ -324,6 +324,7 @@ void RoutineMCNPImporter::BuildG4MaterialList()
             if(uBlob.mcnpMaterialIdx == mBlob.mcnpMaterialIdx)
             {
                 // memory released in ~RoutineMCNPImporter()
+                // G4 material name is set to mcnp universe index
                 G4Material* mat = new G4Material(std::to_string(uBlob.universeIdx), uBlob.density, mBlob.ZList.size());
                 for(size_t i = 0; i < mBlob.ZList.size(); ++i)
                 {
@@ -331,12 +332,57 @@ void RoutineMCNPImporter::BuildG4MaterialList()
                     mat->AddElement(el, mBlob.weightFractionList[i]);
                 }
                 g4MaterialList.push_back(mat);
+
+                // for each element of universeList equal to uBlob.mcnpMaterialIdx
+                // add mat to the element of phantomList in the same position
+                for(size_t kk = 0; kk < universeList.size(); ++kk)
+                {
+                    if(universeList[kk] == uBlob.mcnpMaterialIdx)
+                    {
+                        phantomList[kk] = mat;
+                    }
+                }
             }
+        }
+    }
+
+    // sanity check
+    for(auto&& item : phantomList)
+    {
+        if(item == nullptr)
+        {
+            G4String msg = "phantomList should not have nullptr element";
+            G4Exception("RoutineMCNPImporter::BuildG4MaterialListAndPhantomList()", "RoutineReport", FatalException, msg);
         }
     }
 }
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+std::vector<G4Material*>&& RoutineMCNPImporter::PilferPhantomList()
+{
+    return std::move(phantomList);
+}
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+const std::vector<G4Material*>& RoutineMCNPImporter::GetG4MaterialList() const
+{
+    return g4MaterialList;
+}
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineThreeVector<G4int> RoutineMCNPImporter::GetNumVoxel()
+{
+    return numVoxel;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineThreeVector<G4double> RoutineMCNPImporter::GetDimVoxel()
+{
+    return dimVoxel;
+}
 
 
