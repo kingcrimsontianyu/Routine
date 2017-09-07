@@ -297,12 +297,12 @@ void RoutineMCNPImporter::InputUniverseToMaterial()
             }
         }
 
-        // // display
+        // display
         // for(auto&& item : universeToMCNPMaterialList)
         // {
             // G4cout << "    " << std::setw(10) << item.universeIdx
                              // << std::setw(10) << item.mcnpMaterialIdx
-                             // << std::setw(10) << item.density
+                             // << std::setw(10) << item.density / (g / cm3)
                              // << G4endl;
         // }
     }
@@ -337,7 +337,7 @@ void RoutineMCNPImporter::BuildG4MaterialListAndPhantomList()
                 // add mat to the element of phantomList in the same position
                 for(size_t kk = 0; kk < universeList.size(); ++kk)
                 {
-                    if(universeList[kk] == uBlob.mcnpMaterialIdx)
+                    if(universeList[kk] == uBlob.universeIdx)
                     {
                         phantomList[kk] = mat;
                     }
@@ -347,11 +347,11 @@ void RoutineMCNPImporter::BuildG4MaterialListAndPhantomList()
     }
 
     // sanity check
-    for(auto&& item : phantomList)
+    for(size_t i = 0; i < phantomList.size(); ++i)
     {
-        if(item == nullptr)
+        if(phantomList[i] == nullptr)
         {
-            G4String msg = "phantomList should not have nullptr element";
+            G4String msg = "PhantomList's element is not included in the universe list. Universe = " + std::to_string(universeList[i]) + ", i = " + std::to_string(i);
             G4Exception("RoutineMCNPImporter::BuildG4MaterialListAndPhantomList()", "RoutineReport", FatalException, msg);
         }
     }
