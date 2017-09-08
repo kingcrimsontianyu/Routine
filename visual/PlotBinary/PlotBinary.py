@@ -56,6 +56,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('PDF') # non-interactive plot
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 class Manager:
     #------------------------------------------------------------
@@ -74,6 +75,13 @@ class Manager:
         self.totalNumVoxel        = self.num_voxel_x * self.num_voxel_y * self.num_voxel_z
         self.dataList             = []
         self.data3DList           = []
+
+        self.logScale             = False
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
+    def SetLogScale(self):
+        self.logScale = True
 
     #------------------------------------------------------------
     #------------------------------------------------------------
@@ -145,7 +153,10 @@ class Manager:
         fig = plt.figure(figsize = (5, 5))
         ax = fig.add_subplot(1, 1, 1)
         (fig, ax, plotData) = self.InternalPlotPre(plotSize, plotType, fig, ax)
-        mappable = ax.imshow(plotData, interpolation = 'none', origin = 'lower')
+        if self.logScale:
+            mappable = ax.imshow(plotData, interpolation = 'none', origin = 'lower', norm = LogNorm(vmin = np.amin(plotData), vmax = np.amax(plotData)))
+        else:
+            mappable = ax.imshow(plotData, interpolation = 'none', origin = 'lower')
         (fig, ax) = self.InternalPlotPost(mappable, fig, ax, plotData)
         return fig
 
@@ -197,9 +208,14 @@ class Manager:
                         np.amin(plotData2),
                         np.amin(plotData3)])
 
-        mappable1 = ax1.imshow(plotData1, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
-        mappable2 = ax2.imshow(plotData2, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
-        mappable3 = ax3.imshow(plotData3, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+        if self.logScale:
+            mappable1 = ax1.imshow(plotData1, interpolation = 'none', origin = 'lower', norm = LogNorm(vmin = minV, vmax = maxV))
+            mappable2 = ax2.imshow(plotData2, interpolation = 'none', origin = 'lower', norm = LogNorm(vmin = minV, vmax = maxV))
+            mappable3 = ax3.imshow(plotData3, interpolation = 'none', origin = 'lower', norm = LogNorm(vmin = minV, vmax = maxV))
+        else:
+            mappable1 = ax1.imshow(plotData1, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+            mappable2 = ax2.imshow(plotData2, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
+            mappable3 = ax3.imshow(plotData3, interpolation = 'none', origin = 'lower', vmin = minV, vmax = maxV)
 
         fig = self.InternalPlotPostXYZ(fig,
                                        mappable1, mappable2, mappable3,
