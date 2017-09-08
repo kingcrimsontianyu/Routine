@@ -154,35 +154,35 @@ void RoutineParameterManager::SetParameter()
     }
 
 
-    param->sourceEnergy = std::stof(parameterMap["source-energy"].single) * MeV;
-    param->squareBeamWidth = std::stof(parameterMap["square-beam-width"].single) * cm;
+    param->sourceEnergy = std::stod(parameterMap["source-energy"].single) * MeV;
+    param->squareBeamWidth = std::stod(parameterMap["square-beam-width"].single) * cm;
 
-    param->sourcePosition.x = std::stof(parameterMap["source-position"].x) * cm;
-    param->sourcePosition.y = std::stof(parameterMap["source-position"].y) * cm;
-    param->sourcePosition.z = std::stof(parameterMap["source-position"].z) * cm;
+    param->sourcePosition.x = std::stod(parameterMap["source-position"].x) * cm;
+    param->sourcePosition.y = std::stod(parameterMap["source-position"].y) * cm;
+    param->sourcePosition.z = std::stod(parameterMap["source-position"].z) * cm;
 
-    param->sourceDirection.x = std::stof(parameterMap["source-direction"].x);
-    param->sourceDirection.y = std::stof(parameterMap["source-direction"].y);
-    param->sourceDirection.z = std::stof(parameterMap["source-direction"].z);
+    param->sourceDirection.x = std::stod(parameterMap["source-direction"].x);
+    param->sourceDirection.y = std::stod(parameterMap["source-direction"].y);
+    param->sourceDirection.z = std::stod(parameterMap["source-direction"].z);
 
-    param->worldDimension.x = std::stof(parameterMap["world-dim"].x) * cm;
-    param->worldDimension.y = std::stof(parameterMap["world-dim"].y) * cm;
-    param->worldDimension.z = std::stof(parameterMap["world-dim"].z) * cm;
+    param->worldDimension.x = std::stod(parameterMap["world-dim"].x) * cm;
+    param->worldDimension.y = std::stod(parameterMap["world-dim"].y) * cm;
+    param->worldDimension.z = std::stod(parameterMap["world-dim"].z) * cm;
 
-    param->phantomDimension.x = std::stof(parameterMap["phantom-dim"].x) * cm;
-    param->phantomDimension.y = std::stof(parameterMap["phantom-dim"].y) * cm;
-    param->phantomDimension.z = std::stof(parameterMap["phantom-dim"].z) * cm;
+    param->phantomDimension.x = std::stod(parameterMap["phantom-dim"].x) * cm;
+    param->phantomDimension.y = std::stod(parameterMap["phantom-dim"].y) * cm;
+    param->phantomDimension.z = std::stod(parameterMap["phantom-dim"].z) * cm;
 
     param->numVoxel.x = std::stoi(parameterMap["num-voxel"].x);
     param->numVoxel.y = std::stoi(parameterMap["num-voxel"].y);
     param->numVoxel.z = std::stoi(parameterMap["num-voxel"].z);
 
     param->numThread = std::stoi(parameterMap["num-thread"].single);
-    param->numHistory = static_cast<G4int>(std::stof(parameterMap["num-history"].single));
+    param->numHistory = static_cast<G4int>(std::stod(parameterMap["num-history"].single));
 
-    param->magneticField.x = std::stof(parameterMap["magnetic-field"].x) * tesla;
-    param->magneticField.y = std::stof(parameterMap["magnetic-field"].y) * tesla;
-    param->magneticField.z = std::stof(parameterMap["magnetic-field"].z) * tesla;
+    param->magneticField.x = std::stod(parameterMap["magnetic-field"].x) * tesla;
+    param->magneticField.y = std::stod(parameterMap["magnetic-field"].y) * tesla;
+    param->magneticField.z = std::stod(parameterMap["magnetic-field"].z) * tesla;
 
     param->outputSuffix = parameterMap["output-suffix"].single;
 
