@@ -100,9 +100,9 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
     G4String particleName = pd->GetParticleName();
 
     #if defined G4MULTITHREADED
-    G4RunManager* rm = G4RunManager::GetRunManager();
-    #else
     G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+    #else
+    G4RunManager* rm = G4RunManager::GetRunManager();
     #endif
 
     G4Run* run = rm->GetNonConstCurrentRun();
@@ -207,9 +207,9 @@ void RoutineUtility::AccumulateEnergy(const G4Step* step)
     }
 
     #if defined G4MULTITHREADED
-    G4RunManager* rm = G4RunManager::GetRunManager();
-    #else
     G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+    #else
+    G4RunManager* rm = G4RunManager::GetRunManager();
     #endif
 
     G4Run* run = rm->GetNonConstCurrentRun();
@@ -268,9 +268,9 @@ void RoutineUtility::SaveCustomScoreToFile()
     if(file)
     {
         #if defined G4MULTITHREADED
-        G4RunManager* rm = G4RunManager::GetRunManager();
-        #else
         G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
+        #else
+        G4RunManager* rm = G4RunManager::GetRunManager();
         #endif
         G4Run* run = rm->GetNonConstCurrentRun();
         RoutineRun* mergedRun = static_cast<RoutineRun*>(run);
