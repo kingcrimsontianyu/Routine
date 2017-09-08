@@ -36,10 +36,10 @@ public:
     virtual G4Run* GenerateRun();
     virtual void BeginOfRunAction(const G4Run*);
     virtual void EndOfRunAction(const G4Run*);
-    void OutputEnergyTally(const G4String& prefix,
-                           const G4int numHistory,
-                           G4THitsMap<G4double>* hitsMap,
-                           G4THitsMap<G4double>* hitsMapSquared);
+    void OutputVoxelTally(const G4String& prefix,
+                          const G4int numHistory,
+                          G4THitsMap<G4double>* hitsMap,
+                          G4THitsMap<G4double>* hitsMapSquared);
     void AddEdep (G4double edep);
 private:
     G4Accumulable<G4double> fEdep;

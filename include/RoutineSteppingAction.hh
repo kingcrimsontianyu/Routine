@@ -20,7 +20,7 @@ public:
     virtual void UserSteppingAction(const G4Step*);
 
 private:
-    RoutineEventAction*  fEventAction;
+    RoutineEventAction* fEventAction;
     G4LogicalVolume* fScoringVolume;
     RoutineUtility* rut;
 };

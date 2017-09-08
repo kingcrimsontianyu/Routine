@@ -100,7 +100,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyImparted3D"));
         G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyImparted3DSquared"));
-        OutputEnergyTally("dose", numHistory, hitsMap, hitsMapSquared);
+        OutputVoxelTally("dose_voxel", numHistory, hitsMap, hitsMapSquared);
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -113,7 +113,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         auto biuRun = static_cast<const RoutineRun*>(run);
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyTransfer3D"));
         G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyTransfer3DSquared"));
-        OutputEnergyTally("kerma", numHistory, hitsMap, hitsMapSquared);
+        OutputVoxelTally("kerma_voxel", numHistory, hitsMap, hitsMapSquared);
     }
 
     // histograms
@@ -126,10 +126,10 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineRunAction::OutputEnergyTally(const G4String& prefix,
-                                         const G4int numHistory,
-                                         G4THitsMap<G4double>* hitsMap,
-                                         G4THitsMap<G4double>* hitsMapSquared)
+void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
+                                        const G4int numHistory,
+                                        G4THitsMap<G4double>* hitsMap,
+                                        G4THitsMap<G4double>* hitsMapSquared)
 {
     // convert energy to dose per source particle
     auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
@@ -163,7 +163,7 @@ void RoutineRunAction::OutputEnergyTally(const G4String& prefix,
         }
         else
         {
-            G4cout << "    Save dose to " << path << G4endl;
+            G4cout << "    Save voxel tally to " << path << G4endl;
         }
 
         if(!fileRSD)
@@ -173,7 +173,7 @@ void RoutineRunAction::OutputEnergyTally(const G4String& prefix,
         }
         else
         {
-            G4cout << "    Save RSD to " << pathRSD << G4endl;
+            G4cout << "    Save voxel RSD to " << pathRSD << G4endl;
         }
     }
     else
@@ -187,7 +187,7 @@ void RoutineRunAction::OutputEnergyTally(const G4String& prefix,
         }
         else
         {
-            G4cout << "    Save dose and RSD to " << path << G4endl;
+            G4cout << "    Save tally and RSD to " << path << G4endl;
         }
     }
 
