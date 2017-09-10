@@ -20,33 +20,12 @@
 #include "G4Timer.hh"
 #include "RoutineImportPhantom.hh"
 
-// #define USE_GUI
-
 //------------------------------------------------------------
 //------------------------------------------------------------
 int main(int argc, char** argv)
 {
     Impl(argc, argv);
-
-    // Test(argc, argv);
-
     return 0;
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void Test(int argc,char** argv)
-{
-    RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
-    RoutineMCNPImporter* imp = new RoutineMCNPImporter();
-
-    imp->SetMaterialPath(rp->param->materialPath);
-    imp->SetPhantomPath(rp->param->phantomPath);
-    imp->SetUniverseToMaterialPath(rp->param->universeToMaterialPath);
-    imp->InputPhantom();
-
-    delete imp;
-    delete rp;
 }
 
 //------------------------------------------------------------
@@ -57,18 +36,20 @@ void Impl(int argc,char** argv)
     timer.Start();
 
     RoutineParameterManager* rp = new RoutineParameterManager(argc, argv);
+    RoutineUtility* rut = new RoutineUtility(rp);
+    G4UIExecutive* ui = nullptr;
+    G4VisManager* visManager = nullptr;
+    G4UImanager* UImanager = nullptr;
 
     // very verbose in order to glean useful cross-section info
     // G4EmParameters* empar = G4EmParameters::Instance();
     // empar->SetVerbose(3);
 
-    #if defined USE_GUI
-    G4UIExecutive* ui = 0;
-    if ( argc == 1 )
+	G4cout << ">>> " << rp->param->useUI << G4endl;
+    if(rp->param->useUI)
     {
         ui = new G4UIExecutive(argc, argv);
     }
-    #endif
 
     // Choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
@@ -80,7 +61,6 @@ void Impl(int argc,char** argv)
     G4RunManager* runManager = new G4RunManager;
     #endif
 
-    RoutineUtility* rut = new RoutineUtility(rp);
     // rut->SetPrintParticleInfo(true);
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
@@ -97,7 +77,7 @@ void Impl(int argc,char** argv)
     runManager->Initialize();
 
     // must be called after G4RunManager->Initialize();
-    G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    UImanager = G4UImanager::GetUIpointer();
     if(rp->param->isIonSource)
     {
         UImanager->ApplyCommand("/gun/particle ion");
@@ -116,26 +96,25 @@ void Impl(int argc,char** argv)
 
     runManager->BeamOn(rp->param->numHistory);
 
-    #if defined USE_GUI
-    G4VisManager* visManager = new G4VisExecutive;
-    visManager->Initialize();
-    rut->PrintVisualInfo();
-    #endif
-
-    #if defined USE_GUI
-    UImanager->ApplyCommand("/control/execute vis.mac");
-    #endif
+    if(rp->param->useUI)
+    {
+        visManager = new G4VisExecutive;
+        visManager->Initialize();
+        rut->PrintVisualInfo();
+        UImanager->ApplyCommand("/control/execute vis.mac");
+    }
 
     if(rp->param->storePhysicsTable)
     {
         UImanager->ApplyCommand("/run/particle/storePhysicsTable " + rp->param->physicsTableDir);
     }
 
-    #if defined USE_GUI
-    ui->SessionStart();
-    delete ui;
-    delete visManager;
-    #endif
+    if(rp->param->useUI)
+    {
+        ui->SessionStart();
+        delete ui;
+        delete visManager;
+    }
 
     delete rut;
     delete runManager;

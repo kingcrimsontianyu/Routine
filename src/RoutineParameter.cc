@@ -82,6 +82,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["log-physics-info"         ] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["output-binary-voxel-tally"] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["output-dir"               ] = RoutineParameterValue(".", ParamType::Single);
+    parameterMap["use-ui"                   ] = RoutineParameterValue("false", ParamType::Boolean);
 }
 
 //------------------------------------------------------------
@@ -197,6 +198,7 @@ void RoutineParameterManager::SetParameter()
     param->outputBinaryVoxelTally = parameterMap["output-binary-voxel-tally"].flag;
 
     param->outputDir = parameterMap["output-dir"].single;
+    param->useUI = parameterMap["use-ui"].flag;
 }
 
 //------------------------------------------------------------

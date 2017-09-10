@@ -79,6 +79,7 @@ public:
     G4bool                       logPhysicsInfo;
     G4bool                       outputBinaryVoxelTally;
     G4String                     outputDir;
+    G4bool                       useUI;
 };
 
 //------------------------------------------------------------
