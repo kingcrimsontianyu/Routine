@@ -83,6 +83,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["output-binary-voxel-tally"] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["output-dir"               ] = RoutineParameterValue(".", ParamType::Single);
     parameterMap["use-ui"                   ] = RoutineParameterValue("false", ParamType::Boolean);
+    parameterMap["physics"                  ] = RoutineParameterValue("qbbc", ParamType::Single);
 }
 
 //------------------------------------------------------------
@@ -199,6 +200,7 @@ void RoutineParameterManager::SetParameter()
 
     param->outputDir = parameterMap["output-dir"].single;
     param->useUI = parameterMap["use-ui"].flag;
+    param->physics = parameterMap["physics"].single;
 }
 
 //------------------------------------------------------------

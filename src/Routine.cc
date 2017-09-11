@@ -14,7 +14,6 @@
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 
-#include "QGSP_BIC_HP.hh"
 #include "Randomize.hh"
 #include "RoutinePhysics.hh"
 #include "G4Timer.hh"
@@ -45,7 +44,7 @@ void Impl(int argc,char** argv)
     // G4EmParameters* empar = G4EmParameters::Instance();
     // empar->SetVerbose(3);
 
-	G4cout << ">>> " << rp->param->useUI << G4endl;
+    G4cout << ">>> " << rp->param->useUI << G4endl;
     if(rp->param->useUI)
     {
         ui = new G4UIExecutive(argc, argv);
@@ -65,11 +64,7 @@ void Impl(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
 
-    G4VUserPhysicsList* physicsList = new QGSP_BIC_HP;
-    // G4VUserPhysicsList* physicsList = new QBBC;
-    // G4VUserPhysicsList* physicsList = new RoutineQBBC;
-    // G4VUserPhysicsList* physicsList = new RoutineMinimalist;
-    // G4VUserPhysicsList* physicsList = new RoutineTopas;
+    G4VUserPhysicsList* physicsList = rut->ChoosePhysics();
     runManager->SetUserInitialization(physicsList);
 
     runManager->SetUserInitialization(new RoutineActionInitialization(rp, rut));
@@ -124,6 +119,4 @@ void Impl(int argc,char** argv)
     timer.Stop();
     G4cout << "--> Total real elapsed time = "<< timer.GetRealElapsed() << " [sec]" << G4endl;
 }
-
-
 

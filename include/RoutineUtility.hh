@@ -68,6 +68,8 @@ public:
     // called by G4UserSteppingAction::UserSteppingAction()
     void AccumulateEnergy(const G4Step* step);
     void SaveCustomScoreToFile();
+
+    G4VUserPhysicsList* ChoosePhysics();
 protected:
     G4bool bPrintParticleInfo;
     std::vector<G4String> supportedParticleList;

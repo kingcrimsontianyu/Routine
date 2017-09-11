@@ -1,5 +1,8 @@
 #include "RoutineUtility.hh"
 #include "RoutineRun.hh"
+#include "RoutinePhysics.hh"
+#include "QBBC.hh"
+#include "QGSP_BIC_HP.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -332,6 +335,37 @@ void RoutineUtility::SaveCustomScoreToFile()
                 file << G4endl;
             }
         }
+    }
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+G4VUserPhysicsList* RoutineUtility::ChoosePhysics()
+{
+    if(rp->param->physics == "mini-gamma")
+    {
+        return new RoutineMiniGamma;
+    }
+    else if(rp->param->physics == "qgsp_bic_hp")
+    {
+        return new QGSP_BIC_HP;
+    }
+    else if(rp->param->physics == "qbbc")
+    {
+        return new QBBC;
+        // G4VUserPhysicsList* physicsList = new RoutineQBBC;
+    }
+    else if(rp->param->physics == "mini-proton")
+    {
+        return new RoutineMiniProton;
+    }
+    else if(rp->param->physics == "topas")
+    {
+        return new RoutineTopas;
+    }
+    else
+    {
+        return nullptr;
     }
 }
 
