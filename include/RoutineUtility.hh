@@ -29,6 +29,7 @@
 #include "G4VEnergyLossProcess.hh"
 #include "G4VMultipleScattering.hh"
 #include "G4HadronicProcess.hh"
+#include "G4AutoLock.hh"
 
 class G4HistManager;
 class RoutineRun;
@@ -86,6 +87,7 @@ protected:
     std::vector<G4String> supportedParticleList;
     std::vector<G4String> activeParticleList;
     RoutineParameterManager* rp;
+    G4Mutex mut;
 };
 
 //------------------------------------------------------------
