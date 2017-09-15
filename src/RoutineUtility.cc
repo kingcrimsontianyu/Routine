@@ -97,16 +97,15 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
         return;
     }
 
-    PrintParticleInfo(track);
+    // not very useful
+    // PrintParticleInfo(track);
 
     const G4ParticleDefinition* pd = track->GetDefinition();
     G4String particleName = pd->GetParticleName();
 
-    #if defined G4MULTITHREADED
-    G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
-    #else
+    // reference: https://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch03s04.html
+    // returns G4WorkerRunManage
     G4RunManager* rm = G4RunManager::GetRunManager();
-    #endif
 
     G4Run* run = rm->GetNonConstCurrentRun();
     RoutineRun* localRun = static_cast<RoutineRun*>(run);
@@ -209,11 +208,9 @@ void RoutineUtility::AccumulateEnergy(const G4Step* step)
         return;
     }
 
-    #if defined G4MULTITHREADED
-    G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
-    #else
+    // reference: https://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch03s04.html
+    // returns G4WorkerRunManage
     G4RunManager* rm = G4RunManager::GetRunManager();
-    #endif
 
     G4Run* run = rm->GetNonConstCurrentRun();
     RoutineRun* localRun = static_cast<RoutineRun*>(run);
@@ -266,15 +263,14 @@ void RoutineUtility::SaveCustomScoreToFile()
         return;
     }
 
-    std::ofstream file("histogram_" + rp->param->outputSuffix + ".txt");
+    std::ofstream file(rp->param->outputDir + "/" + "histogram_" + rp->param->outputSuffix + ".txt");
 
     if(file)
     {
-        #if defined G4MULTITHREADED
-        G4MTRunManager* rm = G4MTRunManager::GetMasterRunManager();
-        #else
+        // reference: https://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch03s04.html
+        // returns G4WorkerRunManage
         G4RunManager* rm = G4RunManager::GetRunManager();
-        #endif
+
         G4Run* run = rm->GetNonConstCurrentRun();
         RoutineRun* mergedRun = static_cast<RoutineRun*>(run);
         G4int numHistory = rm->GetNumberOfEventsToBeProcessed();

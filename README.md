@@ -9,7 +9,7 @@ kingcrimsontianyu@gmail.com<br>
 Routine is a Geant4-based, simple application for radiation dose calculation.
 
 # Build
-- <tt>git clone git@gitlab.com:kingcrimsontianyu/routine.git</tt><br>
+- <tt>git clone git@gitlab.com:kingcrimsontianyu/Routine.git</tt><br>
   Download the source code
 
 - <tt>mkdir build</tt><br>
