@@ -1,10 +1,7 @@
 #!/bin/bash
 
 BIN=/home/kingcrimson/research/geant4/g4_routine/build/routine
-VALGRIND="valgrind --tool=memcheck --track-origins=yes --leak-check=full"
 
-# photon
-${VALGRIND} \
 ${BIN} \
 --source-type=proton \
 --source-energy=200 \

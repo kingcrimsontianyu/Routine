@@ -15,8 +15,6 @@ if(BUILD_TESTING)
              --output-suffix=qgsp_bic_hp
              --output-dir=output
              --log-physics-info)
-    file(COPY input DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY mcnp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY compare DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY compare input mcnp memcheck.sh run.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output)
 endif()
