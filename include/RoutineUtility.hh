@@ -38,17 +38,15 @@ class RoutineRun;
 class RoutineUtility
 {
 public:
+    //------------------------------------------------------------
+    // member functions for master thread only
+    //------------------------------------------------------------
     RoutineUtility(RoutineParameterManager* rp);
     RoutineUtility();
     ~RoutineUtility();
 
-    // This function shall be called in user's G4UserStackingAction::ClassifyNewTrack(const G4Track* track) method
-    // to print particle information when the particle is about to be simulated. By default this function is not
-    // effective (bPrintParticleInfo == false). Use SetPrintParticleInfo(true) to activate this function.
-    void PrintParticleInfo(const G4Track* track);
-
     // This function shall be used to determine whether particle info is to be printed at runtime.
-    void SetPrintParticleInfo(G4bool choose);
+    void SetPrintParticleInfoByMaster(G4bool choose);
 
     // This function shall be called in user's G4UserRunAction::BeginOfRunAction(const G4Run*) method
     // to print all particles and their associated processes for a given physics list.
@@ -56,20 +54,33 @@ public:
     // Some ions such as O16 are assembled at run-time and are not included in the particle table before
     // the run
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    void PrintPhysicsInfo();
+    void PrintPhysicsInfoByMaster();
 
-    void PrintActivePhysicsInfo();
+    void PrintVisualInfoByMaster();
 
-    void PrintVisualInfo();
+    void SaveCustomScoreToFileByMaster();
+
+    G4VUserPhysicsList* ChoosePhysicsByMaster();
+
+
+
+
+
+    //------------------------------------------------------------
+    // member functions for worker threads
+    //------------------------------------------------------------
+    // This function shall be called in user's G4UserStackingAction::ClassifyNewTrack(const G4Track* track) method
+    // to print particle information when the particle is about to be simulated. By default this function is not
+    // effective (bPrintParticleInfo == false). Use SetPrintParticleInfo(true) to activate this function.
+    void PrintParticleInfoByWorker(const G4Track* track);
 
     // called by G4UserStackingAction::ClassifyNewTrack()
-    void AccumulateCount(const G4Track* track);
+    void AccumulateCountByWorker(const G4Track* track);
 
     // called by G4UserSteppingAction::UserSteppingAction()
-    void AccumulateEnergy(const G4Step* step);
-    void SaveCustomScoreToFile();
+    void AccumulateEnergyByWorker(const G4Step* step);
 
-    G4VUserPhysicsList* ChoosePhysics();
+
 protected:
     G4bool bPrintParticleInfo;
     std::vector<G4String> supportedParticleList;

@@ -26,14 +26,14 @@ RoutineUtility::~RoutineUtility()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::SetPrintParticleInfo(G4bool choose)
+void RoutineUtility::SetPrintParticleInfoByMaster(G4bool choose)
 {
     bPrintParticleInfo = choose;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::PrintParticleInfo(const G4Track* track)
+void RoutineUtility::PrintParticleInfoByWorker(const G4Track* track)
 {
     if(bPrintParticleInfo)
     {
@@ -62,7 +62,7 @@ void RoutineUtility::PrintParticleInfo(const G4Track* track)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::PrintPhysicsInfo()
+void RoutineUtility::PrintPhysicsInfoByMaster()
 {
     G4ParticleTable* theParticleTable = G4ParticleTable::GetParticleTable();
     G4ParticleTable::G4PTblDicIterator* it = theParticleTable->GetIterator();
@@ -90,14 +90,13 @@ void RoutineUtility::PrintPhysicsInfo()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::AccumulateCount(const G4Track* track)
+void RoutineUtility::AccumulateCountByWorker(const G4Track* track)
 {
     if(!rp->param->logPhysicsInfo)
     {
         return;
     }
 
-    // not very useful
     // PrintParticleInfo(track);
 
     const G4ParticleDefinition* pd = track->GetDefinition();
@@ -201,7 +200,7 @@ void RoutineUtility::AccumulateCount(const G4Track* track)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::AccumulateEnergy(const G4Step* step)
+void RoutineUtility::AccumulateEnergyByWorker(const G4Step* step)
 {
     if(!rp->param->logPhysicsInfo)
     {
@@ -233,7 +232,7 @@ void RoutineUtility::AccumulateEnergy(const G4Step* step)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::PrintVisualInfo()
+void RoutineUtility::PrintVisualInfoByMaster()
 {
     G4VisManager* vm = G4VisManager::GetInstance();
     auto gph = vm->GetAvailableGraphicsSystems();
@@ -256,7 +255,7 @@ void RoutineUtility::PrintVisualInfo()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineUtility::SaveCustomScoreToFile()
+void RoutineUtility::SaveCustomScoreToFileByMaster()
 {
     if(!rp->param->logPhysicsInfo)
     {
@@ -336,7 +335,7 @@ void RoutineUtility::SaveCustomScoreToFile()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-G4VUserPhysicsList* RoutineUtility::ChoosePhysics()
+G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
 {
     if(rp->param->physics == "mini-gamma")
     {

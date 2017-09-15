@@ -64,7 +64,7 @@ void Impl(int argc,char** argv)
 
     runManager->SetUserInitialization(new RoutineDetectorConstruction(rp));
 
-    G4VUserPhysicsList* physicsList = rut->ChoosePhysics();
+    G4VUserPhysicsList* physicsList = rut->ChoosePhysicsByMaster();
     runManager->SetUserInitialization(physicsList);
 
     runManager->SetUserInitialization(new RoutineActionInitialization(rp, rut));
@@ -95,7 +95,7 @@ void Impl(int argc,char** argv)
     {
         visManager = new G4VisExecutive;
         visManager->Initialize();
-        rut->PrintVisualInfo();
+        rut->PrintVisualInfoByMaster();
         UImanager->ApplyCommand("/control/execute vis.mac");
     }
 

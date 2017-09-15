@@ -44,7 +44,7 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
         G4double edepStep = step->GetTotalEnergyDeposit();
         fEventAction->AddEdep(edepStep);
 
-        rut->AccumulateEnergy(step);
+        rut->AccumulateEnergyByWorker(step);
     }
 }
 

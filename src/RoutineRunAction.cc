@@ -120,7 +120,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     if(IsMaster())
     {
         G4cout << "--> Output custom scores." << G4endl;
-        rut->SaveCustomScoreToFile();
+        rut->SaveCustomScoreToFileByMaster();
     }
 }
 
