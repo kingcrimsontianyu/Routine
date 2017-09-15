@@ -8,8 +8,8 @@ ${VALGRIND} \
 ${BIN} \
 --source-type=proton \
 --source-energy=200 \
---num-history=1e2 \
---num-thread=4 \
+--num-history=1e5 \
+--num-thread=20 \
 --source-position=0,21,0 \
 --square-beam-width=2 \
 --world-dim=200,200,200 \
