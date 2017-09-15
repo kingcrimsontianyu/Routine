@@ -1,6 +1,6 @@
 MIT License
 ------------------------------
-tl;dr: You can do whatever you want with this code. 
+tl;dr: You can do whatever you want with this code.
 If you love something, set it free.
 
 ------------------------------------------------------------
