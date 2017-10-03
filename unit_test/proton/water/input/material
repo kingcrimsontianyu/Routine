@@ -1,0 +1,13 @@
+c water
+c http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=276
+m1
+     1000   -0.111894
+     8000   -0.888106
+c
+c air
+c http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=104
+m99999
+     6000   -0.000124
+     7000   -0.755267
+     8000   -0.231781
+     18000  -0.012827
