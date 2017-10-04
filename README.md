@@ -43,7 +43,7 @@ Routine is a Geant4-based, simple application for radiation dose calculation. It
     99999  99999     -0.00120479
     ```
 
-To run the simulation, use the command:
+To run a simulation with 200 MeV proton source, use the command:
 ```
 ./routine \
 --source-type=proton \
@@ -60,6 +60,107 @@ To run the simulation, use the command:
 --output-dir=output \
 --log-physics-info \
 --physics=qgsp_bic_hp
+```
+
+The output files include
+- Voxel kerma and uncertainty
+- Voxel dose and uncertainty
+- Statistics of secondary particles --> this is truly great
+
+Here is part of the output file with statistics of secondary particles:
+```
+--> total number of primary particles = 100000
+    number of particles actually simulated = 45
+
+--> particle                      count per source         dose per source          percent [%]              PDG encoding
+    B10                           6.3600000000e-03         4.9026083634e-07         1.66018e-02              1000050100
+    B11                           2.2200000000e-03         1.5808085314e-07         5.35313e-03              1000050110
+    B12                           6.0000000000e-05         6.3403304618e-09         2.14704e-04              1000050120
+    [lines omitted]
+    alpha                         8.9750000000e-02         8.8297919037e-06         2.99006e-01              1000020040
+    deuteron                      1.0849000000e-01         4.8385490644e-06         1.63849e-01              1000010020
+    e+                            1.2620000000e-02         5.0006847093e-07         1.69340e-02              -11
+    e-                            5.2619200000e+00         2.3903304106e-05         8.09444e-01              11
+    gamma                         5.8010000000e-01         1.2418094232e-09         4.20517e-05              22
+    neutron                       2.5426000000e-01         0.0000000000e+00         0.00000e+00              2112
+    proton                        1.0287390000e+01         2.8982135910e-03         9.81430e+01              2212
+    triton                        2.4000000000e-03         2.8479514683e-07         9.64409e-03              1000010030
+    total dose = 2.9530523821e-03
+
+--> process list
+    B10
+        Transportation                :
+        msc                           : UrbanMsc
+        ionIoni                       : BraggIon, BetheBloch
+        ionInelastic                  : Binary Light Ion Cascade, FTFP
+    B11
+        Transportation                :
+        msc                           : UrbanMsc
+        ionIoni                       : BraggIon, BetheBloch
+        ionInelastic                  : Binary Light Ion Cascade, FTFP
+    B12
+        Transportation                :
+        msc                           : UrbanMsc
+        ionIoni                       : BraggIon, BetheBloch
+        ionInelastic                  : Binary Light Ion Cascade, FTFP
+    [lines omitted]
+    alpha
+        Transportation                :
+        msc                           : UrbanMsc
+        ionIoni                       : BraggIon, BetheBloch
+        hadElastic                    : hElasticLHEP
+        alphaInelastic                : Binary Light Ion Cascade, FTFP
+    deuteron
+        Transportation                :
+        msc                           : UrbanMsc
+        hIoni                         : Bragg, BetheBloch
+        hadElastic                    : hElasticLHEP
+        dInelastic                    : Binary Light Ion Cascade, FTFP
+    e+
+        Transportation                :
+        msc                           : UrbanMsc
+        eIoni                         : MollerBhabha
+        eBrem                         : eBremSB, eBremLPM
+        annihil                       : eplus2gg
+        CoulombScat                   : eCoulombScattering
+        positronNuclear               : G4ElectroVDNuclearModel
+    e-
+        Transportation                :
+        msc                           : UrbanMsc
+        eIoni                         : MollerBhabha
+        eBrem                         : eBremSB, eBremLPM
+        CoulombScat                   : eCoulombScattering
+        electronNuclear               : G4ElectroVDNuclearModel
+    gamma
+        Transportation                :
+        phot                          : PhotoElectric
+        compt                         : Klein-Nishina
+        conv                          : BetheHeitler
+        photonNuclear                 : BertiniCascade, TheoFSGenerator
+    neutron
+        Transportation                :
+        Decay                         :
+        hadElastic                    : hElasticCHIPS, NeutronHPElastic
+        neutronInelastic              : QGSP, FTFP, Binary Cascade, NeutronHPInelastic
+        nCapture                      : NeutronHPCapture, nRadCapture
+        nFission                      : NeutronHPFission, G4LFission
+    proton
+        Transportation                :
+        msc                           : UrbanMsc
+        hIoni                         : Bragg, BetheBloch
+        hBrems                        : hBrem
+        hPairProd                     : hPairProd
+        CoulombScat                   : eCoulombScattering
+        hadElastic                    : hElasticCHIPS
+        protonInelastic               : QGSP, FTFP, Binary Cascade
+    triton
+        Transportation                :
+        msc                           : UrbanMsc
+        hIoni                         : Bragg, BetheBloch
+        Decay                         :
+        hadElastic                    : hElasticLHEP
+        tInelastic                    : Binary Light Ion Cascade, FTFP
+
 ```
 
 # Build
