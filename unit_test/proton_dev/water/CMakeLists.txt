@@ -5,7 +5,7 @@ if(BUILD_TESTING)
              --source-type=proton
              --source-energy=200
              --num-history=1
-             --num-thread=20
+             --num-thread=1
              --source-position=0,21,0
              --square-beam-width=2
              --world-dim=200,200,200

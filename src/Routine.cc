@@ -44,7 +44,6 @@ void Impl(int argc,char** argv)
     // G4EmParameters* empar = G4EmParameters::Instance();
     // empar->SetVerbose(3);
 
-    G4cout << ">>> " << rp->param->useUI << G4endl;
     if(rp->param->useUI)
     {
         ui = new G4UIExecutive(argc, argv);
