@@ -137,24 +137,24 @@ void RoutineDetectorConstruction::AddInternalMaterial()
     ZList.clear(); weightFractionList.clear();
     fNonPhantomMaterialMap.insert(std::pair<G4String, G4Material*>("surround_air", air));
 
-    // water
-    // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
-    G4double water_1 = 0.111894;
-    G4double water_2 = 0.888106;
-    G4double water_sum = water_1 + water_2;
-    water_1 /= water_sum;
-    water_2 /= water_sum;
-    ZList.push_back(1 );  weightFractionList.push_back(water_1);
-    ZList.push_back(8 );  weightFractionList.push_back(water_2);
-    density = 1.0 * g / cm3;
-    G4Material* water = new G4Material("water", density, ZList.size());
-    for(size_t i = 0; i < ZList.size(); ++i)
-    {
-        G4Element* el = nist->FindOrBuildElement(ZList[i]);
-        water->AddElement(el, weightFractionList[i]);
-    }
-    ZList.clear(); weightFractionList.clear();
-    fNonPhantomMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
+    // // water
+    // // http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
+    // G4double water_1 = 0.111894;
+    // G4double water_2 = 0.888106;
+    // G4double water_sum = water_1 + water_2;
+    // water_1 /= water_sum;
+    // water_2 /= water_sum;
+    // ZList.push_back(1 );  weightFractionList.push_back(water_1);
+    // ZList.push_back(8 );  weightFractionList.push_back(water_2);
+    // density = 1.0 * g / cm3;
+    // G4Material* water = new G4Material("water", density, ZList.size());
+    // for(size_t i = 0; i < ZList.size(); ++i)
+    // {
+        // G4Element* el = nist->FindOrBuildElement(ZList[i]);
+        // water->AddElement(el, weightFractionList[i]);
+    // }
+    // ZList.clear(); weightFractionList.clear();
+    // fNonPhantomMaterialMap.insert(std::pair<G4String, G4Material*>("water", water));
 }
 
 //------------------------------------------------------------
@@ -190,7 +190,10 @@ void RoutineDetectorConstruction::PrintMaterialInfo()
 //------------------------------------------------------------
 G4VPhysicalVolume* RoutineDetectorConstruction::Construct()
 {
+    // external phantom materials get registered first
     ImportFromFile();
+
+    // internal material (surround_air gets registered second)
     AddInternalMaterial();
     // PrintMaterialInfo();
 

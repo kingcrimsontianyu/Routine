@@ -41,8 +41,8 @@ void Impl(int argc,char** argv)
     G4UImanager* UImanager = nullptr;
 
     // very verbose in order to glean useful cross-section info
-    // G4EmParameters* empar = G4EmParameters::Instance();
-    // empar->SetVerbose(3);
+    G4EmParameters* empar = G4EmParameters::Instance();
+    empar->SetVerbose(3);
 
     if(rp->param->useUI)
     {
