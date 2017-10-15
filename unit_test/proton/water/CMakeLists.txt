@@ -1,5 +1,5 @@
 if(BUILD_TESTING)
-    add_test(NAME test_proton_200MeV
+    add_test(NAME test_proton_full
              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
              COMMAND routine
              --source-type=proton
@@ -17,13 +17,13 @@ if(BUILD_TESTING)
              --log-physics-info
              --physics=qgsp_bic_hp)
 
-    add_test(NAME test_proton_simple
+    add_test(NAME test_proton_mini
              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
              COMMAND routine
              --source-type=proton
              --source-energy=200
              --num-history=1e5
-             --num-thread=20
+             --num-thread=10
              --source-position=0,21,0
              --square-beam-width=2
              --world-dim=200,200,200

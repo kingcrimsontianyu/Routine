@@ -168,23 +168,13 @@ void RoutineTopas::SetCuts()
 RoutineMiniProton::RoutineMiniProton(G4int) : RoutineUserPhysics()
 {
     name = "mini-proton";
+    defaultCutValue = 1000.0 * cm;
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 RoutineMiniProton::~RoutineMiniProton()
 {
-}
-
-//------------------------------------------------------------
-//------------------------------------------------------------
-void RoutineMiniProton::SetCuts()
-{
-    // defaultCutValue = 0.7 * CLHEP::mm;
-    // SetCutValue(defaultCutValue, "gamma");
-
-    // prevent secondary electrons
-    SetCutValue(1.0 * mm, "proton");
 }
 
 //------------------------------------------------------------

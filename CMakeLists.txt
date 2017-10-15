@@ -5,6 +5,13 @@ cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-4.9.4 \
 -DCMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG" \
 -DCMAKE_C_FLAGS_RELEASE="-O2 -DNDEBUG" \
 ../g4_routine
+
+cmake -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-4.9.4 \
+-DCMAKE_C_COMPILER=/usr/local/bin/gcc-4.9.4 \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_CXX_FLAGS_DEBUG="-g -O0" \
+-DCMAKE_C_FLAGS_DEBUG="-g -O0" \
+../g4_routine
 ]]
 
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)

@@ -61,7 +61,6 @@ public:
     virtual ~RoutineMiniProton();
     virtual void ConstructParticle();
     virtual void ConstructProcess();
-    virtual void SetCuts();
 };
 
 //******************************
