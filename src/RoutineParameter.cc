@@ -84,6 +84,7 @@ void RoutineParameterManager::InitializeMap()
     parameterMap["output-dir"               ] = RoutineParameterValue(".", ParamType::Single);
     parameterMap["use-ui"                   ] = RoutineParameterValue("false", ParamType::Boolean);
     parameterMap["physics"                  ] = RoutineParameterValue("qbbc", ParamType::Single);
+    parameterMap["disable-fluctuation"      ] = RoutineParameterValue("false", ParamType::Boolean);
 }
 
 //------------------------------------------------------------
@@ -201,6 +202,8 @@ void RoutineParameterManager::SetParameter()
     param->outputDir = parameterMap["output-dir"].single;
     param->useUI = parameterMap["use-ui"].flag;
     param->physics = parameterMap["physics"].single;
+
+    param->disableFluctuation = parameterMap["disable-fluctuation"].flag;
 }
 
 //------------------------------------------------------------

@@ -19,8 +19,12 @@ class Manager:
         self.full_routineSDList    = []
         self.mini_routineTallyList = []
         self.mini_routineSDList    = []
-        self.routineSDList    = []
-        self.title            = title
+        self.mini_nofluc_routineTallyList = []
+        self.mini_nofluc_routineSDList    = []
+        self.archerTallyList       = []
+        self.archerRSDList         = []
+        self.archerSDList          = []
+        self.title                 = title
 
         # info
         print("--> numpy version: ", np.version.version)
@@ -90,8 +94,28 @@ class Manager:
 
     #------------------------------------------------------------
     #------------------------------------------------------------
+    def InputArcherTally(self, input_path):
+        print("--> Input ARCHER result")
+        self.archerTallyList = np.zeros(self.totalNumVoxel, dtype = np.float64)
+
+        count = 0
+        with open(input_path, 'r') as file:
+            for line in file:
+                lineString = line.split()
+                self.archerTallyList[count] = float(lineString[3])
+                count += 1
+
+        # source position is y positive
+        # source direction is y negative
+        # so we reverse the data for better visualization
+        self.archerTallyList = self.archerTallyList[::-1]
+
+        print("    total number of tally data = ", count)
+
+    #------------------------------------------------------------
+    #------------------------------------------------------------
     def Compare(self):
-        fig = plt.figure(figsize=(10, 5))
+        fig = plt.figure(figsize=(16, 8))
         plt.suptitle(self.title, fontsize=16)
         ax = plt.subplot(1, 1, 1)
 
@@ -99,27 +123,37 @@ class Manager:
         depthList = depthList * self.dim_voxel[1] + self.dim_voxel[1] / 2.0
         # print(depthList)
 
-        mcnpLine, = plt.plot(depthList, self.mcnpTallyList, linestyle='-', color='red',  markerfacecolor='None', markeredgecolor='red', markeredgewidth=1, marker='o', markersize=8)
-        plt.errorbar(depthList, self.mcnpTallyList, yerr=self.mcnpSDList, ecolor='red', elinewidth=0.8, linestyle='None')
+        mcnpLine, = plt.plot(depthList, self.mcnpTallyList, linestyle='-', color='green',  markerfacecolor='None', markeredgecolor='green', markeredgewidth=1, marker='o', markersize=8)
+        plt.errorbar(depthList, self.mcnpTallyList, yerr=self.mcnpSDList, ecolor='green', elinewidth=0.8, linestyle='None')
 
-        full_routineLine, = plt.plot(depthList, self.full_routineTallyList, linestyle='-', color='blue',  markerfacecolor='blue', markeredgecolor='blue', markeredgewidth=1, marker='x', markersize=5)
-        plt.errorbar(depthList, self.full_routineTallyList, yerr=self.full_routineSDList, ecolor='blue', elinewidth=0.8, linestyle='None')
+        full_routineLine, = plt.plot(depthList, self.full_routineTallyList, linestyle='-', color='brown',  markerfacecolor='brown', markeredgecolor='brown', markeredgewidth=1, marker='x', markersize=5)
+        plt.errorbar(depthList, self.full_routineTallyList, yerr=self.full_routineSDList, ecolor='brown', elinewidth=0.8, linestyle='None')
 
-        mini_routineLine, = plt.plot(depthList, self.mini_routineTallyList, linestyle='-', color='green',  markerfacecolor='None', markeredgecolor='green', markeredgewidth=1, marker='^', markersize=8)
-        plt.errorbar(depthList, self.mini_routineTallyList, yerr=self.mini_routineSDList, ecolor='green', elinewidth=0.8, linestyle='None')
+        mini_routineLine, = plt.plot(depthList, self.mini_routineTallyList, linestyle='-', color='olive',  markerfacecolor='None', markeredgecolor='olive', markeredgewidth=1, marker='^', markersize=8)
+        plt.errorbar(depthList, self.mini_routineTallyList, yerr=self.mini_routineSDList, ecolor='olive', elinewidth=0.8, linestyle='None')
+
+        mini_nofluc_routineLine, = plt.plot(depthList, self.mini_nofluc_routineTallyList, linestyle='-', color='blue',  markerfacecolor='None', markeredgecolor='blue', markeredgewidth=1, marker='^', markersize=8)
+        plt.errorbar(depthList, self.mini_routineTallyList, yerr=self.mini_routineSDList, ecolor='blue', elinewidth=0.8, linestyle='None')
+
+        archerLine, = plt.plot(depthList, self.archerTallyList, linestyle='-', color='red',  markerfacecolor='None', markeredgecolor='red', markeredgewidth=1, marker='o', markersize=8)
 
         ax.set_xlabel("Depth [cm]")
         ax.set_ylabel("Absorbed dose [MeV/g]")
-        plt.legend([mcnpLine, full_routineLine, mini_routineLine], ["MCNP 6.1", "Routine (Geant4 10.3.2, full physics)", "Routine (Geant4 10.3.2, mini physics)"], loc='best', shadow=True)
+
+        plt.legend([mcnpLine, full_routineLine, mini_routineLine, mini_nofluc_routineLine, archerLine],
+        ["MCNP 6.1", "Routine (Geant4 10.3.2, full physics)", "Routine (Geant4 10.3.2, mini physics)", "Routine (Geant4 10.3.2, mini physics no fluctuation)", "Archer (mini physics no fluctuation)"],
+        loc='best', shadow=True)
         plt.savefig(self.title + ".pdf", bbox_inches='tight')
         plt.show()
 
 #------------------------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
-    m = Manager((1, 100, 1), (20, 0.2, 20), "Proton 200 MeV")
+    m = Manager((1, 100, 1), (20, 0.2, 20), "Proton 200 MeV in water")
     (m.mcnpTallyList, m.mcnpSDList) = m.InputMCNPTally("../mcnp/mctal")
     (m.full_routineTallyList, m.full_routineSDList) = m.InputRoutineTally("../output/dose_voxel_qgsp_bic_hp.txt")
     (m.mini_routineTallyList, m.mini_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton.txt")
+    (m.mini_nofluc_routineTallyList, m.mini_nofluc_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton-nofluc.txt")
+    m.InputArcherTally("/home/kingcrimson/research/archer_build/unit_test/physics/proton/water/result.txt")
     m.Compare()
 

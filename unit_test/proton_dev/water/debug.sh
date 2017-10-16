@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GDB=/usr/local/bin/gdb
-BIN=/home/kingcrimson/research/geant4/g4_routine/build/routine
+BIN=/home/kingcrimson/research/geant4/g4_routine/build_debug/routine
 
 ${GDB} --args \
 ${BIN} \

@@ -340,7 +340,7 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
 {
     if(rp->param->physics == "mini-gamma")
     {
-        return new RoutineMiniGamma;
+        return new RoutineMiniGamma(rp);
     }
     else if(rp->param->physics == "qgsp_bic_hp")
     {
@@ -353,11 +353,11 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
     }
     else if(rp->param->physics == "mini-proton")
     {
-        return new RoutineMiniProton;
+        return new RoutineMiniProton(rp);
     }
     else if(rp->param->physics == "topas")
     {
-        return new RoutineTopas;
+        return new RoutineTopas(rp);
     }
     else
     {

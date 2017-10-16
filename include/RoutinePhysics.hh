@@ -2,6 +2,7 @@
 #define ROUTINE_PHYSICSLIST_H
 
 #include "G4VModularPhysicsList.hh"
+#include "RoutineParameter.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -9,8 +10,10 @@ class RoutineModularPhysics : public G4VModularPhysicsList
 {
 public:
     G4String name;
-    RoutineModularPhysics() : G4VModularPhysicsList() {};
-    ~RoutineModularPhysics() {};
+    RoutineModularPhysics(RoutineParameterManager* rp);
+    virtual ~RoutineModularPhysics();
+protected:
+    RoutineParameterManager* rp;
 };
 
 //------------------------------------------------------------
@@ -19,8 +22,10 @@ class RoutineUserPhysics : public G4VUserPhysicsList
 {
 public:
     G4String name;
-    RoutineUserPhysics() : G4VUserPhysicsList() {};
-    ~RoutineUserPhysics() {};
+    RoutineUserPhysics(RoutineParameterManager* rp);
+    virtual ~RoutineUserPhysics();
+protected:
+    RoutineParameterManager* rp;
 };
 
 //******************************
@@ -31,7 +36,7 @@ public:
 class RoutineQBBC: public RoutineModularPhysics
 {
 public:
-    RoutineQBBC(G4int ver = 0);
+    RoutineQBBC(RoutineParameterManager* rp, G4int ver = 0);
     virtual ~RoutineQBBC();
     virtual void SetCuts();
 };
@@ -44,7 +49,7 @@ public:
 class RoutineTopas: public RoutineModularPhysics
 {
 public:
-    RoutineTopas(G4int ver = 0);
+    RoutineTopas(RoutineParameterManager* rp, G4int ver = 0);
     virtual ~RoutineTopas();
     virtual void SetCuts();
 };
@@ -57,7 +62,7 @@ public:
 class RoutineMiniProton: public RoutineUserPhysics
 {
 public:
-    RoutineMiniProton(G4int ver = 0);
+    RoutineMiniProton(RoutineParameterManager* rp, G4int ver = 0);
     virtual ~RoutineMiniProton();
     virtual void ConstructParticle();
     virtual void ConstructProcess();
@@ -71,7 +76,7 @@ public:
 class RoutineMiniGamma: public RoutineUserPhysics
 {
 public:
-    RoutineMiniGamma(G4int ver = 0);
+    RoutineMiniGamma(RoutineParameterManager* rp, G4int ver = 0);
     virtual ~RoutineMiniGamma();
     virtual void ConstructParticle();
     virtual void ConstructProcess();

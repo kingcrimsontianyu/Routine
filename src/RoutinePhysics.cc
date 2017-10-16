@@ -94,12 +94,34 @@
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineModularPhysics::RoutineModularPhysics(RoutineParameterManager* rp_ext)
+: G4VModularPhysicsList(),
+rp(rp_ext)
+{}
+
+RoutineModularPhysics::~RoutineModularPhysics()
+{}
+
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineUserPhysics::RoutineUserPhysics(RoutineParameterManager* rp_ext)
+: G4VUserPhysicsList(),
+rp(rp_ext)
+{}
+
+RoutineUserPhysics::~RoutineUserPhysics()
+{}
+
 //******************************
 // QBBC
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineQBBC::RoutineQBBC(G4int ver)
+RoutineQBBC::RoutineQBBC(RoutineParameterManager* rp_ext, G4int ver) :
+RoutineModularPhysics(rp_ext)
 {
     name = "QBBC";
     defaultCutValue = 0.7 * CLHEP::mm;
@@ -132,7 +154,8 @@ void RoutineQBBC::SetCuts()
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineTopas::RoutineTopas(G4int ver) : RoutineModularPhysics()
+RoutineTopas::RoutineTopas(RoutineParameterManager* rp_ext, G4int ver) :
+RoutineModularPhysics(rp_ext)
 {
     name = "topas";
 
@@ -165,7 +188,8 @@ void RoutineTopas::SetCuts()
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineMiniProton::RoutineMiniProton(G4int) : RoutineUserPhysics()
+RoutineMiniProton::RoutineMiniProton(RoutineParameterManager* rp_ext, G4int) :
+RoutineUserPhysics(rp_ext)
 {
     name = "mini-proton";
     defaultCutValue = 1000.0 * cm;
@@ -205,7 +229,16 @@ void RoutineMiniProton::ConstructProcess()
 
         if (particleName == "proton")
         {
-            ph->RegisterProcess(new G4hIonisation(), particle);
+            auto hIon = new G4hIonisation();
+            if(rp->param->disableFluctuation)
+            {
+                hIon->SetLossFluctuations(false);
+            }
+            else
+            {
+                hIon->SetLossFluctuations(true);
+            }
+            ph->RegisterProcess(hIon, particle);
 
             // G4BinaryCascade* model = new G4BinaryCascade();
             // model->SetMinEnergy(0);
@@ -230,7 +263,8 @@ void RoutineMiniProton::ConstructProcess()
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutineMiniGamma::RoutineMiniGamma(G4int) : RoutineUserPhysics()
+RoutineMiniGamma::RoutineMiniGamma(RoutineParameterManager* rp_ext, G4int) :
+RoutineUserPhysics(rp_ext)
 {
     name = "mini-gamma";
 }

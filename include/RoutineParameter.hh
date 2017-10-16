@@ -81,6 +81,7 @@ public:
     G4String                     outputDir;
     G4bool                       useUI;
     G4String                     physics;
+    G4bool                       disableFluctuation;
 };
 
 //------------------------------------------------------------
