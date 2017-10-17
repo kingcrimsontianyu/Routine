@@ -12,7 +12,8 @@ if(BUILD_TESTING)
              --phantom-path=input/phantom
              --material-path=input/material
              --universe-to-material-path=input/universe_to_material
-             --output-suffix=mini-proton
+             --disable-fluctuation
+             --output-suffix=mini-proton-nofluc
              --output-dir=output
              --log-physics-info
              --store-physics-table
