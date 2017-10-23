@@ -22,18 +22,9 @@ Routine is a Geant4-based, simple application for radiation dose calculation. It
 - material: Define material in MCNP way. In MCNP, a material is not associated with density.
     ```
     c water
-    c http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=276
     m1
          1000   -0.111894
          8000   -0.888106
-    c
-    c air
-    c http://physics.nist.gov/cgi-bin/Star/compos.pl?refer=ap&matno=104
-    m99999
-         6000   -0.000124
-         7000   -0.755267
-         8000   -0.231781
-         18000  -0.012827
     ```
 
 - universe_to_material: In MCNP, a material is not associated with density, and a universe is associated with a material and a density. So conceptually MCNP's universe is identical to Geant4's material.
