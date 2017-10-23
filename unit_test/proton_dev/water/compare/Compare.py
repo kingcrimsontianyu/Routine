@@ -111,7 +111,7 @@ class Manager:
 #------------------------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
-    m = Manager((1, 100, 1), (20, 0.2, 20), "Proton 200 MeV")
+    m = Manager((1, 100, 1), (40, 0.4, 40), "Proton 200 MeV")
     m.InputMCNPTally("../mcnp/mctal")
     m.InputRoutineTally("../output/dose_voxel_qgsp_bic_hp.txt")
     m.Compare()

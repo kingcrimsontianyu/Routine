@@ -154,12 +154,12 @@ class Manager:
 #------------------------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
-    m = Manager((1, 100, 1), (20, 0.2, 20), "Proton 200 MeV in water")
+    m = Manager((1, 100, 1), (40, 0.4, 40), "Proton 200 MeV in water")
     (m.mcnpTallyList, m.mcnpSDList) = m.InputMCNPTally("../mcnp/mctal")
     (m.full_routineTallyList, m.full_routineSDList) = m.InputRoutineTally("../output/dose_voxel_qgsp_bic_hp.txt")
     (m.mini_routineTallyList, m.mini_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton.txt")
     (m.mini_nofluc_routineTallyList, m.mini_nofluc_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton-nofluc.txt")
     # hardcoded
-    m.InputArcherTally("/home/kingcrimson/research/archer_build/unit_test/physics/proton/water/result.txt")
+    m.InputArcherTally("/home/kingcrimson/research/archer_build_debug/unit_test/physics/proton/water/result.txt")
     m.Compare()
 

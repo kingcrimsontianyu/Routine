@@ -60,7 +60,7 @@ RoutineParameterManager::~RoutineParameterManager()
 void RoutineParameterManager::InitializeMap()
 {
     // predefined parameter map
-    parameterMap["source-type"              ] = RoutineParameterValue("proton", ParamType::Single); // proton, gamma, e-, e+
+    parameterMap["source-type"              ] = RoutineParameterValue("none", ParamType::Single);
     parameterMap["source-energy"            ] = RoutineParameterValue("200", ParamType::Single); // MeV
     parameterMap["source-position"          ] = RoutineParameterValue("0, 0, -10.1", ParamType::ThreeVector); // cm
     parameterMap["source-direction"         ] = RoutineParameterValue("0, 0, 1", ParamType::ThreeVector);
@@ -143,7 +143,7 @@ void RoutineParameterManager::SetParameter()
     if(!parameterMap["source-ion-Z"].single.empty() &&
        !parameterMap["source-ion-A"].single.empty())
     {
-        param->sourceType = "none";
+        param->sourceType = "ion";
         param->isIonSource = true;
         param->sourceIonZ = std::stoi(parameterMap["source-ion-Z"].single);
         param->sourceIonA = std::stoi(parameterMap["source-ion-A"].single);

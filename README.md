@@ -40,7 +40,6 @@ Routine is a Geant4-based, simple application for radiation dose calculation. It
     ```
     c universe       material   density
         1      1     -1.0
-    99999  99999     -0.00120479
     ```
 
 To run a simulation with 200 MeV proton source, use the command:
@@ -62,12 +61,32 @@ To run a simulation with 200 MeV proton source, use the command:
 --physics=qgsp_bic_hp
 ```
 
+To run a simulation with 2400 MeV Carbon-12 ion source, use the command:
+```
+./routine \
+--source-ion-Z=6 \
+--source-ion-A=6 \
+--source-energy=2400 \
+--num-history=1e4 \
+--num-thread=20 \
+--source-position=0,9.999,0 \
+--square-beam-width=0.1 \
+--world-dim=200,200,200 \
+--phantom-path=input/phantom \
+--material-path=input/material \
+--universe-to-material-path=input/universe_to_material \
+--output-suffix=qgsp_bic_hp \
+--output-dir=output \
+--log-physics-info \
+--physics=qgsp_bic_hp
+```
+
 The output files include
 - Voxel kerma and uncertainty
 - Voxel dose and uncertainty
 - Statistics of secondary particles --> this is truly great
 
-Here is part of the output file with statistics of secondary particles:
+Here is a sample output file:
 ```
 --> total number of primary particles = 100000
     number of particles actually simulated = 45
