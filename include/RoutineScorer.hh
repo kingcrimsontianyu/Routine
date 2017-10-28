@@ -3,6 +3,7 @@
 
 #include "G4PSEnergyDeposit.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4PSTrackLength.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -49,5 +50,25 @@ protected:
     G4int fYNumVoxel;
     G4int fZNumVoxel;
 };
+
+//------------------------------------------------------------
+// score track-length for primary particles
+// The reason I did not just subclass G4PSTrackLength is
+// that G4PSTrackLength has some private members that cannot
+// be used, an annoying design limitation.
+//------------------------------------------------------------
+class RoutinePSPrimaryTrackLength : public G4VPrimitiveScorer
+{
+public:
+    RoutinePSPrimaryTrackLength(G4String name);
+    virtual ~RoutinePSPrimaryTrackLength();
+    virtual void Initialize(G4HCofThisEvent*);
+protected:
+    virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*) override;
+
+    G4int HCID;
+    G4THitsMap<G4double>* EvtMap;
+};
+
 #endif
 

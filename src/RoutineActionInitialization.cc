@@ -23,7 +23,8 @@ void RoutineActionInitialization::BuildForMaster() const
 void RoutineActionInitialization::Build() const
 {
     // primary generation class
-    SetUserAction(new RoutinePrimaryGeneratorAction(rp));
+    RoutinePrimaryGeneratorAction* primaryGen = new RoutinePrimaryGeneratorAction(rp);
+    SetUserAction(primaryGen);
 
     // user run action class
     RoutineRunAction* runAction = new RoutineRunAction(rp, rut);
@@ -34,10 +35,15 @@ void RoutineActionInitialization::Build() const
     SetUserAction(eventAction);
 
     // user stepping action class (delta track)
-    SetUserAction(new RoutineSteppingAction(eventAction, rut));
+    RoutineSteppingAction* steppingAction = new RoutineSteppingAction(eventAction, rut);
+    SetUserAction(steppingAction);
 
     // user stacking action class
     RoutineStackingAction* stackingAction = new RoutineStackingAction(rut);
     SetUserAction(stackingAction);
+
+    // user tracking action class
+    RoutineTrackingAction* trackingAction = new RoutineTrackingAction(primaryGen);
+    SetUserAction(trackingAction);
 }
 

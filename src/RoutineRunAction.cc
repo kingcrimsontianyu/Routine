@@ -116,6 +116,32 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         OutputVoxelTally("kerma_voxel", numHistory, hitsMap, hitsMapSquared);
     }
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // range
+    // scoring based on hits map
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(IsMaster())
+    {
+        G4cout << "--> Output range." << G4endl;
+        auto biuRun = static_cast<const RoutineRun*>(run);
+        G4double mean, rsd;
+        CalculateMeanAndRsd(mean,
+                            rsd,
+                            numHistory,
+                            biuRun->fTrueRange,
+                            biuRun->fTrueRange2);
+        G4cout << "    True range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
+               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+
+        CalculateMeanAndRsd(mean,
+                            rsd,
+                            numHistory,
+                            biuRun->fProjectedRange,
+                            biuRun->fProjectedRange2);
+        G4cout << "    Projected range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
+               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+    }
+
     // histograms
     if(IsMaster())
     {
@@ -276,6 +302,37 @@ void RoutineRunAction::AddEdep(G4double edep)
     fEdep2 += edep * edep;
 }
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRunAction::CalculateMeanAndRsd(G4double& mean,
+                                           G4double& rsd,
+                                           const G4int numHistory,
+                                           const G4double x,
+                                           const G4double x2)
+{
+    G4double sigma = x2 - x * x / numHistory;
+
+    if (sigma > 0.0)
+    {
+        sigma = std::sqrt(sigma);
+    }
+    else
+    {
+        sigma = 0.0;
+    }
+
+    mean = x / numHistory;
+    sigma /= numHistory;
+
+    if(x != 0.0)
+    {
+        rsd = sigma / x;
+    }
+    else
+    {
+        rsd = 0.0;
+    }
+}
 
 
 

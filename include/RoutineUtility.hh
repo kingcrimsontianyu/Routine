@@ -94,8 +94,10 @@ protected:
 //------------------------------------------------------------
 struct ProcessBlob
 {
+    ProcessBlob();
     G4String processName;
     std::vector<G4String> modelName;
+    G4bool hasOccurred;
 };
 
 //------------------------------------------------------------

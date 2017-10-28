@@ -6,8 +6,8 @@ if(BUILD_TESTING)
              --source-energy=200
              --num-history=1e5
              --num-thread=20
-             --source-position=0,21,0
-             --square-beam-width=2
+             --source-position=0,19.999,0
+             --square-beam-width=0
              --world-dim=200,200,200
              --phantom-path=input/phantom
              --material-path=input/material
@@ -24,8 +24,8 @@ if(BUILD_TESTING)
              --source-energy=200
              --num-history=1e5
              --num-thread=10
-             --source-position=0,21,0
-             --square-beam-width=2
+             --source-position=0,19.999,0
+             --square-beam-width=0
              --world-dim=200,200,200
              --phantom-path=input/phantom
              --material-path=input/material
@@ -42,8 +42,8 @@ if(BUILD_TESTING)
              --source-energy=200
              --num-history=1e5
              --num-thread=10
-             --source-position=0,21,0
-             --square-beam-width=2
+             --source-position=0,19.999,0
+             --square-beam-width=0
              --world-dim=200,200,200
              --phantom-path=input/phantom
              --material-path=input/material

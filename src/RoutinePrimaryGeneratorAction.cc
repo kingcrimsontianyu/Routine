@@ -54,5 +54,9 @@ void RoutinePrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }
 
-
-
+//------------------------------------------------------------
+//------------------------------------------------------------
+G4ParticleGun* RoutinePrimaryGeneratorAction::GetParticleGun()
+{
+    return fParticleGun;
+}

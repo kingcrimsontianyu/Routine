@@ -40,6 +40,11 @@ public:
                           const G4int numHistory,
                           G4THitsMap<G4double>* hitsMap,
                           G4THitsMap<G4double>* hitsMapSquared);
+    void CalculateMeanAndRsd(G4double& mean,
+                             G4double& rsd,
+                             const G4int numHistory,
+                             const G4double x,
+                             const G4double x2);
     void AddEdep (G4double edep);
 private:
     G4Accumulable<G4double> fEdep;

@@ -6,6 +6,14 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
+ProcessBlob::ProcessBlob() :
+hasOccurred(false)
+{
+
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
 RoutineUtility::RoutineUtility(RoutineParameterManager* rp_ext)
 : bPrintParticleInfo(false), rp(rp_ext), mut(G4MUTEX_INITIALIZER)
 {
@@ -229,6 +237,19 @@ void RoutineUtility::AccumulateEnergyByWorker(const G4Step* step)
         RoutineCustomScore temp(0.0, step->GetTotalEnergyDeposit());
         localRun->GetCSMap().insert(std::pair<G4String, RoutineCustomScore>(particleName, temp));
     }
+
+    //
+    auto& ref = localRun->GetCSMap()[particleName].processList;
+    // for each registered process
+    for(auto&& proc : ref)
+    {
+        bool checkCondition = true;
+        // todo: access stepping manager
+        if(checkCondition)
+        {
+            proc.hasOccurred = true;
+        }
+    }
 }
 
 //------------------------------------------------------------
@@ -318,6 +339,14 @@ void RoutineUtility::SaveCustomScoreToFileByMaster()
             for(size_t j = 0; j < it->second.processList.size(); ++j)
             {
                 file << "        " << std::setw(30) << std::left << it->second.processList[j].processName << ": ";
+
+                // todo
+                // std::string msg;
+                // if(it->second.processList[j].hasOccurred)
+                // {
+                    // msg = "occurred";
+                // }
+                // file << std::setw(20) << msg;
 
                 for(size_t mi = 0; mi < it->second.processList[j].modelName.size(); ++mi)
                 {

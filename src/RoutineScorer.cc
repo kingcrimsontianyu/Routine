@@ -132,4 +132,59 @@ void RoutinePSEnergyTransfer::clear()
 
 
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutinePSPrimaryTrackLength::RoutinePSPrimaryTrackLength(G4String name) :
+G4VPrimitiveScorer(name, 0),
+HCID(-1),
+EvtMap(0)
+{
+    SetUnit("mm");
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutinePSPrimaryTrackLength::~RoutinePSPrimaryTrackLength()
+{}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+G4bool RoutinePSPrimaryTrackLength::ProcessHits(G4Step* aStep, G4TouchableHistory*)
+{
+    G4double trklength = aStep->GetStepLength();
+    G4Track* track = aStep->GetTrack();
+    G4int parentId = track->GetParentID();
+
+    if (trklength == 0.0)
+    {
+        return FALSE;
+    }
+
+    // only score if the particle is primary particle
+    if(parentId == 0)
+    {
+        G4int index = GetIndex(aStep);
+        EvtMap->add(index, trklength);
+    }
+
+    return TRUE;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutinePSPrimaryTrackLength::Initialize(G4HCofThisEvent* HCE)
+{
+    EvtMap = new G4THitsMap<G4double>(detector->GetName(),GetName());
+    if(HCID < 0)
+    {
+        HCID = GetCollectionID(0);
+    }
+    HCE->AddHitsCollection(HCID, (G4VHitsCollection*)EvtMap);
+}
+
+
+
+
+
+
 

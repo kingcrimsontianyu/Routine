@@ -17,6 +17,7 @@
 #include "G4PVParameterised.hh"
 #include "G4PSDoseDeposit.hh"
 #include "G4PSEnergyDeposit.hh"
+#include "G4PSTrackLength.hh"
 #include "RoutineScorer.hh"
 #include "RoutineField.hh"
 #include "G4VNestedParameterisation.hh"

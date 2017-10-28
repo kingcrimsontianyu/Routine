@@ -229,6 +229,7 @@ void RoutineMiniProton::ConstructProcess()
 
         if (particleName == "proton")
         {
+            // ionization
             auto hIon = new G4hIonisation();
             if(rp->param->disableFluctuation)
             {
@@ -239,6 +240,22 @@ void RoutineMiniProton::ConstructProcess()
                 hIon->SetLossFluctuations(true);
             }
             ph->RegisterProcess(hIon, particle);
+
+            // multiple scattering
+            G4hMultipleScattering* pmsc = new G4hMultipleScattering();
+            ph->RegisterProcess(pmsc, particle);
+
+            // bremsstrahlung
+            G4hBremsstrahlung* pb = new G4hBremsstrahlung();
+            ph->RegisterProcess(pb, particle);
+
+            // pair production
+            G4hPairProduction* pp = new G4hPairProduction();
+            ph->RegisterProcess(pp, particle);
+
+            // coulomb scattering
+            G4CoulombScattering* pss = new G4CoulombScattering();
+            ph->RegisterProcess(pss, particle);
 
             // G4BinaryCascade* model = new G4BinaryCascade();
             // model->SetMinEnergy(0);

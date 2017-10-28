@@ -20,7 +20,7 @@ public:
     virtual void GeneratePrimaries(G4Event*);
 
     // method to access particle gun
-    const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
+    G4ParticleGun* GetParticleGun();
 
 private:
     RoutineParameterManager* rp;

@@ -4,7 +4,7 @@ if(BUILD_TESTING)
              COMMAND routine
              --source-type=proton
              --source-energy=200
-             --num-history=1
+             --num-history=10
              --num-thread=1
              --source-position=0,19.999,0
              --square-beam-width=0

@@ -7,6 +7,7 @@
 #include "RoutineEventAction.hh"
 #include "RoutineSteppingAction.hh"
 #include "RoutineStackingAction.hh"
+#include "RoutineTrackingAction.hh"
 #include "RoutineRun.hh"
 #include "RoutineParameter.hh"
 

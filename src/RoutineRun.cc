@@ -7,7 +7,12 @@
 //------------------------------------------------------------
 // allocate run scope scoring container
 //------------------------------------------------------------
-RoutineRun::RoutineRun(G4String mfdName) : G4Run()
+RoutineRun::RoutineRun(G4String mfdName) :
+G4Run(),
+fTrueRange(0.0),
+fTrueRange2(0.0),
+fProjectedRange(0.0),
+fProjectedRange2(0.0)
 {
     G4SDManager* sdManager = G4SDManager::GetSDMpointer();
 
@@ -102,6 +107,12 @@ void RoutineRun::Merge(const G4Run * aRun)
         }
     }
 
+    // other
+    fTrueRange       += localRun->fTrueRange      ;
+    fTrueRange2      += localRun->fTrueRange2     ;
+    fProjectedRange  += localRun->fProjectedRange ;
+    fProjectedRange2 += localRun->fProjectedRange2;
+
     G4Run::Merge(aRun);
 }
 
@@ -134,6 +145,25 @@ G4THitsMap<G4double>* RoutineRun::GetHitsMapSquared(const G4String& fullName) co
     }
     return result;
 }
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRun::AddTrueRange(G4double x)
+{
+    fTrueRange  += x;
+    fTrueRange2 += x * x;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRun::AddProjectedRange(G4double x)
+{
+    fProjectedRange  += x;
+    fProjectedRange2 += x * x;
+}
+
+
+
 
 
 

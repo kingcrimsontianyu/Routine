@@ -8,6 +8,7 @@
 #include <vector>
 #include "RoutineUtility.hh"
 
+class RoutineRunAction;
 class RoutineRun : public G4Run
 {
 
@@ -25,6 +26,9 @@ public:
     void DumpAllScorer();
 
     std::map<G4String, RoutineCustomScore>& GetCSMap() {return csMap;}
+
+    void AddTrueRange(G4double x);
+    void AddProjectedRange(G4double x);
 private:
     std::vector<G4String> fCollectionName;
     std::vector<G4int> fCollectionID;
@@ -33,6 +37,9 @@ private:
     std::vector<G4THitsMap<G4double>*> fRunMapSquared;
 
     std::map<G4String, RoutineCustomScore> csMap;
+    G4double fTrueRange, fTrueRange2;
+    G4double fProjectedRange, fProjectedRange2;
+    friend class RoutineRunAction;
 };
 
 #endif
