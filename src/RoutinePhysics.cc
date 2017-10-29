@@ -93,6 +93,7 @@
 #include "G4PhotoElectricEffect.hh"
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
+#include "G4LossTableManager.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -273,6 +274,10 @@ void RoutineMiniProton::ConstructProcess()
         // }
 
     }
+
+    // deexcitation
+    G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();
+    G4LossTableManager::Instance()->SetAtomDeexcitation(de);
 }
 
 //******************************

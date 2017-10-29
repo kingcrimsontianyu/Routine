@@ -29,6 +29,7 @@ public:
 
     void AddTrueRange(G4double x);
     void AddProjectedRange(G4double x);
+    void AddShortestStepProcess(const G4String& procName);
 private:
     std::vector<G4String> fCollectionName;
     std::vector<G4int> fCollectionID;
@@ -39,6 +40,8 @@ private:
     std::map<G4String, RoutineCustomScore> csMap;
     G4double fTrueRange, fTrueRange2;
     G4double fProjectedRange, fProjectedRange2;
+    std::map<G4String, G4int> fShortestStepProcList;
+
     friend class RoutineRunAction;
 };
 

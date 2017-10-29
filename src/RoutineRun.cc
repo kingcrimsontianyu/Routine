@@ -113,6 +113,21 @@ void RoutineRun::Merge(const G4Run * aRun)
     fProjectedRange  += localRun->fProjectedRange ;
     fProjectedRange2 += localRun->fProjectedRange2;
 
+    for(auto it = localRun->fShortestStepProcList.begin(); it != localRun->fShortestStepProcList.end(); ++it)
+    {
+
+        G4String procName = it->first;
+        G4int localCount = it->second;
+        if(fShortestStepProcList.find(procName) == fShortestStepProcList.end())
+        {
+            fShortestStepProcList[procName] = localCount;
+        }
+        else
+        {
+            fShortestStepProcList[procName] += localCount;
+        }
+    }
+
     G4Run::Merge(aRun);
 }
 
@@ -161,6 +176,23 @@ void RoutineRun::AddProjectedRange(G4double x)
     fProjectedRange  += x;
     fProjectedRange2 += x * x;
 }
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRun::AddShortestStepProcess(const G4String& procName)
+{
+    std::map<G4String,G4int>::iterator it = fShortestStepProcList.find(procName);
+    if(it == fShortestStepProcList.end()) // not found
+    {
+        fShortestStepProcList[procName] = 1;
+    }
+    else
+    {
+        fShortestStepProcList[procName]++;
+    }
+}
+
+
 
 
 

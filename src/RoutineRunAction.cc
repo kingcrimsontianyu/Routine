@@ -142,6 +142,21 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
                << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
     }
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // shortest-step process
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(IsMaster())
+    {
+        G4cout << "--> Output shortest-step process." << G4endl;
+        auto biuRun = static_cast<const RoutineRun*>(run);
+        G4cout << "    " << std::setw(20) << std::left << "Process" << std::setw(20) << "Occurrence per primary particle [%]" << G4endl;
+        for(auto it = biuRun->fShortestStepProcList.begin(); it != biuRun->fShortestStepProcList.end(); ++it)
+        {
+            G4cout << "    " << std::setw(20) << std::left << it->first
+                   << std::setw(20) << static_cast<G4double>(it->second) / static_cast<G4double>(numHistory) * 100.0 << G4endl;
+        }
+    }
+
     // histograms
     if(IsMaster())
     {

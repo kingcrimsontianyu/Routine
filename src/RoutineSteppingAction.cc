@@ -45,6 +45,18 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
         fEventAction->AddEdep(edepStep);
 
         rut->AccumulateEnergyByWorker(step);
+
+        // for primary particles
+        G4Track* aTrack = step->GetTrack();
+        if(aTrack->GetTrackID() == 1)
+        {
+            RoutineRun* run = static_cast<RoutineRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+            auto process = step->GetPostStepPoint()->GetProcessDefinedStep();
+            if(process)
+            {
+                run->AddShortestStepProcess(process->GetProcessName());
+            }
+        }
     }
 }
 
