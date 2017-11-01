@@ -66,6 +66,9 @@ public:
     virtual ~RoutineMiniProton();
     virtual void ConstructParticle();
     virtual void ConstructProcess();
+
+protected:
+    G4VPhysicsConstructor* fHadronPhys;
 };
 
 //******************************
@@ -83,6 +86,18 @@ public:
     virtual void SetCuts();
 };
 
-
+//******************************
+// single event proton
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+class RoutineSingleScatteringProton: public RoutineUserPhysics
+{
+public:
+    RoutineSingleScatteringProton(RoutineParameterManager* rp, G4int ver = 0);
+    virtual ~RoutineSingleScatteringProton();
+    virtual void ConstructParticle();
+    virtual void ConstructProcess();
+};
 
 #endif

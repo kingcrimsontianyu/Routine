@@ -83,6 +83,7 @@
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #include "G4DataQuestionaire.hh"
 #include "G4IonBinaryCascadePhysics.hh"
+#include "G4HadronElasticPhysics.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 #include "G4EmExtraPhysics.hh"
 #include "G4HadronElasticPhysicsXS.hh"
@@ -94,6 +95,13 @@
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
 #include "G4LossTableManager.hh"
+
+#include "G4HadronElasticProcess.hh"
+#include "G4HadronElastic.hh"
+#include "G4CrossSectionDataSetRegistry.hh"
+#include "G4ChipsProtonElasticXS.hh"
+#include "G4ChipsElasticModel.hh"
+#include "G4EmProcessOptions.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -225,10 +233,11 @@ void RoutineMiniProton::ConstructProcess()
     {
         G4ParticleDefinition* particle = GetParticleIterator()->value();
         G4String particleName = particle->GetParticleName();
+        G4ProcessManager* pmanager = particle->GetProcessManager();
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
 
-        if (particleName == "proton")
+        if(particleName == "proton")
         {
             // ionization
             auto hIon = new G4hIonisation();
@@ -258,6 +267,17 @@ void RoutineMiniProton::ConstructProcess()
             G4CoulombScattering* pss = new G4CoulombScattering();
             ph->RegisterProcess(pss, particle);
 
+            // G4EmProcessOptions ctor calls singleton G4EmParameters
+            // G4EmProcessOptions emOptions;
+            // emOptions.SetPolarAngleLimit(0.0);
+
+            // proton elastic
+            // G4HadronElasticProcess* hel = new G4HadronElasticProcess();
+            // G4ChipsElasticModel* chipsp = new G4ChipsElasticModel();
+            // hel->AddDataSet(G4CrossSectionDataSetRegistry::Instance()->GetCrossSectionDataSet(G4ChipsProtonElasticXS::Default_Name()));
+            // hel->RegisterMe(chipsp);
+            // pmanager->AddDiscreteProcess(hel);
+
             // G4BinaryCascade* model = new G4BinaryCascade();
             // model->SetMinEnergy(0);
             // model->SetMaxEnergy(9.9 * GeV);
@@ -276,8 +296,13 @@ void RoutineMiniProton::ConstructProcess()
     }
 
     // deexcitation
-    G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();
-    G4LossTableManager::Instance()->SetAtomDeexcitation(de);
+    // G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();
+    // G4LossTableManager::Instance()->SetAtomDeexcitation(de);
+
+    // //
+    // fHadronPhys = new G4HadronElasticPhysics();
+    // fHadronPhys->ConstructProcess();
+
 }
 
 //******************************
@@ -403,4 +428,101 @@ void RoutineMiniGamma::ConstructProcess()
 
 
 
+//******************************
+// single scattering proton
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineSingleScatteringProton::RoutineSingleScatteringProton(RoutineParameterManager* rp_ext, G4int) :
+RoutineUserPhysics(rp_ext)
+{
+    name = "single-scattering-proton";
+    defaultCutValue = 1000.0 * cm;
+}
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineSingleScatteringProton::~RoutineSingleScatteringProton()
+{
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineSingleScatteringProton::ConstructParticle()
+{
+    G4Proton::Proton();
+    G4Gamma::Gamma();
+    G4Electron::Electron();
+    G4Positron::Positron();
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineSingleScatteringProton::ConstructProcess()
+{
+    AddTransportation();
+
+    G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+
+    GetParticleIterator()->reset();
+    while((*GetParticleIterator())())
+    {
+        G4ParticleDefinition* particle = GetParticleIterator()->value();
+        G4String particleName = particle->GetParticleName();
+        G4ProcessManager* pmanager = particle->GetProcessManager();
+
+        G4cout << "    ConstructProcess() for " << particleName << G4endl;
+
+        if(particleName == "proton")
+        {
+            // ionization
+            auto hIon = new G4hIonisation();
+            if(rp->param->disableFluctuation)
+            {
+                hIon->SetLossFluctuations(false);
+            }
+            else
+            {
+                hIon->SetLossFluctuations(true);
+            }
+            ph->RegisterProcess(hIon, particle);
+
+            // bremsstrahlung
+            G4hBremsstrahlung* pb = new G4hBremsstrahlung();
+            ph->RegisterProcess(pb, particle);
+
+            // pair production
+            G4hPairProduction* pp = new G4hPairProduction();
+            ph->RegisterProcess(pp, particle);
+
+            // coulomb scattering
+            G4CoulombScattering* pss = new G4CoulombScattering();
+            ph->RegisterProcess(pss, particle);
+
+            auto theParameters = G4EmParameters::Instance();
+            theParameters->SetMscThetaLimit(0.0);
+
+            // proton elastic
+            // G4HadronElasticProcess* hel = new G4HadronElasticProcess();
+            // G4ChipsElasticModel* chipsp = new G4ChipsElasticModel();
+            // hel->AddDataSet(G4CrossSectionDataSetRegistry::Instance()->GetCrossSectionDataSet(G4ChipsProtonElasticXS::Default_Name()));
+            // hel->RegisterMe(chipsp);
+            // pmanager->AddDiscreteProcess(hel);
+
+            // G4BinaryCascade* model = new G4BinaryCascade();
+            // model->SetMinEnergy(0);
+            // model->SetMaxEnergy(9.9 * GeV);
+            // G4ProtonInelasticProcess* proc = new G4ProtonInelasticProcess();
+            // proc->RegisterMe(model);
+            // ph->RegisterProcess(proc, particle);
+        }
+    }
+
+    // deexcitation
+    // G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();
+    // G4LossTableManager::Instance()->SetAtomDeexcitation(de);
+
+    // //
+    // fHadronPhys = new G4HadronElasticPhysics();
+    // fHadronPhys->ConstructProcess();
+}

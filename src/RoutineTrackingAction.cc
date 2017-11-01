@@ -35,8 +35,6 @@ void RoutineTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
         G4ThreeVector vertex = fPrimaryGen->GetParticleGun()->GetParticlePosition();
         // particle is shooting toward negative y axis
         G4ThreeVector displace = vertex - aTrack->GetPosition();
-
-
         run->AddTrueRange(trackLength);
         run->AddProjectedRange(displace.y());
     }

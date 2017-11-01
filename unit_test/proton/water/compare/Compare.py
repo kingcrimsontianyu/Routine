@@ -21,6 +21,8 @@ class Manager:
         self.mini_routineSDList    = []
         self.mini_nofluc_routineTallyList = []
         self.mini_nofluc_routineSDList    = []
+        self.single_scattering_routineTallyList = []
+        self.single_scattering_routineSDList    = []
         self.archerTallyList       = []
         self.archerRSDList         = []
         self.archerSDList          = []
@@ -119,7 +121,7 @@ class Manager:
         plt.suptitle(self.title, fontsize=16)
         ax = plt.subplot(1, 1, 1)
 
-        depthList = np.arange(len(self.mcnpTallyList))
+        depthList = np.arange(len(self.full_routineTallyList))
         depthList = depthList * self.dim_voxel[1] + self.dim_voxel[1] / 2.0
         # print(depthList)
 
@@ -127,19 +129,17 @@ class Manager:
         # mcnpLine, = plt.plot(depthList, self.mcnpTallyList, linestyle='-', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker=',', markersize=8)
         # plt.errorbar(depthList, self.mcnpTallyList, yerr=self.mcnpSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
 
-        # my_color = '#ff8000'
-        my_color = '#ff0000'
+        my_color = '#ff8000'
         full_routineLine, = plt.plot(depthList, self.full_routineTallyList, linestyle='-', color=my_color,  markerfacecolor=my_color, markeredgecolor=my_color, markeredgewidth=1, marker=',', markersize=5)
         plt.errorbar(depthList, self.full_routineTallyList, yerr=self.full_routineSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
 
-        # my_color = '#cc0066'
-        my_color = '#0000ff'
+        my_color = '#cc0066'
         mini_routineLine, = plt.plot(depthList, self.mini_routineTallyList, linestyle='-', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker=',', markersize=8)
         plt.errorbar(depthList, self.mini_routineTallyList, yerr=self.mini_routineSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
 
-        # my_color = '#0000ff'
-        # mini_nofluc_routineLine, = plt.plot(depthList, self.mini_nofluc_routineTallyList, linestyle='-', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='o', markersize=8)
-        # plt.errorbar(depthList, self.mini_routineTallyList, yerr=self.mini_routineSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
+        my_color = '#0000ff'
+        single_scattering_routineLine, = plt.plot(depthList, self.single_scattering_routineTallyList, linestyle='-', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker=',', markersize=8)
+        plt.errorbar(depthList, self.single_scattering_routineTallyList, yerr=self.single_scattering_routineSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
 
         # my_color = '#ff0000'
         # archerLine, = plt.plot(depthList, self.archerTallyList, linestyle='None', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='x', markersize=8)
@@ -147,24 +147,23 @@ class Manager:
         ax.set_xlabel("Depth [cm]")
         ax.set_ylabel("Absorbed dose [MeV/g]")
 
-        # plt.legend([mcnpLine, full_routineLine, mini_routineLine, mini_nofluc_routineLine, archerLine],
-        # ["MCNP 6.1", "Routine (Geant4 10.3.2, full physics)", "Routine (Geant4 10.3.2, mini physics)", "Routine (Geant4 10.3.2, mini physics no fluctuation)", "Archer (mini physics no fluctuation)"],
-        # loc='best', shadow=True, fontsize=12)
-        plt.legend([full_routineLine, mini_routineLine],
-        ["Routine (Geant4 10.3.2, full physics)", "Routine (Geant4 10.3.2, mini physics)"],
+        plt.legend([full_routineLine, mini_routineLine, single_scattering_routineLine],
+        ["Routine (Geant4 10.3.2, full physics)", "Routine (Geant4 10.3.2, EM multiple scattering)", "Routine (Geant4 10.3.2, EM single scattering)"],
         loc='best', shadow=True, fontsize=12)
 
+        self.title = self.title.replace(' ', '_')
         plt.savefig(self.title + ".pdf", bbox_inches='tight')
         plt.show()
 
 #------------------------------------------------------------
 #------------------------------------------------------------
 if __name__ == "__main__":
-    m = Manager((1, 100, 1), (40, 0.4, 40), "Proton 200 MeV in water")
-    (m.mcnpTallyList, m.mcnpSDList) = m.InputMCNPTally("../mcnp/mctal")
+    m = Manager((1, 200, 1), (40, 0.2, 40), "Proton 200 MeV in water")
+    # (m.mcnpTallyList, m.mcnpSDList) = m.InputMCNPTally("../mcnp/mctal")
     (m.full_routineTallyList, m.full_routineSDList) = m.InputRoutineTally("../output/dose_voxel_qgsp_bic_hp.txt")
     (m.mini_routineTallyList, m.mini_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton.txt")
     # (m.mini_nofluc_routineTallyList, m.mini_nofluc_routineSDList) = m.InputRoutineTally("../output/dose_voxel_mini-proton-nofluc.txt")
+    (m.single_scattering_routineTallyList, m.single_scattering_routineSDList) = m.InputRoutineTally("../output/dose_voxel_single-scattering-proton.txt")
     # hardcoded
     # m.InputArcherTally("/home/kingcrimson/research/archer_build_debug/unit_test/physics/proton/water/result.txt")
     m.Compare()

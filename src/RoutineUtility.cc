@@ -378,11 +378,14 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
     else if(rp->param->physics == "qbbc")
     {
         return new QBBC;
-        // G4VUserPhysicsList* physicsList = new RoutineQBBC;
     }
     else if(rp->param->physics == "mini-proton")
     {
         return new RoutineMiniProton(rp);
+    }
+    else if(rp->param->physics == "single-scattering-proton")
+    {
+        return new RoutineSingleScatteringProton(rp);
     }
     else if(rp->param->physics == "topas")
     {

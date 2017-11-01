@@ -341,7 +341,7 @@ void RoutineRunAction::CalculateMeanAndRsd(G4double& mean,
 
     if(x != 0.0)
     {
-        rsd = sigma / x;
+        rsd = sigma / mean;
     }
     else
     {
