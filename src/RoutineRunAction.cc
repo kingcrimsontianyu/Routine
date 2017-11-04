@@ -186,6 +186,23 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         analysisManager->Write();
         analysisManager->CloseFile();
     }
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // scatter angle
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(IsMaster())
+    {
+        G4cout << "--> Output scatter angle." << G4endl;
+        auto biuRun = static_cast<const RoutineRun*>(run);
+        G4double mean, rsd;
+        CalculateMeanAndRsd(mean,
+                            rsd,
+                            numHistory,
+                            biuRun->fPolarAngle,
+                            biuRun->fPolarAngle2);
+        G4cout << "    Polar angle cosine = " << std::setprecision(16) << mean / pi * 180.0 << "[degree]\n"
+               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+    }
 }
 
 //------------------------------------------------------------

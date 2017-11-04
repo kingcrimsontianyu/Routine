@@ -62,26 +62,27 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
             if(process)
             {
                 G4String procName = process->GetProcessName();
-                if(procName == "msc")
+                if((rut->GetParameter()->param->physics == "multiple-scattering-proton") ||
+                   (rut->GetParameter()->param->physics == "single-scattering-proton" &&
+                   procName == "CoulombScat"))
                 {
                     G4StepPoint* prePoint  = step->GetPreStepPoint();
                     G4StepPoint* postPoint = step->GetPostStepPoint();
 
                     G4ThreeVector direction1 = prePoint->GetMomentumDirection();
                     G4ThreeVector direction2 = postPoint->GetMomentumDirection();
-                    G4double polarAngleCosine = direction1.dot(direction2);
-                    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-                    analysisManager->FillH1(1, polarAngleCosine);
-                }
 
-                if(procName == "CoulombScat")
-                {
-                    G4StepPoint* prePoint  = step->GetPreStepPoint();
-                    G4StepPoint* postPoint = step->GetPostStepPoint();
-
-                    G4ThreeVector direction1 = prePoint->GetMomentumDirection();
-                    G4ThreeVector direction2 = postPoint->GetMomentumDirection();
                     G4double polarAngleCosine = direction1.dot(direction2); // direction vector length == 1.0
+                    // handle numerical inaccuracy
+                    if(polarAngleCosine > 1.0)
+                    {
+                        polarAngleCosine = 1.0;
+                    }
+                    else if(polarAngleCosine < -1.0)
+                    {
+                        polarAngleCosine = -1.0;
+                    }
+
                     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
                     analysisManager->FillH1(0, polarAngleCosine);
                 }

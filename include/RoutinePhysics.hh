@@ -87,7 +87,21 @@ public:
 };
 
 //******************************
-// single event proton
+// multiple scattering proton
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+class RoutineMultipleScatteringProton: public RoutineUserPhysics
+{
+public:
+    RoutineMultipleScatteringProton(RoutineParameterManager* rp, G4int ver = 0);
+    virtual ~RoutineMultipleScatteringProton();
+    virtual void ConstructParticle();
+    virtual void ConstructProcess();
+};
+
+//******************************
+// single scattering proton
 //******************************
 //------------------------------------------------------------
 //------------------------------------------------------------

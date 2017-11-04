@@ -383,6 +383,10 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
     {
         return new RoutineMiniProton(rp);
     }
+    else if(rp->param->physics == "multiple-scattering-proton")
+    {
+        return new RoutineMultipleScatteringProton(rp);
+    }
     else if(rp->param->physics == "single-scattering-proton")
     {
         return new RoutineSingleScatteringProton(rp);
@@ -396,6 +400,16 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
         return nullptr;
     }
 }
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineParameterManager* RoutineUtility::GetParameter()
+{
+    return rp;
+}
+
+
+
 
 
 
@@ -455,5 +469,6 @@ void RoutineCustomScore::AccumulateCount(const G4double count_ext)
 {
     count += count_ext;
 }
+
 
 

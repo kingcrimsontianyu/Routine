@@ -251,17 +251,17 @@ void RoutineMiniProton::ConstructProcess()
 
         if(particleName == "proton")
         {
-            // ionization
-            auto hIon = new G4hIonisation();
-            if(rp->param->disableFluctuation)
-            {
-                hIon->SetLossFluctuations(false);
-            }
-            else
-            {
-                hIon->SetLossFluctuations(true);
-            }
-            ph->RegisterProcess(hIon, particle);
+            // // ionization
+            // auto hIon = new G4hIonisation();
+            // if(rp->param->disableFluctuation)
+            // {
+                // hIon->SetLossFluctuations(false);
+            // }
+            // else
+            // {
+                // hIon->SetLossFluctuations(true);
+            // }
+            // ph->RegisterProcess(hIon, particle);
 
             // multiple scattering
             G4hMultipleScattering* pmsc = new G4hMultipleScattering();
@@ -439,6 +439,71 @@ void RoutineMiniGamma::ConstructProcess()
 
 
 
+//******************************
+// multiple scattering proton
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineMultipleScatteringProton::RoutineMultipleScatteringProton(RoutineParameterManager* rp_ext, G4int) :
+RoutineUserPhysics(rp_ext)
+{
+    name = "multiple-scattering-proton";
+    defaultCutValue = 1000.0 * cm;
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineMultipleScatteringProton::~RoutineMultipleScatteringProton()
+{
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineMultipleScatteringProton::ConstructParticle()
+{
+    G4Proton::Proton();
+    G4Gamma::Gamma();
+    G4Electron::Electron();
+    G4Positron::Positron();
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineMultipleScatteringProton::ConstructProcess()
+{
+    AddTransportation();
+
+    G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+
+    GetParticleIterator()->reset();
+    while((*GetParticleIterator())())
+    {
+        G4ParticleDefinition* particle = GetParticleIterator()->value();
+        G4String particleName = particle->GetParticleName();
+        G4ProcessManager* pmanager = particle->GetProcessManager();
+
+        G4cout << "    ConstructProcess() for " << particleName << G4endl;
+
+        if(particleName == "proton")
+        {
+            // ionization
+            auto hIon = new G4hIonisation();
+            if(rp->param->disableFluctuation)
+            {
+                hIon->SetLossFluctuations(false);
+            }
+            else
+            {
+                hIon->SetLossFluctuations(true);
+            }
+            ph->RegisterProcess(hIon, particle);
+
+            // multiple scattering
+            G4hMultipleScattering* pmsc = new G4hMultipleScattering();
+            ph->RegisterProcess(pmsc, particle);
+        }
+    }
+}
 
 //******************************
 // single scattering proton
@@ -499,42 +564,12 @@ void RoutineSingleScatteringProton::ConstructProcess()
             }
             ph->RegisterProcess(hIon, particle);
 
-            // bremsstrahlung
-            G4hBremsstrahlung* pb = new G4hBremsstrahlung();
-            ph->RegisterProcess(pb, particle);
-
-            // pair production
-            G4hPairProduction* pp = new G4hPairProduction();
-            ph->RegisterProcess(pp, particle);
-
             // coulomb scattering
             G4CoulombScattering* pss = new G4CoulombScattering();
             ph->RegisterProcess(pss, particle);
 
             auto theParameters = G4EmParameters::Instance();
             theParameters->SetMscThetaLimit(0.0);
-
-            // proton elastic
-            // G4HadronElasticProcess* hel = new G4HadronElasticProcess();
-            // G4ChipsElasticModel* chipsp = new G4ChipsElasticModel();
-            // hel->AddDataSet(G4CrossSectionDataSetRegistry::Instance()->GetCrossSectionDataSet(G4ChipsProtonElasticXS::Default_Name()));
-            // hel->RegisterMe(chipsp);
-            // pmanager->AddDiscreteProcess(hel);
-
-            // G4BinaryCascade* model = new G4BinaryCascade();
-            // model->SetMinEnergy(0);
-            // model->SetMaxEnergy(9.9 * GeV);
-            // G4ProtonInelasticProcess* proc = new G4ProtonInelasticProcess();
-            // proc->RegisterMe(model);
-            // ph->RegisterProcess(proc, particle);
         }
     }
-
-    // deexcitation
-    // G4VAtomDeexcitation* de = new G4UAtomicDeexcitation();
-    // G4LossTableManager::Instance()->SetAtomDeexcitation(de);
-
-    // //
-    // fHadronPhys = new G4HadronElasticPhysics();
-    // fHadronPhys->ConstructProcess();
 }

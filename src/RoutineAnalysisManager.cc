@@ -25,6 +25,5 @@ void RoutineAnalysisManager::Initialize()
     G4int nbins = 1000;
     G4double vmin = std::cos(10.0 / 180.0 * pi);
     G4double vmax = 1.00000001;
-    analysisManager->CreateH1("single_scatter_polar_angle_cosine", "single scatter polar angle cosine", nbins, vmin, vmax);
-    analysisManager->CreateH1("multiple_scatter_polar_angle_cosine", "multiple scatter polar angle cosine", nbins, vmin, vmax);
+    analysisManager->CreateH1("scatter_polar_angle_cosine", "scatter polar angle cosine", nbins, vmin, vmax);
 }

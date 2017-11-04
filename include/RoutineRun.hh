@@ -30,6 +30,7 @@ public:
     void AddTrueRange(G4double x);
     void AddProjectedRange(G4double x);
     void AddShortestStepProcess(const G4String& procName);
+    void AddPolarAngle(G4double x);
 private:
     std::vector<G4String> fCollectionName;
     std::vector<G4int> fCollectionID;
@@ -41,6 +42,8 @@ private:
     G4double fTrueRange, fTrueRange2;
     G4double fProjectedRange, fProjectedRange2;
     std::map<G4String, G4int> fShortestStepProcList;
+
+    G4double fPolarAngle, fPolarAngle2;
 
     friend class RoutineRunAction;
 };

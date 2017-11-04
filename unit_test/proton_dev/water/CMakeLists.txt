@@ -12,12 +12,11 @@ if(BUILD_TESTING)
              --phantom-path=input/phantom
              --material-path=input/material
              --universe-to-material-path=input/universe_to_material
-             --disable-fluctuation
-             --output-suffix=mini-proton-nofluc
+             --output-suffix=single-scattering-proton
              --output-dir=output
              --log-physics-info
              --store-physics-table
-             --physics=mini-proton)
+             --physics=single-scattering-proton)
     file(COPY compare input mcnp memcheck.sh run.sh debug.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output ${CMAKE_CURRENT_BINARY_DIR}/xs_data)
 endif()

@@ -63,7 +63,7 @@ public:
 
     G4VUserPhysicsList* ChoosePhysicsByMaster();
 
-
+    RoutineParameterManager* GetParameter();
 
 
 

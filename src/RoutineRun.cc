@@ -12,7 +12,9 @@ G4Run(),
 fTrueRange(0.0),
 fTrueRange2(0.0),
 fProjectedRange(0.0),
-fProjectedRange2(0.0)
+fProjectedRange2(0.0),
+fPolarAngle(0.0),
+fPolarAngle2(0.0)
 {
     G4SDManager* sdManager = G4SDManager::GetSDMpointer();
 
@@ -108,10 +110,12 @@ void RoutineRun::Merge(const G4Run * aRun)
     }
 
     // other
-    fTrueRange       += localRun->fTrueRange      ;
-    fTrueRange2      += localRun->fTrueRange2     ;
-    fProjectedRange  += localRun->fProjectedRange ;
-    fProjectedRange2 += localRun->fProjectedRange2;
+    fTrueRange         += localRun->fTrueRange         ;
+    fTrueRange2        += localRun->fTrueRange2        ;
+    fProjectedRange    += localRun->fProjectedRange    ;
+    fProjectedRange2   += localRun->fProjectedRange2   ;
+    fPolarAngle        += localRun->fPolarAngle        ;
+    fPolarAngle2       += localRun->fPolarAngle2       ;
 
     for(auto it = localRun->fShortestStepProcList.begin(); it != localRun->fShortestStepProcList.end(); ++it)
     {
@@ -192,6 +196,13 @@ void RoutineRun::AddShortestStepProcess(const G4String& procName)
     }
 }
 
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineRun::AddPolarAngle(G4double x)
+{
+    fPolarAngle  += x;
+    fPolarAngle2 += x * x;
+}
 
 
 
