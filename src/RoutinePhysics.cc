@@ -102,6 +102,9 @@
 #include "G4ChipsProtonElasticXS.hh"
 #include "G4ChipsElasticModel.hh"
 #include "G4EmProcessOptions.hh"
+#include "G4MesonConstructor.hh"
+#include "G4BaryonConstructor.hh"
+#include "G4IonConstructor.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -214,6 +217,15 @@ RoutineMiniProton::~RoutineMiniProton()
 //------------------------------------------------------------
 void RoutineMiniProton::ConstructParticle()
 {
+    // G4MesonConstructor pMesonConstructor;
+    // pMesonConstructor.ConstructParticle();
+
+    // G4BaryonConstructor pBaryonConstructor;
+    // pBaryonConstructor.ConstructParticle();
+
+    // G4IonConstructor pConstructor;
+    // pConstructor.ConstructParticle();
+
     G4Proton::Proton();
     G4Gamma::Gamma();
     G4Electron::Electron();
@@ -255,17 +267,17 @@ void RoutineMiniProton::ConstructProcess()
             G4hMultipleScattering* pmsc = new G4hMultipleScattering();
             ph->RegisterProcess(pmsc, particle);
 
-            // bremsstrahlung
-            G4hBremsstrahlung* pb = new G4hBremsstrahlung();
-            ph->RegisterProcess(pb, particle);
+            // // bremsstrahlung
+            // G4hBremsstrahlung* pb = new G4hBremsstrahlung();
+            // ph->RegisterProcess(pb, particle);
 
-            // pair production
-            G4hPairProduction* pp = new G4hPairProduction();
-            ph->RegisterProcess(pp, particle);
+            // // pair production
+            // G4hPairProduction* pp = new G4hPairProduction();
+            // ph->RegisterProcess(pp, particle);
 
-            // coulomb scattering
-            G4CoulombScattering* pss = new G4CoulombScattering();
-            ph->RegisterProcess(pss, particle);
+            // // coulomb scattering
+            // G4CoulombScattering* pss = new G4CoulombScattering();
+            // ph->RegisterProcess(pss, particle);
 
             // G4EmProcessOptions ctor calls singleton G4EmParameters
             // G4EmProcessOptions emOptions;
@@ -276,7 +288,7 @@ void RoutineMiniProton::ConstructProcess()
             // G4ChipsElasticModel* chipsp = new G4ChipsElasticModel();
             // hel->AddDataSet(G4CrossSectionDataSetRegistry::Instance()->GetCrossSectionDataSet(G4ChipsProtonElasticXS::Default_Name()));
             // hel->RegisterMe(chipsp);
-            // pmanager->AddDiscreteProcess(hel);
+            // ph->RegisterProcess(hel, particle);
 
             // G4BinaryCascade* model = new G4BinaryCascade();
             // model->SetMinEnergy(0);

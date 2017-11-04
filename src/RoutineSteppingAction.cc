@@ -6,6 +6,7 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4LogicalVolume.hh"
+#include "RoutineAnalysisManager.hh"
 
 //------------------------------------------------------------
 // stepping action class must be created with event action parameter
@@ -55,6 +56,35 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
             if(process)
             {
                 run->AddShortestStepProcess(process->GetProcessName());
+            }
+
+            // get polar angle distribution for scattering
+            if(process)
+            {
+                G4String procName = process->GetProcessName();
+                if(procName == "msc")
+                {
+                    G4StepPoint* prePoint  = step->GetPreStepPoint();
+                    G4StepPoint* postPoint = step->GetPostStepPoint();
+
+                    G4ThreeVector direction1 = prePoint->GetMomentumDirection();
+                    G4ThreeVector direction2 = postPoint->GetMomentumDirection();
+                    G4double polarAngleCosine = direction1.dot(direction2);
+                    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+                    analysisManager->FillH1(1, polarAngleCosine);
+                }
+
+                if(procName == "CoulombScat")
+                {
+                    G4StepPoint* prePoint  = step->GetPreStepPoint();
+                    G4StepPoint* postPoint = step->GetPostStepPoint();
+
+                    G4ThreeVector direction1 = prePoint->GetMomentumDirection();
+                    G4ThreeVector direction2 = postPoint->GetMomentumDirection();
+                    G4double polarAngleCosine = direction1.dot(direction2); // direction vector length == 1.0
+                    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+                    analysisManager->FillH1(0, polarAngleCosine);
+                }
             }
         }
     }

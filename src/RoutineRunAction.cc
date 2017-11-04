@@ -1,4 +1,5 @@
 #include "RoutineRunAction.hh"
+#include "RoutineAnalysisManager.hh"
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -9,12 +10,16 @@ G4UserRunAction(), fEdep("Edep", 0.0), fEdep2("Edep2", 0.0), rp(rp_ext), rut(rut
     G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
     parameterManager->RegisterAccumulable(fEdep);
     parameterManager->RegisterAccumulable(fEdep2);
+
+    fRoutineAnalysisManager = new RoutineAnalysisManager();
 }
 
 //------------------------------------------------------------
 //------------------------------------------------------------
 RoutineRunAction::~RoutineRunAction()
-{}
+{
+    delete fRoutineAnalysisManager;
+}
 
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -33,6 +38,13 @@ void RoutineRunAction::BeginOfRunAction(const G4Run*)
     // reset parameters to their initial values
     G4AccumulableManager* parameterManager = G4AccumulableManager::Instance();
     parameterManager->Reset();
+
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    if(analysisManager->IsActive())
+    {
+        G4String filename = rp->param->outputDir + "/" + rp->param->outputSuffix;
+        analysisManager->OpenFile(filename);
+    }
 }
 
 //------------------------------------------------------------
@@ -162,6 +174,17 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     {
         G4cout << "--> Output custom scores." << G4endl;
         rut->SaveCustomScoreToFileByMaster();
+    }
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // G4 histograms
+    // executed by all threads
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    if(analysisManager->IsActive())
+    {
+        analysisManager->Write();
+        analysisManager->CloseFile();
     }
 }
 

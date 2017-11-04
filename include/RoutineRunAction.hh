@@ -20,6 +20,7 @@
 #include "RoutineParameter.hh"
 
 class G4Run;
+class RoutineAnalysisManager;
 
 /// Run action class
 ///
@@ -51,6 +52,7 @@ private:
     G4Accumulable<G4double> fEdep2;
     RoutineParameterManager* rp;
     RoutineUtility* rut;
+    RoutineAnalysisManager* fRoutineAnalysisManager;
 };
 
 #endif
