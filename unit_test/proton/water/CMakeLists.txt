@@ -5,7 +5,7 @@ if(BUILD_TESTING)
              --source-type=proton
              --source-energy=200
              --num-history=1e5
-             --num-thread=20
+             --num-thread=10
              --source-position=0,19.999,0
              --square-beam-width=0
              --world-dim=200,200,200
@@ -16,6 +16,24 @@ if(BUILD_TESTING)
              --output-dir=output
              --log-physics-info
              --physics=qgsp_bic_hp)
+
+    add_test(NAME test_proton_tweaker
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+             COMMAND routine
+             --source-type=proton
+             --source-energy=200
+             --num-history=1e5
+             --num-thread=10
+             --source-position=0,19.999,0
+             --square-beam-width=0
+             --world-dim=200,200,200
+             --phantom-path=input/phantom
+             --material-path=input/material
+             --universe-to-material-path=input/universe_to_material
+             --output-suffix=tweaker
+             --output-dir=output
+             --log-physics-info
+             --physics=tweaker)
 
     add_test(NAME test_proton_mini
              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -30,7 +48,7 @@ if(BUILD_TESTING)
              --phantom-path=input/phantom
              --material-path=input/material
              --universe-to-material-path=input/universe_to_material
-             --output-suffix=mini-proton
+             --output-suffix=ionization
              --output-dir=output
              --log-physics-info
              --physics=mini-proton)
@@ -49,7 +67,7 @@ if(BUILD_TESTING)
              --material-path=input/material
              --universe-to-material-path=input/universe_to_material
              --disable-fluctuation
-             --output-suffix=mini-proton-nofluc
+             --output-suffix=ionization-no-fluc
              --output-dir=output
              --log-physics-info
              --physics=mini-proton)
@@ -78,7 +96,7 @@ if(BUILD_TESTING)
              --source-type=proton
              --source-energy=200
              --num-history=1e2
-             --num-thread=20
+             --num-thread=10
              --source-position=0,19.999,0
              --square-beam-width=0
              --world-dim=200,200,200

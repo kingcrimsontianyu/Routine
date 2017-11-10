@@ -33,7 +33,7 @@ void RoutineTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
         G4double trackLength = aTrack->GetTrackLength();
         RoutineRun* run = static_cast<RoutineRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
         G4ThreeVector initialPosition = fPrimaryGen->GetParticleGun()->GetParticlePosition();
-        G4ThreeVector finalPosition = aTrack->GetPosition();;
+        G4ThreeVector finalPosition = aTrack->GetPosition();
         // particle is shooting toward negative y axis
         G4ThreeVector displace = initialPosition - finalPosition;
         run->AddTrueRange(trackLength);

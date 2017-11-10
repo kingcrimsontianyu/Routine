@@ -15,8 +15,7 @@ ${BIN} \
 --phantom-path=input/phantom \
 --material-path=input/material \
 --universe-to-material-path=input/universe_to_material \
---disable-fluctuation \
---output-suffix=mini-proton-nofluc \
+--output-suffix=ionization \
 --output-dir=output \
 --log-physics-info \
 --physics=mini-proton

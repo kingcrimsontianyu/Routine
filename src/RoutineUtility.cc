@@ -395,6 +395,10 @@ G4VUserPhysicsList* RoutineUtility::ChoosePhysicsByMaster()
     {
         return new RoutineTopas(rp);
     }
+    else if(rp->param->physics == "tweaker")
+    {
+        return new RoutineTweaker(rp);
+    }
     else
     {
         return nullptr;

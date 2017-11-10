@@ -195,6 +195,55 @@ void RoutineTopas::SetCuts()
     SetCutsWithDefault();
 }
 
+
+
+
+
+
+//******************************
+// tweaker
+//******************************
+//------------------------------------------------------------
+// insignificant
+//     G4DecayPhysics
+//     G4IonPhysics
+//     G4EmExtraPhysics
+//
+// significant
+//     G4EmStandardPhysics
+//     G4HadronElasticPhysicsHP
+//     G4HadronPhysicsQGSP_BIC_HP
+//     G4StoppingPhysics
+//------------------------------------------------------------
+RoutineTweaker::RoutineTweaker(RoutineParameterManager* rp_ext, G4int ver) :
+RoutineModularPhysics(rp_ext)
+{
+    name = "tweaker";
+    defaultCutValue = 0.7 * CLHEP::mm;
+    SetVerboseLevel(ver);
+    RegisterPhysics( new G4EmStandardPhysics(ver) );
+    // RegisterPhysics( new G4HadronElasticPhysicsHP(ver) );
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(ver));
+    RegisterPhysics( new G4StoppingPhysics(ver) );
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+RoutineTweaker::~RoutineTweaker()
+{
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+void RoutineTweaker::SetCuts()
+{
+    SetCutsWithDefault();
+    SetCutValue(0, "proton");
+}
+
+
+
+
 //******************************
 // mini proton
 //******************************
@@ -251,21 +300,21 @@ void RoutineMiniProton::ConstructProcess()
 
         if(particleName == "proton")
         {
-            // // ionization
-            // auto hIon = new G4hIonisation();
-            // if(rp->param->disableFluctuation)
-            // {
-                // hIon->SetLossFluctuations(false);
-            // }
-            // else
-            // {
-                // hIon->SetLossFluctuations(true);
-            // }
-            // ph->RegisterProcess(hIon, particle);
+            // ionization
+            auto hIon = new G4hIonisation();
+            if(rp->param->disableFluctuation)
+            {
+                hIon->SetLossFluctuations(false);
+            }
+            else
+            {
+                hIon->SetLossFluctuations(true);
+            }
+            ph->RegisterProcess(hIon, particle);
 
-            // multiple scattering
-            G4hMultipleScattering* pmsc = new G4hMultipleScattering();
-            ph->RegisterProcess(pmsc, particle);
+            // // multiple scattering
+            // G4hMultipleScattering* pmsc = new G4hMultipleScattering();
+            // ph->RegisterProcess(pmsc, particle);
 
             // // bremsstrahlung
             // G4hBremsstrahlung* pb = new G4hBremsstrahlung();

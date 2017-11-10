@@ -55,6 +55,19 @@ public:
 };
 
 //******************************
+// tweaker
+//******************************
+//------------------------------------------------------------
+//------------------------------------------------------------
+class RoutineTweaker: public RoutineModularPhysics
+{
+public:
+    RoutineTweaker(RoutineParameterManager* rp, G4int ver = 0);
+    virtual ~RoutineTweaker();
+    virtual void SetCuts();
+};
+
+//******************************
 // mini proton
 //******************************
 //------------------------------------------------------------

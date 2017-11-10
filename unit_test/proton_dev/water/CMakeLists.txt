@@ -4,7 +4,7 @@ if(BUILD_TESTING)
              COMMAND routine
              --source-type=proton
              --source-energy=200
-             --num-history=1
+             --num-history=5
              --num-thread=1
              --source-position=0,19.999,0
              --square-beam-width=0
@@ -12,11 +12,11 @@ if(BUILD_TESTING)
              --phantom-path=input/phantom
              --material-path=input/material
              --universe-to-material-path=input/universe_to_material
-             --output-suffix=single-scattering-proton
+             --output-suffix=ionization
              --output-dir=output
              --log-physics-info
              --store-physics-table
-             --physics=single-scattering-proton)
+             --physics=mini-proton)
     file(COPY compare input mcnp memcheck.sh run.sh debug.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output ${CMAKE_CURRENT_BINARY_DIR}/xs_data)
 endif()

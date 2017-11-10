@@ -67,10 +67,11 @@ class Manager:
     #------------------------------------------------------------
     #------------------------------------------------------------
     def Process(self):
-        angle = np.radians(10.0)
-        step = (1.0 - np.cos(angle)) / self.numData
-        start = np.cos(angle) + step / 2.0
-        stop = 1.0
+        angle_small = 0.0
+        angle_large = np.radians(10.0)
+        step = (np.cos(angle_small) - np.cos(angle_large)) / self.numData
+        start = np.cos(angle_large) + step / 2.0
+        stop = np.cos(angle_small)
         self.depthList = np.arange(start, stop, step)
         print("--> num data of depthList = ", len(self.depthList))
 
