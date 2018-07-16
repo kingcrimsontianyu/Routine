@@ -399,6 +399,7 @@ void RoutineMiniGamma::ConstructParticle()
 }
 
 //------------------------------------------------------------
+// from em standard op0
 //------------------------------------------------------------
 void RoutineMiniGamma::ConstructProcess()
 {
@@ -419,65 +420,59 @@ void RoutineMiniGamma::ConstructProcess()
 
         if (particleName == "gamma")
         {
-            ph->RegisterProcess(new G4PhotoElectricEffect(), particle);
+            G4PhotoElectricEffect* pee = new G4PhotoElectricEffect();
+            pee->SetEmModel(new G4LivermorePhotoElectricModel());
+            ph->RegisterProcess(pee, particle);
+
             ph->RegisterProcess(new G4ComptonScattering(), particle);
             ph->RegisterProcess(new G4GammaConversion(), particle);
             ph->RegisterProcess(new G4RayleighScattering(), particle);
         }
         else if (particleName == "e-")
         {
-            // from em standard op1
-            G4eIonisation* eioni = new G4eIonisation();
-            eioni->SetStepFunction(0.8, 1.0*mm);
-
             G4eMultipleScattering* msc = new G4eMultipleScattering;
             G4UrbanMscModel* msc1 = new G4UrbanMscModel();
             G4WentzelVIModel* msc2 = new G4WentzelVIModel();
             msc1->SetHighEnergyLimit(highEnergyLimit);
             msc2->SetLowEnergyLimit(highEnergyLimit);
-            msc->AddEmModel(0, msc1);
-            msc->AddEmModel(0, msc2);
+            msc->SetEmModel(msc1);
+            msc->SetEmModel(msc2);
 
             G4eCoulombScatteringModel* ssm = new G4eCoulombScatteringModel();
             G4CoulombScattering* ss = new G4CoulombScattering();
-            ss->SetEmModel(ssm, 1);
+            ss->SetEmModel(ssm);
             ss->SetMinKinEnergy(highEnergyLimit);
             ssm->SetLowEnergyLimit(highEnergyLimit);
             ssm->SetActivationLowEnergyLimit(highEnergyLimit);
 
             ph->RegisterProcess(msc, particle);
-            ph->RegisterProcess(eioni, particle);
+            ph->RegisterProcess(new G4eIonisation(), particle);
             ph->RegisterProcess(new G4eBremsstrahlung(), particle);
             ph->RegisterProcess(ss, particle);
         }
         else if (particleName == "e+")
         {
-            // from em standard op1
-            G4eIonisation* eioni = new G4eIonisation();
-            eioni->SetStepFunction(0.8, 1.0*mm);
-
             G4eMultipleScattering* msc = new G4eMultipleScattering;
             G4UrbanMscModel* msc1 = new G4UrbanMscModel();
             G4WentzelVIModel* msc2 = new G4WentzelVIModel();
             msc1->SetHighEnergyLimit(highEnergyLimit);
             msc2->SetLowEnergyLimit(highEnergyLimit);
-            msc->AddEmModel(0, msc1);
-            msc->AddEmModel(0, msc2);
+            msc->SetEmModel(msc1);
+            msc->SetEmModel(msc2);
 
             G4eCoulombScatteringModel* ssm = new G4eCoulombScatteringModel();
             G4CoulombScattering* ss = new G4CoulombScattering();
-            ss->SetEmModel(ssm, 1);
+            ss->SetEmModel(ssm);
             ss->SetMinKinEnergy(highEnergyLimit);
             ssm->SetLowEnergyLimit(highEnergyLimit);
             ssm->SetActivationLowEnergyLimit(highEnergyLimit);
 
             ph->RegisterProcess(msc, particle);
-            ph->RegisterProcess(eioni, particle);
+            ph->RegisterProcess(new G4eIonisation(), particle);
             ph->RegisterProcess(new G4eBremsstrahlung(), particle);
             ph->RegisterProcess(new G4eplusAnnihilation(), particle);
             ph->RegisterProcess(ss, particle);
         }
-
     }
 }
 

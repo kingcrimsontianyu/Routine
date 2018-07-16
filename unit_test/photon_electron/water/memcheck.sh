@@ -15,10 +15,10 @@ ${BIN} \
 --phantom-path=input/phantom \
 --material-path=input/material \
 --universe-to-material-path=input/universe_to_material \
---output-suffix=qgsp_bic_hp \
+--output-suffix=mini-gamma \
 --output-dir=output \
 --log-physics-info \
---physics=qgsp_bic_hp
+--physics=mini-gamma
 
 
 
