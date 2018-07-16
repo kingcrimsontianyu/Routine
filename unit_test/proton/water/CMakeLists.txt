@@ -53,7 +53,7 @@ if(BUILD_TESTING)
              --log-physics-info
              --physics=mini-proton)
 
-    add_test(NAME test_proton_mini_nofluc
+    add_test(NAME test_proton_nofluc_mini
              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
              COMMAND routine
              --source-type=proton

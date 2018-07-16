@@ -16,8 +16,9 @@ class Manager:
         self.routineTallyList = []
         self.routineSDList    = []
         self.archerTallyList       = []
-        self.archerRSDList         = []
         self.archerSDList          = []
+        self.archerGPUTallyList    = []
+        self.archerGPUSDList       = []
         self.title                 = title
 
         # info
@@ -90,21 +91,30 @@ class Manager:
     #------------------------------------------------------------
     def InputArcherTally(self, input_path):
         print("--> Input ARCHER result")
-        self.archerTallyList = np.zeros(self.totalNumVoxel, dtype = np.float64)
+        archerTallyList = np.zeros(self.totalNumVoxel, dtype = np.float64)
+        archerSDTallyList = np.zeros(self.totalNumVoxel, dtype = np.float64)
+        archerRSDTallyList = np.zeros(self.totalNumVoxel, dtype = np.float64)
 
         count = 0
         with open(input_path, 'r') as file:
             for line in file:
                 lineString = line.split()
-                self.archerTallyList[count] = float(lineString[3])
+                archerTallyList[count] = float(lineString[3])
+                archerRSDTallyList[count] = float(lineString[4])
                 count += 1
 
         # source position is y positive
         # source direction is y negative
         # so we reverse the data for better visualization
-        self.archerTallyList = self.archerTallyList[::-1]
+        archerTallyList = archerTallyList[::-1]
+        archerRSDTallyList = archerRSDTallyList[::-1]
+
+        for i in range(len(archerTallyList)):
+            archerSDTallyList[i] = archerTallyList[i] * archerRSDTallyList[i]
+
 
         print("    total number of tally data = ", count)
+        return (archerTallyList, archerSDTallyList)
 
     #------------------------------------------------------------
     #------------------------------------------------------------
@@ -117,19 +127,26 @@ class Manager:
         depthList = depthList * self.dim_voxel[1] + self.dim_voxel[1] / 2.0
         # print(depthList)
 
-        my_color = '#0000ff'
-        routineLine, = plt.plot(depthList, self.routineTallyList, linestyle='None', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='o', markersize=8)
+        my_color = '#008800'
+        routineLine, = plt.plot(depthList, self.routineTallyList, linestyle='-', linewidth=1, color=my_color,  marker='None', markersize=8)
         plt.errorbar(depthList, self.routineTallyList, yerr=self.routineSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
 
+        my_color = '#0000ff'
+        archerLine, = plt.plot(depthList, self.archerTallyList, linestyle='None', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='o', markersize=8)
+        plt.errorbar(depthList, self.archerTallyList, yerr=self.archerSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
+
         my_color = '#ff0000'
-        archerLine, = plt.plot(depthList, self.archerTallyList, linestyle='None', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='x', markersize=8)
-        # plt.errorbar(depthList, self.archerTallyList, yerr=self.archerSDList, ecolor=my_color, elinewidth=0.8, linestyle='None')
+        archerGPULine, = plt.plot(depthList, self.archerGPUTallyList, linestyle='None', color=my_color,  markerfacecolor='None', markeredgecolor=my_color, markeredgewidth=1, marker='x', markersize=8)
+        # gpu uses batch method
+        # we set the batch number to one in order to be consistent with cpu result
+        # rsd is not valid for batch == 1
+        # so here we don't plot the errorbars
 
         ax.set_xlabel("Depth [cm]")
         ax.set_ylabel("Absorbed dose [MeV/g]")
 
-        plt.legend([routineLine, archerLine],
-        ["Routine (Geant4 10.3.2, ionization)", "ARCHER"],
+        plt.legend([routineLine, archerLine, archerGPULine],
+        ["Routine (Geant4 10.3.2, ionization)", "ARCHER-CPU (based on Geant4)", "ARCHER-GPU (based on Geant4)"],
         loc='best', shadow=True, fontsize=12)
 
         self.title = self.title.replace(' ', '_')
@@ -142,6 +159,8 @@ if __name__ == "__main__":
     m = Manager((1, 200, 1), (40, 0.2, 40), "Proton 200 MeV in water absorbed dose")
     (m.routineTallyList, m.routineSDList) = m.InputRoutineTally("../output/dose_voxel_ionization.txt")
     # hardcoded
-    m.InputArcherTally("/home/kingcrimson/research/archer_build_debug/unit_test/physics/proton/water/result.txt")
+    (m.archerTallyList, m.archerSDList) = m.InputArcherTally("/home/kingcrimson/research/archer_build_release/unit_test/physics/proton/water/output_cpu_FP64/dose.txt")
+    (m.archerGPUTallyList, m.archerGPUSDList) = m.InputArcherTally("/home/kingcrimson/research/archer_build_release/unit_test/physics/proton/water/output_gpu_FP64/dose.txt")
+
     m.Compare()
 
