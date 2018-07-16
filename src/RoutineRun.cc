@@ -109,28 +109,28 @@ void RoutineRun::Merge(const G4Run * aRun)
         }
     }
 
-    // other
-    fTrueRange         += localRun->fTrueRange         ;
-    fTrueRange2        += localRun->fTrueRange2        ;
-    fProjectedRange    += localRun->fProjectedRange    ;
-    fProjectedRange2   += localRun->fProjectedRange2   ;
-    fPolarAngle        += localRun->fPolarAngle        ;
-    fPolarAngle2       += localRun->fPolarAngle2       ;
+    // // other
+    // fTrueRange         += localRun->fTrueRange         ;
+    // fTrueRange2        += localRun->fTrueRange2        ;
+    // fProjectedRange    += localRun->fProjectedRange    ;
+    // fProjectedRange2   += localRun->fProjectedRange2   ;
+    // fPolarAngle        += localRun->fPolarAngle        ;
+    // fPolarAngle2       += localRun->fPolarAngle2       ;
 
-    for(auto it = localRun->fShortestStepProcList.begin(); it != localRun->fShortestStepProcList.end(); ++it)
-    {
+    // for(auto it = localRun->fShortestStepProcList.begin(); it != localRun->fShortestStepProcList.end(); ++it)
+    // {
 
-        G4String procName = it->first;
-        G4int localCount = it->second;
-        if(fShortestStepProcList.find(procName) == fShortestStepProcList.end())
-        {
-            fShortestStepProcList[procName] = localCount;
-        }
-        else
-        {
-            fShortestStepProcList[procName] += localCount;
-        }
-    }
+        // G4String procName = it->first;
+        // G4int localCount = it->second;
+        // if(fShortestStepProcList.find(procName) == fShortestStepProcList.end())
+        // {
+            // fShortestStepProcList[procName] = localCount;
+        // }
+        // else
+        // {
+            // fShortestStepProcList[procName] += localCount;
+        // }
+    // }
 
     G4Run::Merge(aRun);
 }

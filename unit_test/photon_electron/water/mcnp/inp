@@ -1,0 +1,136 @@
+cem03.03 model
+c reference: model physics section of the manual
+c --> model physics is automatically off for n p e
+c     and is on for other particles.
+c --> cem03.03 is recommended by mcnp. lca  8j 1 1
+c --> bertini/dresner. lca 2j 1, lea 6j 0
+c     use bertini for nucleons (proton and neutron) and pions
+c     and isabel for other particles.
+c --> isabel is slow.
+c --> solved "random number stride exceeds" warning
+c
+c ++++++++++++++++++++++
+c cell cards
+c ++++++++++++++++++++++
+1 0 -4 u=1 lat=1 fill=0:0 -50:49 0:0 $ lattice
+     11 99r
+2 0 -3 fill=1         $ container
+3 1 -1.20479e-06 -1 3 $ inside boundary, outside container
+4 2 -1.0  2 u=11      $ water
+999 0 1               $ void
+
+c ++++++++++++++++++++++
+c surface cards
+c ++++++++++++++++++++++
+1 rpp -200 200 -200 200 -200 200 $ boundary box
+2 pz -1e4                        $ auxiliary plane
+3 rpp -20 20 -20 20 -20 20       $ container
+4 rpp -20 20 0 0.4  -20 20       $ voxel
+
+c ++++++++++++++++++++++
+c data cards
+c ++++++++++++++++++++++
+imp:h 1 3r 0
+c
+c
+c
+c n: neutron
+c p: photon
+c h: proton
+c /: positive pion
+c *: negative pion
+c z: neutral pion
+c d: deuteron
+c t: triton
+c s: helion
+c a: alpha
+c e: electron
+c #: heavy ion
+mode n p h / * z d t s a e #
+c
+c
+c
+c enable light-ion and heavy-ion NCIA (neutron capture ion algorithm) (manual 3-70)
+phys:n 300  5j 3.5
+c enable photonuclear reaction (manual 3-73)
+phys:p 300  2j -1
+phys:h 300
+phys:/ 300
+phys:* 300
+phys:z 300
+phys:d 300
+phys:t 300
+phys:s 300
+phys:a 300
+phys:e 300
+phys:# 300
+c
+c
+c
+c mcnp 6.1 manual p3-79, p2-11
+cut:n j 0
+cut:p j 1e-3
+cut:h j 1
+cut:/ j 0.14875
+cut:* j 0.14875
+cut:z j 0
+cut:d j 2.0
+cut:t j 3.0
+cut:s j 3.0
+cut:a j 4.0
+cut:e j 1e-3
+cut:# j 5.0
+c
+c
+c
+c increase stride to avoid warning message
+rand stride=458751
+c
+c
+c
+c use the CEM03.03 model.
+c use the LAQGSM03.03 model for all heavy ion interactions
+c as well as all light ion interactions.
+lca  8j 1 1
+c
+c
+c
+nps 1e5
+sdef  erg=200
+      x=d1
+      y=21
+      z=d2
+      vec=0 -1 0
+      dir=d3
+      par=h
+si1  -1 1
+sp1  0  1
+si2  -1 1
+sp2  0  1
+si3  0.99999 1
+sp3  0  1
+c
+c
+c
+c dry air
+c http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104
+m1
+      6000   -0.000124
+      7000   -0.755267
+      8000   -0.231781
+     18000   -0.012827
+c
+c
+c water
+c http://physics.nist.gov/cgi-bin/Star/compos.pl?matno=276
+m2
+     1000    -0.111894
+     8000    -0.888106
+prdmp j -600 1 1 $ print only when done, dump every 10h, produce mctal, store only 1 dump
++f6 (4<1[0:0 -50:49 0:0]<2)
+sd6 640
+fc6 dose from all particles
+talnp
+
+
+

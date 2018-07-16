@@ -47,47 +47,47 @@ void RoutineSteppingAction::UserSteppingAction(const G4Step* step)
 
         rut->AccumulateEnergyByWorker(step);
 
-        // for primary particles
-        G4Track* aTrack = step->GetTrack();
-        if(aTrack->GetTrackID() == 1)
-        {
-            RoutineRun* run = static_cast<RoutineRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-            auto process = step->GetPostStepPoint()->GetProcessDefinedStep();
-            if(process)
-            {
-                run->AddShortestStepProcess(process->GetProcessName());
-            }
+        // // for primary particles
+        // G4Track* aTrack = step->GetTrack();
+        // if(aTrack->GetTrackID() == 1)
+        // {
+            // RoutineRun* run = static_cast<RoutineRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+            // auto process = step->GetPostStepPoint()->GetProcessDefinedStep();
+            // if(process)
+            // {
+                // run->AddShortestStepProcess(process->GetProcessName());
+            // }
 
-            // get polar angle distribution for scattering
-            if(process)
-            {
-                G4String procName = process->GetProcessName();
-                if((rut->GetParameter()->param->physics == "multiple-scattering-proton") ||
-                   (rut->GetParameter()->param->physics == "single-scattering-proton" &&
-                   procName == "CoulombScat"))
-                {
-                    G4StepPoint* prePoint  = step->GetPreStepPoint();
-                    G4StepPoint* postPoint = step->GetPostStepPoint();
+            // // get polar angle distribution for scattering
+            // if(process)
+            // {
+                // G4String procName = process->GetProcessName();
+                // if((rut->GetParameter()->param->physics == "multiple-scattering-proton") ||
+                   // (rut->GetParameter()->param->physics == "single-scattering-proton" &&
+                   // procName == "CoulombScat"))
+                // {
+                    // G4StepPoint* prePoint  = step->GetPreStepPoint();
+                    // G4StepPoint* postPoint = step->GetPostStepPoint();
 
-                    G4ThreeVector direction1 = prePoint->GetMomentumDirection();
-                    G4ThreeVector direction2 = postPoint->GetMomentumDirection();
+                    // G4ThreeVector direction1 = prePoint->GetMomentumDirection();
+                    // G4ThreeVector direction2 = postPoint->GetMomentumDirection();
 
-                    G4double polarAngleCosine = direction1.dot(direction2); // direction vector length == 1.0
-                    // handle numerical inaccuracy
-                    if(polarAngleCosine > 1.0)
-                    {
-                        polarAngleCosine = 1.0;
-                    }
-                    else if(polarAngleCosine < -1.0)
-                    {
-                        polarAngleCosine = -1.0;
-                    }
+                    // G4double polarAngleCosine = direction1.dot(direction2); // direction vector length == 1.0
+                    // // handle numerical inaccuracy
+                    // if(polarAngleCosine > 1.0)
+                    // {
+                        // polarAngleCosine = 1.0;
+                    // }
+                    // else if(polarAngleCosine < -1.0)
+                    // {
+                        // polarAngleCosine = -1.0;
+                    // }
 
-                    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-                    analysisManager->FillH1(0, polarAngleCosine);
-                }
-            }
-        }
+                    // G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+                    // analysisManager->FillH1(0, polarAngleCosine);
+                // }
+            // }
+        // }
     }
 }
 

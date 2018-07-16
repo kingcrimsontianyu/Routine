@@ -132,77 +132,77 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
     // range
     // scoring based on hits map
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    if(IsMaster())
-    {
-        G4cout << "--> Output range." << G4endl;
-        auto biuRun = static_cast<const RoutineRun*>(run);
-        G4double mean, rsd;
-        CalculateMeanAndRsd(mean,
-                            rsd,
-                            numHistory,
-                            biuRun->fTrueRange,
-                            biuRun->fTrueRange2);
-        G4cout << "    True range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
-               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+    // if(IsMaster())
+    // {
+        // G4cout << "--> Output range." << G4endl;
+        // auto biuRun = static_cast<const RoutineRun*>(run);
+        // G4double mean, rsd;
+        // CalculateMeanAndRsd(mean,
+                            // rsd,
+                            // numHistory,
+                            // biuRun->fTrueRange,
+                            // biuRun->fTrueRange2);
+        // G4cout << "    True range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
+               // << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
 
-        CalculateMeanAndRsd(mean,
-                            rsd,
-                            numHistory,
-                            biuRun->fProjectedRange,
-                            biuRun->fProjectedRange2);
-        G4cout << "    Projected range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
-               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
-    }
+        // CalculateMeanAndRsd(mean,
+                            // rsd,
+                            // numHistory,
+                            // biuRun->fProjectedRange,
+                            // biuRun->fProjectedRange2);
+        // G4cout << "    Projected range = " << std::setprecision(16) << mean / (cm) << " [cm]\n"
+               // << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+    // }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // shortest-step process
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    if(IsMaster())
-    {
-        G4cout << "--> Output shortest-step process." << G4endl;
-        auto biuRun = static_cast<const RoutineRun*>(run);
-        G4cout << "    " << std::setw(20) << std::left << "Process" << std::setw(20) << "Occurrence per primary particle [%]" << G4endl;
-        for(auto it = biuRun->fShortestStepProcList.begin(); it != biuRun->fShortestStepProcList.end(); ++it)
-        {
-            G4cout << "    " << std::setw(20) << std::left << it->first
-                   << std::setw(20) << static_cast<G4double>(it->second) / static_cast<G4double>(numHistory) * 100.0 << G4endl;
-        }
-    }
+    // if(IsMaster())
+    // {
+        // G4cout << "--> Output shortest-step process." << G4endl;
+        // auto biuRun = static_cast<const RoutineRun*>(run);
+        // G4cout << "    " << std::setw(20) << std::left << "Process" << std::setw(20) << "Occurrence per primary particle [%]" << G4endl;
+        // for(auto it = biuRun->fShortestStepProcList.begin(); it != biuRun->fShortestStepProcList.end(); ++it)
+        // {
+            // G4cout << "    " << std::setw(20) << std::left << it->first
+                   // << std::setw(20) << static_cast<G4double>(it->second) / static_cast<G4double>(numHistory) * 100.0 << G4endl;
+        // }
+    // }
 
-    // histograms
-    if(IsMaster())
-    {
-        G4cout << "--> Output custom scores." << G4endl;
-        rut->SaveCustomScoreToFileByMaster();
-    }
+    // // histograms
+    // if(IsMaster())
+    // {
+        // G4cout << "--> Output custom scores." << G4endl;
+        // rut->SaveCustomScoreToFileByMaster();
+    // }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // G4 histograms
     // executed by all threads
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-    if(analysisManager->IsActive())
-    {
-        analysisManager->Write();
-        analysisManager->CloseFile();
-    }
+    // G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    // if(analysisManager->IsActive())
+    // {
+        // analysisManager->Write();
+        // analysisManager->CloseFile();
+    // }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // scatter angle
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    if(IsMaster())
-    {
-        G4cout << "--> Output scatter angle." << G4endl;
-        auto biuRun = static_cast<const RoutineRun*>(run);
-        G4double mean, rsd;
-        CalculateMeanAndRsd(mean,
-                            rsd,
-                            numHistory,
-                            biuRun->fPolarAngle,
-                            biuRun->fPolarAngle2);
-        G4cout << "    Polar angle cosine = " << std::setprecision(16) << mean / pi * 180.0 << "[degree]\n"
-               << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
-    }
+    // if(IsMaster())
+    // {
+        // G4cout << "--> Output scatter angle." << G4endl;
+        // auto biuRun = static_cast<const RoutineRun*>(run);
+        // G4double mean, rsd;
+        // CalculateMeanAndRsd(mean,
+                            // rsd,
+                            // numHistory,
+                            // biuRun->fPolarAngle,
+                            // biuRun->fPolarAngle2);
+        // G4cout << "    Polar angle cosine = " << std::setprecision(16) << mean / pi * 180.0 << "[degree]\n"
+               // << "    Relative standard deviation = " << std::setprecision(3) << rsd * 100.0 << " [%]" << G4endl;
+    // }
 }
 
 //------------------------------------------------------------
