@@ -294,7 +294,6 @@ void RoutineMiniProton::ConstructProcess()
     {
         G4ParticleDefinition* particle = GetParticleIterator()->value();
         G4String particleName = particle->GetParticleName();
-        G4ProcessManager* pmanager = particle->GetProcessManager();
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
 
@@ -434,7 +433,6 @@ void RoutineMiniGamma::ConstructProcess()
             G4eMultipleScattering* msc = new G4eMultipleScattering;
             G4UrbanMscModel* msc1 = new G4UrbanMscModel();
             G4WentzelVIModel* msc2 = new G4WentzelVIModel();
-            msc1->SetNewDisplacementFlag(false);
             msc1->SetHighEnergyLimit(highEnergyLimit);
             msc2->SetLowEnergyLimit(highEnergyLimit);
             msc->AddEmModel(0, msc1);
@@ -461,7 +459,6 @@ void RoutineMiniGamma::ConstructProcess()
             G4eMultipleScattering* msc = new G4eMultipleScattering;
             G4UrbanMscModel* msc1 = new G4UrbanMscModel();
             G4WentzelVIModel* msc2 = new G4WentzelVIModel();
-            msc1->SetNewDisplacementFlag(false);
             msc1->SetHighEnergyLimit(highEnergyLimit);
             msc2->SetLowEnergyLimit(highEnergyLimit);
             msc->AddEmModel(0, msc1);
@@ -529,7 +526,6 @@ void RoutineMultipleScatteringProton::ConstructProcess()
     {
         G4ParticleDefinition* particle = GetParticleIterator()->value();
         G4String particleName = particle->GetParticleName();
-        G4ProcessManager* pmanager = particle->GetProcessManager();
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
 
@@ -595,7 +591,6 @@ void RoutineSingleScatteringProton::ConstructProcess()
     {
         G4ParticleDefinition* particle = GetParticleIterator()->value();
         G4String particleName = particle->GetParticleName();
-        G4ProcessManager* pmanager = particle->GetProcessManager();
 
         G4cout << "    ConstructProcess() for " << particleName << G4endl;
 
