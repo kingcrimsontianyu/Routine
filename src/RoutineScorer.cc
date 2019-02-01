@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePSEnergyImparted::RoutinePSEnergyImparted(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel)
-:G4PSEnergyDeposit(name),
+RoutinePSEnergyImparted::RoutinePSEnergyImparted(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel) :
+G4PSEnergyDeposit(name),
 fXNumVoxel(xNumVoxel),
 fYNumVoxel(yNumVoxel),
 fZNumVoxel(zNumVoxel)
@@ -29,11 +29,20 @@ G4int RoutinePSEnergyImparted::GetIndex(G4Step* aStep)
 }
 
 
+
+
+
+
+
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePSEnergyTransfer::RoutinePSEnergyTransfer(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel)
-: G4VPrimitiveScorer(name),
-HCID(-1), EvtMap(0), fXNumVoxel(xNumVoxel), fYNumVoxel(yNumVoxel), fZNumVoxel(zNumVoxel)
+RoutinePSEnergyTransfer::RoutinePSEnergyTransfer(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel) :
+G4VPrimitiveScorer(name),
+HCID(-1),
+EvtMap(0),
+fXNumVoxel(xNumVoxel),
+fYNumVoxel(yNumVoxel),
+fZNumVoxel(zNumVoxel)
 {
     CheckAndSetUnit("MeV", "Energy");
 }
@@ -134,10 +143,13 @@ void RoutinePSEnergyTransfer::clear()
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-RoutinePSPrimaryTrackLength::RoutinePSPrimaryTrackLength(G4String name) :
+RoutinePSPrimaryTrackLength::RoutinePSPrimaryTrackLength(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel) :
 G4VPrimitiveScorer(name, 0),
 HCID(-1),
-EvtMap(0)
+EvtMap(0),
+fXNumVoxel(xNumVoxel),
+fYNumVoxel(yNumVoxel),
+fZNumVoxel(zNumVoxel)
 {
     SetUnit("mm");
 }
@@ -146,6 +158,20 @@ EvtMap(0)
 //------------------------------------------------------------
 RoutinePSPrimaryTrackLength::~RoutinePSPrimaryTrackLength()
 {}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+G4int RoutinePSPrimaryTrackLength::GetIndex(G4Step* aStep)
+{
+    const G4VTouchable* touchable = aStep->GetPreStepPoint()->GetTouchable();
+    G4int xIdx = touchable->GetReplicaNumber(0);
+    G4int yIdx = touchable->GetReplicaNumber(1);
+    G4int zIdx = touchable->GetReplicaNumber(2);
+
+    // x idx changes fastest, z slowest
+    G4int globalIdx = fXNumVoxel * fYNumVoxel * zIdx + fXNumVoxel * yIdx + xIdx;
+    return globalIdx;
+}
 
 //------------------------------------------------------------
 //------------------------------------------------------------

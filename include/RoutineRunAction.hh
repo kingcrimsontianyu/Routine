@@ -40,7 +40,8 @@ public:
     void OutputVoxelTally(const G4String& prefix,
                           const G4int numHistory,
                           G4THitsMap<G4double>* hitsMap,
-                          G4THitsMap<G4double>* hitsMapSquared);
+                          G4THitsMap<G4double>* hitsMapSquared,
+                          G4bool isDividedByMass = true);
     void CalculateMeanAndRsd(G4double& mean,
                              G4double& rsd,
                              const G4int numHistory,

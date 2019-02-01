@@ -35,6 +35,7 @@ public:
     RoutineNestedParameterisation* GetParameterisation() const;
     G4Material* GetPhantomMaterial(G4int globalIdx) const;
     G4double GetPhantomMass() const;
+    G4double GetPhantomVolume() const;
 protected:
     void AddInternalMaterial();
     void ImportFromFile();

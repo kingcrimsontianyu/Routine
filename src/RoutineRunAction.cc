@@ -104,7 +104,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // dose
-    // scoring based on hits map (voxel dose)
+    // scoring based on hits map (voxel tally)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
@@ -117,7 +117,7 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // kerma
-    // scoring based on hits map (voxel dose)
+    // scoring based on hits map (voxel tally)
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if(IsMaster())
     {
@@ -126,6 +126,20 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/energyTransfer3D"));
         G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/energyTransfer3DSquared"));
         OutputVoxelTally("kerma_voxel", numHistory, hitsMap, hitsMapSquared);
+    }
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // track-length
+    // scoring based on hits map (voxel tally)
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(IsMaster())
+    {
+        G4cout << "--> Output flux based on hits map (voxel tally)." << G4endl;
+        auto biuRun = static_cast<const RoutineRun*>(run);
+        G4THitsMap<G4double>* hitsMap = biuRun->GetHitsMap(G4String("PhantomMFD/trackLength3D"));
+        G4THitsMap<G4double>* hitsMapSquared = biuRun->GetHitsMapSquared(G4String("PhantomMFD/trackLength3DSquared"));
+        G4bool isDividedByMass = false;
+        OutputVoxelTally("flux_voxel", numHistory, hitsMap, hitsMapSquared, isDividedByMass);
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -169,12 +183,12 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
         // }
     // }
 
-    // // histograms
-    // if(IsMaster())
-    // {
-        // G4cout << "--> Output custom scores." << G4endl;
-        // rut->SaveCustomScoreToFileByMaster();
-    // }
+    // histograms
+    if(IsMaster())
+    {
+        G4cout << "--> Output custom scores." << G4endl;
+        rut->SaveCustomScoreToFileByMaster();
+    }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // G4 histograms
@@ -210,20 +224,34 @@ void RoutineRunAction::EndOfRunAction(const G4Run* run)
 void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
                                         const G4int numHistory,
                                         G4THitsMap<G4double>* hitsMap,
-                                        G4THitsMap<G4double>* hitsMapSquared)
+                                        G4THitsMap<G4double>* hitsMapSquared,
+                                        G4bool isDividedByMass)
 {
-    // convert energy to dose per source particle
+    // convert energy to tally per source particle
     auto detectorConstruction = static_cast<const RoutineDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
     G4double mass = detectorConstruction->GetPhantomMass();
+    G4double volume = detectorConstruction->GetPhantomVolume();
 
-    G4double edep = 0.0;
+    G4double rawTally = 0.0;
     for(auto it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); ++it)
     {
-        edep += *(it->second);
+        rawTally += *(it->second);
     }
-    G4double dose  = edep / mass;
-    dose /= numHistory;
-    G4cout << "    Average " << prefix << " = " << dose / (MeV / g) << " [MeV/g]"<< G4endl;
+    G4double tally;
+
+    if(isDividedByMass)
+    {
+        tally = rawTally / mass;
+        tally /= numHistory;
+        G4cout << "    Average " << prefix << " = " << tally / (MeV / g) << " [MeV/g]"<< G4endl;
+    }
+    else
+    {
+        tally = rawTally / volume;
+        tally /= numHistory;
+        G4cout << "    Average " << prefix << " = " << tally / (1.0 / (cm * cm)) << " [1/cm2]"<< G4endl;
+    }
+
 
     // get phantom parameters
     RoutineThreeVector<G4int> numVoxel = detectorConstruction->GetNumVoxel();
@@ -273,7 +301,7 @@ void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
     }
 
     // store data in column major where x index changes fastest
-    std::vector<G4double> dose_temp_list(numVoxel.x * numVoxel.y * numVoxel.z);
+    std::vector<G4double> tally_temp_list(numVoxel.x * numVoxel.y * numVoxel.z);
     std::vector<G4double> rsd_list(numVoxel.x * numVoxel.y * numVoxel.z);
 
     for(G4int k = 0; k < numVoxel.z; ++k)
@@ -282,30 +310,41 @@ void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
         {
             for(G4int i = 0; i < numVoxel.x; ++i)
             {
-                G4double edep_temp = 0.0;
-                G4double edep2_temp = 0.0;
+                G4double rawTally_temp = 0.0;
+                G4double rawTally2_temp = 0.0;
 
                 // x idx changes fastest, z slowest
                 G4int globalIdx = numVoxel.x * numVoxel.y * k + numVoxel.x * j + i;
-                G4double* edepPtr = (*hitsMap)[globalIdx];
-                if(edepPtr != nullptr)
+                G4double* rawTallyPtr = (*hitsMap)[globalIdx];
+                if(rawTallyPtr != nullptr)
                 {
-                    edep_temp = *edepPtr;
+                    rawTally_temp = *rawTallyPtr;
                 }
-                G4double* edep2Ptr = (*hitsMapSquared)[globalIdx];
-                if(edep2Ptr != nullptr)
+                G4double* rawTally2Ptr = (*hitsMapSquared)[globalIdx];
+                if(rawTally2Ptr != nullptr)
                 {
-                    edep2_temp = *edep2Ptr;
+                    rawTally2_temp = *rawTally2Ptr;
                 }
 
-                // convert from energy to dose
-                G4Material* material = detectorConstruction->GetPhantomMaterial(globalIdx);
-                G4double density = material->GetDensity();
-                G4double mass_temp = density * voxelVolume;
-                G4double dose_temp  = edep_temp / mass_temp;
-                G4double dose2_temp = edep2_temp / mass_temp / mass_temp;
+                G4double tally_temp;
+                G4double tally2_temp;
+                if(isDividedByMass)
+                {
+                    // convert from energy to dose
+                    G4Material* material = detectorConstruction->GetPhantomMaterial(globalIdx);
+                    G4double density = material->GetDensity();
+                    G4double mass_temp = density * voxelVolume;
+                    tally_temp  = rawTally_temp / mass_temp;
+                    tally2_temp = rawTally2_temp / mass_temp / mass_temp;
+                }
+                else
+                {
+                    // convert from track-length to flux
+                    tally_temp  = rawTally_temp / voxelVolume;
+                    tally2_temp = rawTally2_temp / voxelVolume / voxelVolume;
+                }
 
-                G4double sigma = dose2_temp - dose_temp * dose_temp / numHistory;
+                G4double sigma = tally2_temp - tally_temp * tally_temp / numHistory;
                 if (sigma > 0.0)
                 {
                     sigma = std::sqrt(sigma);
@@ -314,28 +353,39 @@ void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
                 {
                     sigma = 0.0;
                 }
-                dose_temp /= numHistory;
+                tally_temp /= numHistory;
                 sigma /= numHistory;
                 G4double rsd;
-                if(dose_temp != 0.0)
+                if(tally_temp != 0.0)
                 {
-                    rsd = sigma / dose_temp;
+                    rsd = sigma / tally_temp;
                 }
                 else
                 {
                     rsd = 0.0;
                 }
 
-                dose_temp_list[globalIdx] = dose_temp;
+                tally_temp_list[globalIdx] = tally_temp;
                 rsd_list[globalIdx] = rsd;
 
                 if(!rp->param->outputBinaryVoxelTally)
                 {
-                    file << std::setw(5) << i
-                         << std::setw(5) << j
-                         << std::setw(5) << k
-                         << std::setw(20) << std::scientific << std::setprecision(12) << dose_temp / (MeV / g)
-                         << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
+                    if(isDividedByMass)
+                    {
+                        file << std::setw(5) << i
+                             << std::setw(5) << j
+                             << std::setw(5) << k
+                             << std::setw(20) << std::scientific << std::setprecision(12) << tally_temp / (MeV / g)
+                             << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
+                    }
+                    else
+                    {
+                        file << std::setw(5) << i
+                             << std::setw(5) << j
+                             << std::setw(5) << k
+                             << std::setw(20) << std::scientific << std::setprecision(12) << tally_temp / (1.0 / (cm * cm))
+                             << std::setw(20) << std::scientific << std::setprecision(12) << rsd << G4endl;
+                    }
                 }
 
             }
@@ -344,7 +394,7 @@ void RoutineRunAction::OutputVoxelTally(const G4String& prefix,
 
     if(rp->param->outputBinaryVoxelTally)
     {
-        file.write((const char*)dose_temp_list.data(), sizeof(G4double) * dose_temp_list.size());
+        file.write((const char*)tally_temp_list.data(), sizeof(G4double) * tally_temp_list.size());
         fileRSD.write((const char*)rsd_list.data(), sizeof(G4double) * rsd_list.size());
     }
 }

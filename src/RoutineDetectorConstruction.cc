@@ -301,6 +301,7 @@ void RoutineDetectorConstruction::ConstructSDandField()
     G4MultiFunctionalDetector* mfd = new G4MultiFunctionalDetector("PhantomMFD");
     mfd->RegisterPrimitive(new RoutinePSEnergyImparted(G4String("energyImparted3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
     mfd->RegisterPrimitive(new RoutinePSEnergyTransfer(G4String("energyTransfer3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
+    mfd->RegisterPrimitive(new RoutinePSPrimaryTrackLength(G4String("trackLength3D"), fNumVoxel.x, fNumVoxel.y, fNumVoxel.z));
 
     // add mfd to the singleton sd manager
     G4SDManager* sdManager = G4SDManager::GetSDMpointer();
@@ -377,7 +378,12 @@ G4double RoutineDetectorConstruction::GetPhantomMass() const
     return mass;
 }
 
-
+//------------------------------------------------------------
+//------------------------------------------------------------
+G4double RoutineDetectorConstruction::GetPhantomVolume() const
+{
+    return GetVoxelVolume() * fNumVoxel.x * fNumVoxel.y * fNumVoxel.z;
+}
 
 
 //------------------------------------------------------------

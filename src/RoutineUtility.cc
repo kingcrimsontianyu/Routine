@@ -15,7 +15,7 @@ hasOccurred(false)
 //------------------------------------------------------------
 //------------------------------------------------------------
 RoutineUtility::RoutineUtility(RoutineParameterManager* rp_ext)
-: bPrintParticleInfo(false), rp(rp_ext), mut(G4MUTEX_INITIALIZER)
+: bPrintParticleInfo(false), rp(rp_ext)
 {
 }
 

@@ -60,14 +60,18 @@ protected:
 class RoutinePSPrimaryTrackLength : public G4VPrimitiveScorer
 {
 public:
-    RoutinePSPrimaryTrackLength(G4String name);
+    RoutinePSPrimaryTrackLength(G4String name, G4int xNumVoxel, G4int yNumVoxel, G4int zNumVoxel);
     virtual ~RoutinePSPrimaryTrackLength();
     virtual void Initialize(G4HCofThisEvent*);
 protected:
+    virtual G4int GetIndex(G4Step*);
     virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*) override;
 
     G4int HCID;
     G4THitsMap<G4double>* EvtMap;
+    G4int fXNumVoxel;
+    G4int fYNumVoxel;
+    G4int fZNumVoxel;
 };
 
 #endif

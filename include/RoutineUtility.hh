@@ -87,7 +87,7 @@ protected:
     std::vector<G4String> supportedParticleList;
     std::vector<G4String> activeParticleList;
     RoutineParameterManager* rp;
-    G4Mutex mut;
+    // G4Mutex mut;
 };
 
 //------------------------------------------------------------

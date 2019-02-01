@@ -25,7 +25,7 @@ void RoutineTrackingAction::PreUserTrackingAction(const G4Track*)
 
 //------------------------------------------------------------
 //------------------------------------------------------------
-void RoutineTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
+void RoutineTrackingAction::PostUserTrackingAction(const G4Track* /*aTrack*/)
 {
     // // for primary particles
     // if (aTrack->GetTrackID() == 1)
